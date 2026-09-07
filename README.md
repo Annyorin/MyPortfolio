@@ -1,44 +1,125 @@
-# Промпты агентов для мультиагентной разработки в Claude Code и Cursor.
+# Мультиагентная разработка + дизайн-слой
 
-Расширенное описание подхода приведено в [статье](https://habr.com/ru/articles/971620/).
+Локальная копия [rdudov/agents](https://github.com/rdudov/agents) с ролью дизайнера
+из [Annyorin/TemplateDesign](https://github.com/Annyorin/TemplateDesign).
 
-Общее описание подхода: [00_agent_development.md](https://github.com/rdudov/agents/blob/master/00_agent_development.md)
+Оркестрация сделана по документации Anthropic: координатор в основной сессии,
+исполнители и ревьюеры — изолированные субагенты с узкими tools.
 
-Промпт оркестратора, который координирует работу остальных агентов: 01_orchestrator.md
+- Как запускать субагентов: [orchestration/README.md](orchestration/README.md)
+- Источники и лицензии: [NOTICE.md](NOTICE.md)
+- Исходный подход Dudov: [00_agent_development.md](00_agent_development.md), [статья на Хабре](https://habr.com/ru/articles/971620/)
+- Anthropic: [subagents](https://code.claude.com/docs/en/sub-agents), [SDK](https://code.claude.com/docs/en/agent-sdk/subagents), [multiagent](https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration)
 
-Промпты агентов (названия говорят сами за себя):
-- [02_analyst_prompt.md](https://github.com/rdudov/agents/blob/master/02_analyst_prompt.md)
-- [03_tz_reviewer_prompt.md](https://github.com/rdudov/agents/blob/master/03_tz_reviewer_prompt.md)
-- [04_architect_prompt.md](https://github.com/rdudov/agents/blob/master/04_architect_prompt.md)
-- [05_architecture_reviewer_prompt.md](https://github.com/rdudov/agents/blob/master/05_architecture_reviewer_prompt.md)
-- [06_agent_planner.md](https://github.com/rdudov/agents/blob/master/06_agent_planner.md)
-- [07_agent_plan_reviewer.md](https://github.com/rdudov/agents/blob/master/07_agent_plan_reviewer.md)
-- [08_agent_developer.md](https://github.com/rdudov/agents/blob/master/08_agent_developer.md)
-- [09_agent_code_reviewer.md](https://github.com/rdudov/agents/blob/master/09_agent_code_reviewer.md)
-- [10_agent_blocker_rescuer.md](https://github.com/rdudov/agents/blob/master/10_agent_blocker_rescuer.md) — опциональный summary-слой после deterministic rescuer executor для environment/evidence/stale-artifact блокеров
+## Что где
 
-Пример промпта для запуска мультиагентной разработки в Cursor, чтобы он автоматически стартовал субагентов с нужными ролями. 
+| Путь | Назначение |
+|------|------------|
+| `01_orchestrator.md` | алгоритм координатора |
+| `02_*.md` … `10_*.md` | исходные роли разработки |
+| `11_designer_prompt.md`, `12_design_reviewer_prompt.md` | дизайн-слой |
+| `.claude/agents/` | субагенты Claude Code / Agent SDK |
+| `design/` | метасреда TemplateDesign |
+| `.cursor/skills/` | процедуры дизайна (по вызову) |
+| `docs/implementation/` | артефакты прогона (gitignored) |
+
+## Поток
+
+Анализ → (Дизайн, если есть UI) → Архитектура → План → Разработка.
+
+Дизайнер не делает всё сам. Он вызывает `designer-research`, `designer-content`,
+`designer-ds`, `designer-prototype`. Архитектор получает `design_spec.md` как
+UX-ограничение, ТЗ остаётся источником продуктовых требований.
+
+## Запуск в Cursor / Claude Code
+
 ```
-Используя подход по оркестрации мультиагентной разработки (agents/01_orchestrator.md), 
-выполни доработку {ссылка на файл с постановкой задачи}.
+По CLAUDE.md и 01_orchestrator.md выполни задачу: {постановка}.
 
-Описание проекта {ссылка на описание проекта для агентов, если проект существующий}
-
-Каталог артефактов пайплайна: docs/implementation
-
-Промпты агентов с указанными в 01_orchestrator.md ролями находятся в agents (02*.md..10.md).
-Агентов нужно вызывать shell-командами:
-agent -f --model {модель} -p {промпт}
-и дожидаться от них результатов.
-Если пайплайн упирается в environment/evidence/stale-artifact blocker, используй rescuer executor, а 10_agent_blocker_rescuer.md — только для краткой интерпретации его результата.
-
-Промпт следующего формата:
-"{содержимое файла с ролью} {входные данные согласно описанию роли}"
-
-Модель:
-аналитик, архитектор, планировщик — gpt-5.4-high
-ревьюеры ТЗ, архитектуры, плана, кода и разработчик — gpt-5.3-codex
+Каталог артефактов: docs/implementation
+Делегируй субагентам из .claude/agents/, не делай предметную работу сам.
+Если есть UI — после ТЗ запусти designer, затем design-reviewer.
+Дизайн-система только через designer-ds. Figma — OAuth текущего пользователя.
 ```
 
-Необходимо установить CLI agent через curl https://cursor.com/install, запустить agent login и залогиниться с учёткой cursor.
-Названия моделей для CLI можно уточнить командой agent models.
+Для Cursor CLI по-прежнему можно вызывать `agent -f --model … -p …`, но
+предпочтительнее встроенные субагенты: меньше утечки контекста и уже заданы
+запреты инструментов.
+
+Модели (ориентир исходного репозитория): аналитик / архитектор / планировщик /
+дизайнер — более сильная; ревьюеры и разработчик — быстрее/дешевле.
+
+## Figma
+
+Скопируй `.cursor/mcp.json.example` в `.cursor/mcp.json` и перезапусти IDE.
+Официальный сервер: `https://mcp.figma.com/mcp`. Кучу чужих аккаунтов в шаблоне
+намеренно убрали — подключается твой OAuth.
+
+## Портфолио + Storybook
+
+Локальная поставка продукта (UC-01…UC-05): каталог компонентов в Storybook и сайт
+«Портфолио.Главная». Figma для **запуска** не нужна. Краткая инструкция по сайту:
+[`portfolio/README.md`](portfolio/README.md). Reference-витрина Ui kit (не продукт):
+[`ds-showcase/README.md`](ds-showcase/README.md).
+
+### Эталон Figma (опционально)
+
+Сцена Главной: [node `41:1416`](https://www.figma.com/design/xboMnqU5JURL0xlzxN7edN/%D0%9F%D0%BE%D1%80%D1%82%D1%84%D0%BE%D0%BB%D0%B8%D0%BE?node-id=41-1416)  
+`fileKey`: `xboMnqU5JURL0xlzxN7edN`
+
+### Требования
+
+- Node.js LTS
+- npm
+
+### Установка
+
+Из корня репозитория:
+
+```bash
+npm ci
+```
+
+или `npm install`, если lockfile ещё не зафиксирован.
+
+Убедитесь, что на месте Shared DS:
+
+- `ds-showcase/css/` (`tokens.css`, `components.css`, …)
+- `ds-showcase/assets/` (images и прочие медиа)
+
+### Команды
+
+| Скрипт | Назначение |
+|--------|------------|
+| `npm run storybook` | UC-01: Storybook (порт по умолчанию **6006**) |
+| `npm run portfolio:dev` | UC-02: Vite — Главная (`/portfolio/main.html`) |
+| `npm run portfolio:static` | опционально: static serve **корня репозитория** (порт **4174**); откройте `/portfolio/` |
+| `npm test` | автотесты поставки |
+
+Alias ассетов: **`@ds-assets` → `ds-showcase/assets`** (Vite `vite.config.js` и
+Storybook `.storybook/main.js`; см. `package.json` description). Импорты вида
+`@ds-assets/...` резолвятся одинаково в `portfolio:dev` и Storybook.
+
+Если Storybook не стартует: проверьте Node LTS, выполните `npm ci`, убедитесь что
+`ds-showcase/css` и `ds-showcase/assets` существуют; CLI Storybook печатает понятную
+ошибку окружения (UC-01 A2).
+
+Битые медиа на Главной: смотрите предупреждения в DevTools Console (NFR).
+
+### Camera hotkeys (Главная)
+
+Кратко (холст, не поля ввода):
+
+| Действие | Клавиши / жест |
+|----------|----------------|
+| Zoom in | `+` / `=` или Ctrl\|Meta + `=` / `+` |
+| Zoom out | `-` или Ctrl\|Meta + `-` |
+| 100% | Ctrl\|Meta + `0` или Shift + `0` |
+| Fit | Shift + `1` |
+| Zoom к курсору | Ctrl\|Meta + wheel |
+| Pan | wheel без модификатора; Space + drag |
+
+### Запреты
+
+- Не коммитить секреты (`.env`, токены, `.cursor/mcp.json` с ключами).
+- Каталог `design/**` не менять без явной нужды (метасреда дизайна).

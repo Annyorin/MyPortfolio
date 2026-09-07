@@ -1,2 +1,28 @@
 ## Pipeline artifacts default location
 docs/implementation/
+
+## Local clone cache of upstream TemplateDesign
+_vendor/
+
+## Dependencies
+node_modules/
+
+## Env / secrets — never commit
+.env
+.env.*
+!.env.example
+
+## Local MCP auth — never commit
+.cursor/mcp.json
+.cursor/mcp.json.local
+
+## OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+## Local scratch / debug
+_tmp*
+tmp-*
+_patch_*.mjs
+_debug_*.mjs

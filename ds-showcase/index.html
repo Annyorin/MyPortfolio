@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS Showcase</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/showcase.css">
+</head>
+<body>
+  <main class="ds-showcase">
+    <h1 class="ds-showcase__title">DS Showcase</h1>
+
+    <section class="ds-section" aria-labelledby="section-foundations">
+      <h2 id="section-foundations">Foundations</h2>
+
+      <div class="ds-swatches" role="list">
+        <div class="ds-swatch-item" role="listitem">
+          <div class="ds-swatch" data-token="primary" aria-hidden="true"></div>
+          <div class="ds-swatch__meta">
+            <span class="ds-swatch__label">Primary</span>
+            <span class="ds-swatch__hex">#64b3f9</span>
+          </div>
+        </div>
+        <div class="ds-swatch-item" role="listitem">
+          <div class="ds-swatch" data-token="secondary" aria-hidden="true"></div>
+          <div class="ds-swatch__meta">
+            <span class="ds-swatch__label">Secondary</span>
+            <span class="ds-swatch__hex">#ededed</span>
+          </div>
+        </div>
+        <div class="ds-swatch-item" role="listitem">
+          <div class="ds-swatch" data-token="gray-dark" aria-hidden="true"></div>
+          <div class="ds-swatch__meta">
+            <span class="ds-swatch__label">Gray_dark</span>
+            <span class="ds-swatch__hex">#e4e4e4</span>
+          </div>
+        </div>
+        <div class="ds-swatch-item" role="listitem">
+          <div class="ds-swatch" data-token="gray-text" aria-hidden="true"></div>
+          <div class="ds-swatch__meta">
+            <span class="ds-swatch__label">Gray_text</span>
+            <span class="ds-swatch__hex">#888888</span>
+          </div>
+        </div>
+        <div class="ds-swatch-item" role="listitem">
+          <div class="ds-swatch" data-token="black" aria-hidden="true"></div>
+          <div class="ds-swatch__meta">
+            <span class="ds-swatch__label">Black</span>
+            <span class="ds-swatch__hex">#232323</span>
+          </div>
+        </div>
+        <div class="ds-swatch-item" role="listitem">
+          <div class="ds-swatch" data-token="white" aria-hidden="true"></div>
+          <div class="ds-swatch__meta">
+            <span class="ds-swatch__label">White</span>
+            <span class="ds-swatch__hex">#fefefe</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-type-specimens">
+        <p class="ds-type ds-type--h1"><span class="ds-type__label">Заголовок 1</span></p>
+        <p class="ds-type ds-type--h2"><span class="ds-type__label">Заголовок 2</span></p>
+        <p class="ds-type ds-type--text"><span class="ds-type__label">Текст</span></p>
+        <p class="ds-type ds-type--caption"><span class="ds-type__label">Подписи</span></p>
+      </div>
+    </section>
+
+    <section class="ds-section" aria-labelledby="section-icons">
+      <h2 id="section-icons">Icons</h2>
+      <div class="ds-icons" role="list">
+        <span class="ds-icon" role="listitem" aria-label="close" data-icon="close">
+          <img src="assets/icons/close.svg" alt="" width="24" height="24">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="Plus" data-icon="Plus">
+          <img src="assets/icons/plus.svg" alt="" width="24" height="24">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="Plus hover" data-icon="Plus">
+          <img src="assets/icons/plus-hover.svg" alt="" width="24" height="24">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="Minus" data-icon="Minus">
+          <img src="assets/icons/minus.svg" alt="" width="24" height="24">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="Minus hover" data-icon="Minus">
+          <img src="assets/icons/minus-hover.svg" alt="" width="24" height="24">
+        </span>
+        <span
+          class="ds-icon"
+          role="listitem"
+          aria-label="vuesax/linear/arrow-right"
+          data-icon="vuesax/linear/arrow-right"
+        >
+          <img src="assets/icons/arrow-right.svg" alt="" width="24" height="24">
+        </span>
+      </div>
+    </section>
+
+    <section class="ds-section" aria-labelledby="section-atomic">
+      <h2 id="section-atomic">Atomic</h2>
+
+      <div class="ds-avatar ds-placeholder">
+        <img src="assets/images/avatar.png" alt="Avatar of Аня Ясинская" width="48" height="48">
+      </div>
+
+      <div class="ds-profile">
+        <div class="ds-avatar ds-placeholder" aria-hidden="true">
+          <img src="assets/images/avatar.png" alt="" width="48" height="48">
+        </div>
+        <div class="ds-profile__meta">
+          <span class="ds-profile__name">Аня Ясинская</span>
+          <span class="ds-profile__role">Подуктовый дизайнер</span>
+        </div>
+      </div>
+
+      <div class="ds-chip-samples">
+        <span class="ds-chip ds-chip--default">B2B</span>
+        <span class="ds-chip ds-chip--active">B2B</span>
+      </div>
+
+      <div class="ds-link-samples">
+        <a class="ds-link ds-link--default" href="#">Link</a>
+        <a class="ds-link ds-link--hover" href="#">Link</a>
+      </div>
+
+      <div class="ds-tapper" role="group" aria-label="Tapper">
+        <button type="button" class="scene-tapper__hit" data-tapper-action="zoom-out" aria-label="Отдалить">
+          <span class="ds-icon ds-icon--swap" aria-hidden="true" data-icon="Minus">
+            <img class="ds-icon__state ds-icon__state--default" src="assets/icons/minus.svg" alt="" width="24" height="24">
+            <img class="ds-icon__state ds-icon__state--hover" src="assets/icons/minus-hover.svg" alt="" width="24" height="24">
+          </span>
+          <span class="ds-tooltip" role="tooltip">Отдалить</span>
+        </button>
+        <button type="button" class="scene-tapper__hit" data-tapper-action="zoom-in" aria-label="Приблизить">
+          <span class="ds-icon ds-icon--swap" aria-hidden="true" data-icon="Plus">
+            <img class="ds-icon__state ds-icon__state--default" src="assets/icons/plus.svg" alt="" width="24" height="24">
+            <img class="ds-icon__state ds-icon__state--hover" src="assets/icons/plus-hover.svg" alt="" width="24" height="24">
+          </span>
+          <span class="ds-tooltip" role="tooltip">Приблизить</span>
+        </button>
+      </div>
+
+      <div class="ds-tooltip-samples" aria-label="Tooltip samples">
+        <span class="ds-tooltip">Приблизить</span>
+        <span class="ds-tooltip">Отдалить</span>
+      </div>
+
+      <div class="ds-stiker" aria-label="Stiker">Обо мне</div>
+
+      <button type="button" class="ds-hover" aria-label="Behance">
+        <span class="ds-hover__label">Behance</span>
+        <span class="ds-icon" aria-hidden="true" data-icon="vuesax/linear/arrow-right">
+          <img src="assets/icons/arrow-right.svg" alt="" width="24" height="24">
+        </span>
+      </button>
+    </section>
+
+    <section class="ds-section" aria-labelledby="section-composite">
+      <h2 id="section-composite">Composite</h2>
+
+      <div class="ds-card-samples">
+        <article class="ds-card ds-card--default">
+          <div class="ds-card__media ds-placeholder">
+            <img src="assets/images/card-innodragon.png" alt="InnoDragon project cover" width="310" height="190">
+          </div>
+          <div class="ds-card__body">
+            <div class="ds-card__header">
+              <h3 class="ds-card__title">InnoDragon</h3>
+              <p class="ds-card__meta">· 2024-2026</p>
+            </div>
+            <p class="ds-card__description">Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.</p>
+          </div>
+        </article>
+        <article class="ds-card ds-card--hover">
+          <div class="ds-card__media ds-placeholder">
+            <img src="assets/images/card-innodragon.png" alt="InnoDragon project cover" width="310" height="190">
+          </div>
+          <div class="ds-card__body">
+            <div class="ds-card__header">
+              <h3 class="ds-card__title">InnoDragon</h3>
+              <p class="ds-card__meta">· 2024-2026</p>
+            </div>
+            <p class="ds-card__description">Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.</p>
+          </div>
+        </article>
+      </div>
+
+      <aside class="ds-sidebar">
+        <div class="ds-sidebar__designer">
+          <div class="ds-sidebar__profile ds-profile">
+            <div class="ds-avatar ds-placeholder" aria-hidden="true">
+              <img src="assets/images/avatar.png" alt="" width="48" height="48">
+            </div>
+            <div class="ds-profile__meta">
+              <span class="ds-profile__name">Аня Ясинская</span>
+              <span class="ds-profile__role">Подуктовый дизайнер</span>
+            </div>
+          </div>
+          <div class="ds-sidebar__inform">
+            <p class="ds-sidebar__bio">Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.</p>
+            <div class="ds-sidebar__skills">
+              <span class="ds-chip ds-chip--active">B2B</span>
+              <span class="ds-chip ds-chip--active">B2C</span>
+              <span class="ds-chip ds-chip--default">Design System</span>
+              <span class="ds-chip ds-chip--default">AI-prototyping</span>
+            </div>
+          </div>
+        </div>
+        <nav class="ds-sidebar__contacts" aria-label="Contacts">
+          <a class="ds-link" href="#">CV</a>
+          <a class="ds-link" href="#">Telegram</a>
+          <a class="ds-link" href="#">LinkedIn</a>
+          <a class="ds-link" href="#">Behance</a>
+        </nav>
+      </aside>
+    </section>
+
+    <section class="ds-section" aria-labelledby="section-media">
+      <h2 id="section-media">Media</h2>
+      <div class="ds-media">
+        <div class="ds-placeholder" data-media="img_bg" style="width:345px;aspect-ratio:345/230">
+          <img src="assets/images/img-bg.png" alt="IMG_BG media sample" width="345" height="230">
+        </div>
+        <div class="ds-placeholder" data-media="img_1" style="width:345px;aspect-ratio:345/230">
+          <img src="assets/images/img-1.png" alt="IMG_1 media sample" width="345" height="230">
+        </div>
+        <div class="ds-placeholder" data-media="img_2" style="width:345px;aspect-ratio:345/230">
+          <img src="assets/images/img-2.png" alt="IMG_2 media sample" width="345" height="230">
+        </div>
+        <div class="ds-placeholder" data-media="img_3" style="width:345px;aspect-ratio:345/345">
+          <img src="assets/images/img-3.png" alt="IMG_3 media sample" width="345" height="345">
+        </div>
+        <div class="ds-placeholder" data-media="comp" style="width:149px;aspect-ratio:149/103">
+          <img src="assets/images/comp.png" alt="Comp media sample" width="149" height="103">
+        </div>
+        <div class="ds-placeholder" data-media="me" style="width:254px;aspect-ratio:254/254">
+          <img src="assets/images/me.png" alt="me media sample" width="254" height="254">
+        </div>
+        <div class="ds-placeholder" data-media="macbook" style="width:451px;aspect-ratio:451/319">
+          <img src="assets/images/macbook.png" alt="Macbook media sample" width="451" height="319">
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+/**
+ * Foundations tokens (canonical values from TZ §3.1 / architecture §4.2).
+ */
+
+/* Font Delivery: Inter 400/500/600 only; A1 fallback sans-serif on body (showcase.css) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+:root {
+  /* ColorToken */
+  --color-primary: #64b3f9;
+  --color-secondary: #ededed;
+  --color-white: #fefefe;
+  --color-black: #232323;
+  --color-gray-text: #888888;
+  --color-gray-dark: #e4e4e4;
+  --color-gray-l: #6b6b6b;
+
+  /* ElevationToken — Shadow only (no alternate Card elevation token) */
+  --shadow: 0 5px 9px #bbbbbd40;
+
+  /* TypographyStyle — H1: 20px / 24px / 600 */
+  --type-h1-size: 20px;
+  --type-h1-line: 24px;
+  --type-h1-weight: 600;
+
+  /* TypographyStyle — H2: 16px / 20px / 500 */
+  --type-h2-size: 16px;
+  --type-h2-line: 20px;
+  --type-h2-weight: 500;
+
+  /* TypographyStyle — Text: 16px / 20px / 400 */
+  --type-text-size: 16px;
+  --type-text-line: 20px;
+  --type-text-weight: 400;
+
+  /* TypographyStyle — Caption: 12px / 16px / 500 */
+  --type-caption-size: 12px;
+  --type-caption-line: 16px;
+  --type-caption-weight: 500;
+
+  /* Page — light theme (white / near-white) */
+  --page-bg: var(--color-white);
+}

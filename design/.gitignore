@@ -1,0 +1,29 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+*.swp
+*~
+
+# Secrets
+.env
+.env.*
+*.pem
+credentials.json
+
+# Dependencies & build (when code env grows)
+node_modules/
+dist/
+build/
+.storybook-static/
+
+# Logs & temp
+*.log
+tmp/
+temp/
+
+# Optional: large local archives (uncomment if _archive grows too big)
+# _archive/

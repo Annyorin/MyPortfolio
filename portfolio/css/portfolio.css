@@ -1,0 +1,222 @@
+/**
+ * Portfolio chrome only: viewport / world / camera transform surface + scene slot helpers.
+ * DS tokens and component styles stay in ds-showcase/css (architecture §3.2).
+ */
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background-color: #f5f5f5;
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline: none;
+  background-color: #f5f5f5;
+}
+
+.scene-infinite-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #f5f5f5;
+  background-repeat: repeat;
+}
+
+/* Pan host: translate only when CSS zoom is used on .world (sharper rasterization). */
+.camera-pan {
+  position: relative;
+  z-index: 1;
+  transform-origin: 0 0;
+}
+
+.world {
+  position: relative;
+  z-index: 1;
+  transform-origin: 0 0;
+  /* Avoid permanent compositor layer that freezes a 1× bitmap under transform: scale */
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+.scene-chrome {
+  z-index: 20;
+  transform: none !important;
+}
+
+.scene-chrome[data-node-kind="tapper"] {
+  left: auto;
+  top: 50%;
+  right: 24px;
+  bottom: auto;
+  transform: translateY(-50%);
+}
+
+.scene-chrome[data-node-kind="sidebar"],
+.scene-chrome.ds-sidebar {
+  top: 24px;
+  bottom: 24px;
+  height: auto;
+  min-height: 0;
+}
+
+.scene-node[data-node-kind="card"],
+.scene-node[data-node-kind="about"] {
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.scene-node[data-node-kind="card"].is-card-grab,
+.scene-node[data-node-kind="about"].is-card-grab {
+  cursor: grab;
+}
+
+.scene-node[data-node-kind="card"].is-card-dragging,
+.scene-node[data-node-kind="about"].is-card-dragging {
+  cursor: grabbing;
+  z-index: 40;
+}
+
+.scene-about-cluster {
+  position: absolute;
+  overflow: visible;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: transform 220ms ease;
+  cursor: pointer;
+}
+
+.scene-about-cluster:hover,
+.scene-about-cluster.is-card-grab,
+.scene-about-cluster.is-card-dragging {
+  transform: scale(1.03);
+}
+
+.scene-about__item {
+  overflow: visible;
+}
+
+.scene-about__me,
+.scene-about__macbook {
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.scene-about__me > img,
+.scene-about__macbook > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.scene-about-cluster .ds-stiker {
+  pointer-events: none;
+}
+
+.scene-bg {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.scene-comp,
+.scene-comp__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Media slots: keep box geometry before load / on broken src (UC-02 A1).
+   Placeholder rules live here because portfolio does not load showcase.css. */
+.ds-card__media.ds-placeholder,
+.ds-avatar.ds-placeholder,
+.scene-comp.ds-placeholder,
+.ds-media-slot--broken {
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #ededed;
+}
+
+.ds-card__media.ds-placeholder {
+  min-height: 180px;
+  aspect-ratio: 310 / 180;
+}
+
+.ds-avatar.ds-placeholder {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  aspect-ratio: 1 / 1;
+}
+
+.ds-placeholder > img,
+.ds-media-slot--broken > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scene-comp.ds-placeholder > img,
+.scene-comp.ds-media-slot--broken > .scene-comp__img {
+  object-fit: contain;
+}
+
+.scene-node.ds-sidebar:not(.scene-chrome) {
+  height: 100%;
+  min-height: 0;
+}
+
+.scene-node[data-node-kind="tapper"].ds-tapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 0;
+  border: none;
+  overflow: visible;
+}
+
+.scene-node[data-node-kind="tapper"].ds-tapper:not(.ds-tapper--portrait) {
+  flex-direction: row;
+  padding: 8px 16px;
+}
+
+.scene-about-cluster .ds-stiker {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+}
+
+.scene-tapper__hit {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.scene-tapper__hit:focus-visible {
+  outline: 2px solid #232323;
+  outline-offset: 2px;
+}

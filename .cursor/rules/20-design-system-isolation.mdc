@@ -1,0 +1,10 @@
+---
+description: Строгая изоляция дизайн-системы
+globs: design/02-design-system/**
+alwaysApply: false
+---
+
+Задача в этих файлах выполняется целиком внутри `design/02-design-system/`.
+Наружу виден только `design/02-design-system/outputs/ds-manifest.md`.
+Другие среды не читай. Нужен вход — контракт в `design/_shared/contracts/`.
+Объёмную работу запускай субагентом `designer-ds` с чистым контекстом.
