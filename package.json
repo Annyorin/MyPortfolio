@@ -7,6 +7,9 @@
     "storybook": "storybook dev -p 6006",
     "portfolio:dev": "vite --open /portfolio/main.html",
     "portfolio:static": "npx --yes serve -l 4174 .",
+    "build": "vite build && node scripts/copy-pages-assets.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
+    "preview": "vite preview",
     "test": "node --test tests/test_content_map_layout.mjs tests/test_typography_hanging.mjs tests/test_portfolio_scaffold.mjs tests/test_portfolio_entry_smoke.mjs tests/test_camera_stub.mjs tests/test_camera_controller.mjs tests/test_camera_math.mjs tests/test_input_gestures.mjs tests/test_input_routing.mjs tests/test_interactions.mjs tests/test_card_drag.mjs tests/test_storybook_inventory.mjs tests/test_ds_css_shared_linkage.mjs tests/test_portfolio_stubs.mjs tests/test_portfolio_entry.mjs tests/test_scene_renderer.mjs tests/test_portfolio_scene_layout.mjs tests/test_portfolio_camera_e2e.mjs tests/test_portfolio_interactions.mjs tests/test_portfolio_viewport_branches.mjs tests/test_infinite_bg.mjs tests/test_ds_showcase_scaffold.mjs tests/test_ds_showcase_shell.mjs tests/test_ds_showcase_smoke.mjs tests/test_ds_showcase_tokens.mjs tests/test_ds_showcase_foundations.mjs tests/test_ds_showcase_assets.mjs tests/test_ds_showcase_atomic.mjs tests/test_ds_showcase_composite.mjs tests/test_ds_showcase_page.mjs tests/test_ds_showcase_readme.mjs tests/test_delivery_readme.mjs"
   },
   "devDependencies": {

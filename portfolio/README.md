@@ -24,6 +24,14 @@ npm run portfolio:static
 
 Сервер отдаёт корень репозитория (порт **4174**); откройте `/portfolio/`.
 
+## GitHub Pages
+
+```bash
+npm run build:pages
+```
+
+Деплой из Actions на push в `master` → https://annyorin.github.io/MyPortfolio/
+
 Storybook (UC-01): `npm run storybook` — см. корневой README.
 
 ## Alias `@ds-assets`

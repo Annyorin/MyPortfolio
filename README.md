@@ -94,7 +94,14 @@ npm ci
 | `npm run storybook` | UC-01: Storybook (порт по умолчанию **6006**) |
 | `npm run portfolio:dev` | UC-02: Vite — Главная (`/portfolio/main.html`) |
 | `npm run portfolio:static` | опционально: static serve **корня репозитория** (порт **4174**); откройте `/portfolio/` |
+| `npm run build:pages` | production-сборка для GitHub Pages (`base=/MyPortfolio/`) |
 | `npm test` | автотесты поставки |
+
+### GitHub Pages
+
+Публикация: workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) на push в `master`.
+
+Сайт: **https://annyorin.github.io/MyPortfolio/**
 
 Alias ассетов: **`@ds-assets` → `ds-showcase/assets`** (Vite `vite.config.js` и
 Storybook `.storybook/main.js`; см. `package.json` description). Импорты вида

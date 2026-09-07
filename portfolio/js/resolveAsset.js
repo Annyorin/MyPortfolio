@@ -4,7 +4,7 @@
  *
  * Note: Vite's `@ds-assets` resolve.alias (see vite.config.js / .storybook) works for
  * JS `import`, not for runtime `img.src` / CSS `url()`. In the browser we therefore
- * emit a real HTTP path under `/ds-showcase/assets/…` (repo root = Vite root).
+ * emit a real HTTP path under `{BASE_URL}ds-showcase/assets/…`.
  */
 
 import { contentMap } from "../../shared/content.js";
@@ -14,7 +14,27 @@ const DS_ASSETS_ALIAS = "@ds-assets";
 void DS_ASSETS_ALIAS;
 
 const DS_ASSETS_REPO_PREFIX = "ds-showcase/assets/";
-const DS_ASSETS_BROWSER_PREFIX = "/ds-showcase/assets/";
+
+/**
+ * @returns {string} Vite BASE_URL (always ends with `/`) or `/`.
+ */
+function viteBaseUrl() {
+  try {
+    if (
+      typeof import.meta !== "undefined" &&
+      import.meta.env &&
+      typeof import.meta.env.BASE_URL === "string" &&
+      import.meta.env.BASE_URL.length > 0
+    ) {
+      return import.meta.env.BASE_URL.endsWith("/")
+        ? import.meta.env.BASE_URL
+        : `${import.meta.env.BASE_URL}/`;
+    }
+  } catch {
+    // ignore
+  }
+  return "/";
+}
 
 /**
  * Detects whether the runtime prefers the Vite/Storybook alias or a repo-root path.
@@ -50,8 +70,8 @@ function detectResolveMode() {
 function buildUrl(pathFromDsRoot, mode) {
   const relative = String(pathFromDsRoot).replace(/^\/+/, "");
   if (mode === "alias") {
-    // Browser-loadable path (img.src / CSS url). Alias string is not fetchable.
-    return `${DS_ASSETS_BROWSER_PREFIX}${relative}`;
+    // Browser-loadable path (img.src / CSS url). Respect Vite base (GitHub Pages).
+    return `${viteBaseUrl()}ds-showcase/assets/${relative}`;
   }
   return `${DS_ASSETS_REPO_PREFIX}${relative}`;
 }
@@ -72,7 +92,7 @@ export function resolveAsset(key, options = {}) {
 
   if (!pathFromDsRoot) {
     console.warn(`[resolveAsset] unknown or empty asset key: ${String(key)}`);
-    return DS_ASSETS_BROWSER_PREFIX;
+    return `${viteBaseUrl()}ds-showcase/assets/`;
   }
 
   const mode = options.mode ?? detectResolveMode();
