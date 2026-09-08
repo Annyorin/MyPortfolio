@@ -23,7 +23,7 @@ Research digest пуст (research пропущен по scope). Эталон д
 | Ключ | Текст | Вариант / состояние | Роль | Источник инсайта |
 |------|-------|---------------------|------|------------------|
 | profile.name | Аня Ясинская | — | Имя в Profile / Sidebar | figma:xboMnqU5JURL0xlzxN7edN/41:1416 |
-| profile.role | Подуктовый дизайнер | — | Роль в Profile (орфография макета) | figma:xboMnqU5JURL0xlzxN7edN/41:1416; tz:technical_specification.md§1/§4 |
+| profile.role | Продуктовый дизайнер | — | Роль в Profile (орфография макета) | figma:xboMnqU5JURL0xlzxN7edN/41:1416; tz:technical_specification.md§1/§4 |
 | sidebar.bio | Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь. | — | Bio в Sidebar.Inform | figma:xboMnqU5JURL0xlzxN7edN/41:1416 |
 | chip.b2b | B2B | **active** | Sidebar Skills + образец Chip | figma:xboMnqU5JURL0xlzxN7edN/41:1416\|41:11646 |
 | chip.b2c | B2C | **active** | Sidebar Skills | figma:xboMnqU5JURL0xlzxN7edN/41:1416 |
@@ -69,4 +69,4 @@ Research digest пуст (research пропущен по scope). Эталон д
 | comp | — | Экспорт из Figma Ui kit: Comp (коллаж) |
 
 ## Tone of voice — краткая выжимка
-Как в макете, без маркетинговой переписки. Орфография и формулировки демо-строк — дословно из Figma `41:1416` / `41:11646` (в т.ч. «Подуктовый дизайнер»; правило орфографии макета — ТЗ §1 / §4). a11y-имена Tapper — из ТЗ §3, не маркетинг.
+Как в макете, без маркетинговой переписки. Орфография и формулировки демо-строк — дословно из Figma `41:1416` / `41:11646` (в т.ч. «Продуктовый дизайнер»; правило орфографии макета — ТЗ §1 / §4). a11y-имена Tapper — из ТЗ §3, не маркетинг.

@@ -58,7 +58,7 @@ describe("content map / scene layout / resolveAsset", () => {
     const { contentMap } = await import(
       pathToFileURL(abs("shared/content.js")).href
     );
-    assert.equal(contentMap["profile.role"], "Подуктовый дизайнер");
+    assert.equal(contentMap["profile.role"], "Продуктовый дизайнер");
     assert.equal(contentMap["card.title"], "CityBike");
     assert.equal(contentMap["card.a.title"], "InnoDragon");
     assert.equal(contentMap["card.b.title"], "Innophish");

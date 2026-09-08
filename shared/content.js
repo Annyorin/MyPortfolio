@@ -32,7 +32,7 @@ export const contentMap = {
 
   "profile.name": "Аня Ясинская",
 
-  "profile.role": "Подуктовый дизайнер",
+  "profile.role": "Продуктовый дизайнер",
 
   "sidebar.bio":
 

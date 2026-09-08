@@ -56,7 +56,7 @@ role: ds-reference
 | Ключ | Текст | Вариант / где |
 |------|-------|---------------|
 | `profile.name` | Аня Ясинская | Profile, Sidebar |
-| `profile.role` | Подуктовый дизайнер | Profile, Sidebar (орфография макета) |
+| `profile.role` | Продуктовый дизайнер | Profile, Sidebar (орфография макета) |
 | `sidebar.bio` | Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь. | Sidebar.Inform |
 | `chip.b2b` | B2B | **active** · Sidebar Skills |
 | `chip.b2c` | B2C | **active** · Sidebar Skills |

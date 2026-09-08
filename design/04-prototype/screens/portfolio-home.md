@@ -63,7 +63,7 @@ updated: 2026-09-06
 | `tapper.zoom_out` | Уменьшить масштаб |
 | `tapper.zoom_in` | Увеличить масштаб |
 | `profile.name` | Аня Ясинская |
-| `profile.role` | Подуктовый дизайнер |
+| `profile.role` | Продуктовый дизайнер |
 | `sidebar.bio` | Создаю чистые интерфейсы. … (полный текст в content-package) |
 | `chip.b2b` / `chip.b2c` | B2B / B2C · **active** |
 | `chip.design_system` / `chip.ai_prototyping` | Design System / AI-prototyping · **default** |

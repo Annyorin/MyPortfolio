@@ -23,7 +23,7 @@ const SECTION_ORDER = ["Foundations", "Icons", "Atomic", "Composite", "Media"];
 /** Demo strings from design/03-content/outputs/content-package.md (§2.8.1). */
 const CONTENT_LITERALS = [
   "Аня Ясинская",
-  "Подуктовый дизайнер",
+  "Продуктовый дизайнер",
   "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.",
   "B2B",
   "Написать",
@@ -144,7 +144,7 @@ describe("TC-E2E-01 showcase shell inventory", () => {
     }
 
     assert.ok(html.includes("Аня Ясинская"));
-    assert.ok(html.includes("Подуктовый дизайнер"));
+    assert.ok(html.includes("Продуктовый дизайнер"));
     assert.ok(html.includes('aria-label="Stiker"') || /Stiker/i.test(html));
 
     assert.doesNotMatch(html, /якорн|оглавлени|table of contents/i);
