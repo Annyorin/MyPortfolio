@@ -216,15 +216,15 @@ describe("TC-E2E-05 keyboard focus and accessible names", () => {
     assert.match(components, /\.ds-link:focus-visible\s*\{/);
     assert.match(components, /\.ds-hover:focus-visible\s*\{/);
     assert.match(components, /\.ds-tapper:focus-visible\s*\{/);
-    assert.match(components, /\.ds-sidebar__contacts\s+\.ds-link:focus-visible\s*\{/);
+    assert.match(components, /\.ds-button:focus-visible\s*\{/);
 
     assert.match(html, /class="ds-tapper"[^>]*aria-label="Tapper"/);
     assert.match(html, /class="ds-hover"[^>]*aria-label="Behance"/);
-    assert.match(html, /ds-sidebar__contacts[^>]*aria-label="Contacts"/);
+    assert.match(html, /ds-sidebar__skills[^>]*aria-label="Contacts"/);
 
     const icons = /aria-labelledby=["']section-icons["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(icons, "Icons section");
-    for (const name of ["close", "Plus", "Minus", "vuesax/linear/arrow-right"]) {
+    for (const name of ["close", "Plus", "Minus", "vuesax/linear/arrow-right", "telegram", "mail", "CursorFigma"]) {
       assert.ok(icons[0].includes(`aria-label="${name}"`), `Icon aria-label missing: ${name}`);
     }
 

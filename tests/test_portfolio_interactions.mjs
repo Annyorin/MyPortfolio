@@ -473,19 +473,27 @@ describe("portfolio interactions e2e (UC-05 / UC-02 A1)", () => {
     );
 
     const contacts = nodesById.sidebar.querySelectorAll(
-      ".ds-sidebar__contacts a.ds-link"
+      ".ds-sidebar__skills a.ds-button"
     );
     assert.ok(contacts.length >= 4);
+    let withUrl = 0;
     for (const link of contacts) {
       const href = link.getAttribute("href") ?? "";
-      assert.ok(href.length > 0 && href !== "#");
-      assert.equal(link.getAttribute("target"), "_blank");
+      assert.ok(href.length > 0);
       assert.ok(
         Number(link.tabIndex) >= 0 || link.getAttribute("tabindex") === "0"
       );
+      if (href === "#") continue;
+      withUrl += 1;
+      if (href.startsWith("mailto:")) continue;
+      assert.equal(link.getAttribute("target"), "_blank");
     }
+    assert.ok(withUrl >= 3);
 
-    const link = contacts[0];
+    const link = nodesById.sidebar.querySelector(
+      ".ds-sidebar__skills a.ds-button--primary"
+    );
+    assert.ok(link);
     const contactEv = makeEvent({ type: "click", target: link });
     shim.world.dispatchEvent(contactEv);
     assert.equal(contactEv.defaultPrevented, false);

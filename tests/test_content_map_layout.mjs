@@ -59,7 +59,17 @@ describe("content map / scene layout / resolveAsset", () => {
       pathToFileURL(abs("shared/content.js")).href
     );
     assert.equal(contentMap["profile.role"], "Подуктовый дизайнер");
-    assert.equal(contentMap["card.title"], "InnoDragon");
+    assert.equal(contentMap["card.title"], "CityBike");
+    assert.equal(contentMap["card.a.title"], "InnoDragon");
+    assert.equal(contentMap["card.b.title"], "Innophish");
+    assert.equal(contentMap["card.c.title"], "CityBike");
+    assert.equal(contentMap["card.a.action"], "modal");
+    assert.equal(contentMap["card.b.action"], "modal");
+    assert.equal(contentMap["card.meta"], "· 2024");
+    assert.match(
+      contentMap["card.c.url"],
+      /behance\.net\/gallery\/211908269/
+    );
   });
 
   it("TC-E2E-02: layout has 7 slots with zIndex paint order BG→…→Tapper", async () => {
@@ -186,12 +196,15 @@ describe("content map / scene layout / resolveAsset", () => {
       "contact.telegram",
       "contact.linkedin",
       "contact.behance",
+      "contact.mail",
     ];
     for (const key of contactKeys) {
       assert.equal(typeof contentMap[key], "string");
       assert.ok(contentMap[key].length > 0);
     }
-    assert.equal(contentMap["contact.cv"], "CV");
+    assert.equal(contentMap["contact.cv"], "Резюме");
+    assert.equal(contentMap["contact.telegram"], "Написать");
+    assert.equal(contentMap["contact.mail"], "Почта");
     assert.equal(Object.hasOwn(contentMap, "contact.cv.url"), false);
     assert.equal(contentMap.url, undefined);
     for (const key of contactKeys) {
@@ -202,6 +215,10 @@ describe("content map / scene layout / resolveAsset", () => {
     assert.equal(typeof contentMap.contactUrls, "object");
     assert.equal(contentMap.contactUrls["contact.telegram"], "https://t.me/Annyorina");
     assert.equal(contentMap.contactUrls["contact.cv"], "assets/cv.pdf");
+    assert.equal(
+      contentMap.contactUrls["contact.mail"],
+      "mailto:annyorin@gmail.com"
+    );
     assert.ok(fs.existsSync(abs("portfolio/assets/cv.pdf")));
   });
 
@@ -211,11 +228,16 @@ describe("content map / scene layout / resolveAsset", () => {
     assert.ok(!source.includes("ds-showcase/assets/"));
   });
 
-  it("selectSceneLayout: <1024 → 41:1416; ≥1024 → 51:4107", async () => {
-    const { selectSceneLayout, layout1024, layout1366 } = await import(
-      pathToFileURL(abs("shared/layout.js")).href
-    );
+  it("selectSceneLayout: <768 → null; 768–1023 → 41:1416; ≥1024 → 51:4107", async () => {
+    const { selectSceneLayout, layout1024, layout1366, isMobileViewport } =
+      await import(pathToFileURL(abs("shared/layout.js")).href);
 
+    assert.equal(isMobileViewport({ width: 360 }), true);
+    assert.equal(isMobileViewport({ width: 767 }), true);
+    assert.equal(isMobileViewport({ width: 768 }), false);
+    assert.equal(selectSceneLayout({ width: 360, height: 800 }), null);
+    assert.equal(selectSceneLayout({ width: 767, height: 800 }), null);
+    assert.equal(selectSceneLayout({ width: 768, height: 609 }).id, "41:1416");
     assert.equal(selectSceneLayout({ width: 1023, height: 609 }).id, "41:1416");
     assert.equal(selectSceneLayout({ width: 1024, height: 609 }).id, "51:4107");
     assert.equal(selectSceneLayout({ width: 1365, height: 768 }).id, "51:4107");

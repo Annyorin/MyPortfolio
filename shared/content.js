@@ -50,13 +50,17 @@ export const contentMap = {
 
   "chip.sample.active": "B2B",
 
-  "contact.cv": "CV",
+  "contact.cv": "Резюме",
 
-  "contact.telegram": "Telegram",
+  "contact.telegram": "Написать",
 
   "contact.linkedin": "LinkedIn",
 
   "contact.behance": "Behance",
+
+  "contact.mail": "Почта",
+
+  "sidebar.copyright": "Annyorina © 2026",
 
   "link.sample": "Link",
 
@@ -64,13 +68,34 @@ export const contentMap = {
 
   "hover.label": "Behance",
 
-  "card.title": "InnoDragon",
+  "card.title": "CityBike",
 
-  "card.meta": "· 2024-2026",
+  "card.meta": "· 2024",
 
   "card.description":
+    "Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.",
 
+  "card.url":
+    "https://www.behance.net/gallery/211908269/E-bike-Rental-Mobile-App-for-Android",
+
+  "card.a.title": "InnoDragon",
+  "card.a.meta": "· 2024-2026",
+  "card.a.description":
     "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.",
+  "card.a.action": "modal",
+
+  "card.b.title": "Innophish",
+  "card.b.meta": "· 2024-2026",
+  "card.b.description":
+    "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.",
+  "card.b.action": "modal",
+
+  "card.c.title": "CityBike",
+  "card.c.meta": "· 2024",
+  "card.c.description":
+    "Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.",
+  "card.c.url":
+    "https://www.behance.net/gallery/211908269/E-bike-Rental-Mobile-App-for-Android",
 
   "tapper.zoom_out": "Отдалить",
 
@@ -82,9 +107,9 @@ export const contentMap = {
 
   "foundations.swatch_labels":
 
-    "Primary, Secondary, Gray_dark, Gray_text, Black, White",
+    "Primary, Primary_hover, Secondary, Gray_dark, Gray_text, Black, White",
 
-  "typography.labels": "Заголовок 1, Заголовок 2, Текст, Подписи",
+  "typography.labels": "Заголовок 1, Заголовок 2, Текст 1, Текст 2, Подписи",
 
 
 
@@ -97,6 +122,8 @@ export const contentMap = {
     "contact.linkedin": "https://www.linkedin.com/in/anna-yasinskaya-b67798236",
 
     "contact.behance": "https://www.behance.net/annyorin",
+
+    "contact.mail": "mailto:annyorin@gmail.com",
 
   },
 
@@ -119,13 +146,21 @@ export const contentMap = {
 
     avatar: { pathFromDsRoot: "images/avatar.png" },
 
-    "card.image": { pathFromDsRoot: "images/card-innodragon.png" },
+    "card.image": {
+      pathFromDsRoot: "images/card-citybike.png",
+      intrinsicWidth: 1232,
+      intrinsicHeight: 760,
+    },
 
     "card.image.a": { pathFromDsRoot: "images/img-1.png" },
 
     "card.image.b": { pathFromDsRoot: "images/img-2.png" },
 
-    "card.image.c": { pathFromDsRoot: "images/img-3.png" },
+    "card.image.c": {
+      pathFromDsRoot: "images/card-citybike.png",
+      intrinsicWidth: 1232,
+      intrinsicHeight: 760,
+    },
 
     img_bg: { pathFromDsRoot: "images/img-bg.png" },
 
@@ -152,6 +187,18 @@ export const contentMap = {
     "icons.minus.hover": { pathFromDsRoot: "icons/minus-hover.svg" },
 
     "icons.arrow-right": { pathFromDsRoot: "icons/arrow-right.svg" },
+
+    "icons.telegram": { pathFromDsRoot: "icons/telegram.svg" },
+
+    "icons.cv": { pathFromDsRoot: "icons/cv.svg" },
+
+    "icons.behance": { pathFromDsRoot: "icons/behance.svg" },
+
+    "icons.mail": { pathFromDsRoot: "icons/mail.svg" },
+
+    "icons.linkedin": { pathFromDsRoot: "icons/linkedin.svg" },
+
+    "icons.cursor-figma": { pathFromDsRoot: "icons/cursor-figma.png" },
 
   },
 

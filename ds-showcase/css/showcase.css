@@ -110,6 +110,10 @@ body {
   background-color: var(--color-primary);
 }
 
+.ds-swatch[data-token="primary-hover"] {
+  background-color: var(--color-primary-hover);
+}
+
 .ds-swatch[data-token="secondary"] {
   background-color: var(--color-secondary);
 }
@@ -180,6 +184,12 @@ body {
   font-weight: var(--type-text-weight);
 }
 
+.ds-type--text-2 {
+  font-size: var(--type-text-2-size);
+  line-height: var(--type-text-2-line);
+  font-weight: var(--type-text-2-weight);
+}
+
 .ds-type--caption {
   font-size: var(--type-caption-size);
   line-height: var(--type-caption-line);
@@ -188,6 +198,7 @@ body {
 
 .ds-icons,
 .ds-chip-samples,
+.ds-button-samples,
 .ds-link-samples,
 .ds-tooltip-samples,
 .ds-card-samples,
@@ -212,7 +223,8 @@ body {
 .ds-section[aria-labelledby="section-atomic"] > .ds-tapper,
 .ds-section[aria-labelledby="section-atomic"] > .ds-tooltip-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-stiker,
-.ds-section[aria-labelledby="section-atomic"] > .ds-hover {
+.ds-section[aria-labelledby="section-atomic"] > .ds-hover,
+.ds-section[aria-labelledby="section-atomic"] > .ds-fab {
   margin-top: 12px;
 }
 
@@ -248,6 +260,11 @@ body {
 .ds-media > [data-media="macbook"] {
   width: 451px;
   aspect-ratio: 451 / 319;
+}
+
+.ds-media > [data-media="sitybike"] {
+  width: 308px;
+  aspect-ratio: 308 / 190;
 }
 /**
  * MediaAsset / Avatar box: keeps screen-spec proportions when the file is

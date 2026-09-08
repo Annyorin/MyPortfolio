@@ -1,8 +1,8 @@
 /**
  * Tests for ds-showcase Foundations catalog (task 2.2).
  *
- * TC-E2E-01: six swatches with names/hex; no GrayL; type samples use §3.1 tokens; light page.
- * TC-UNIT-01: DOM count of .ds-swatch === 6.
+ * TC-E2E-01: seven swatches with names/hex; no GrayL; type samples use §3.1 tokens; light page.
+ * TC-UNIT-01: DOM count of .ds-swatch === 7.
  * Regression: smoke 1.3; token values from 2.1 unchanged.
  */
 
@@ -20,9 +20,15 @@ const INDEX_PATH = path.join(SHOWCASE_ROOT, "index.html");
 const SHOWCASE_CSS_PATH = path.join(SHOWCASE_ROOT, "css", "showcase.css");
 const TOKENS_PATH = path.join(SHOWCASE_ROOT, "css", "tokens.css");
 
-/** Swatch order and hex from TZ §3.1 (GrayL excluded). */
+/** Swatch order and hex from Figma Colors 41:1550 (GrayL excluded). */
 const SWATCHES = [
   { token: "primary", label: "Primary", hex: "#64b3f9", cssVar: "--color-primary" },
+  {
+    token: "primary-hover",
+    label: "Primary_hover",
+    hex: "#79befc",
+    cssVar: "--color-primary-hover",
+  },
   { token: "secondary", label: "Secondary", hex: "#ededed", cssVar: "--color-secondary" },
   { token: "gray-dark", label: "Gray_dark", hex: "#e4e4e4", cssVar: "--color-gray-dark" },
   { token: "gray-text", label: "Gray_text", hex: "#888888", cssVar: "--color-gray-text" },
@@ -47,10 +53,17 @@ const TYPE_SPECIMENS = [
   },
   {
     modifier: "text",
-    label: "Текст",
+    label: "Текст 1",
     size: "var(--type-text-size)",
     line: "var(--type-text-line)",
     weight: "var(--type-text-weight)",
+  },
+  {
+    modifier: "text-2",
+    label: "Текст 2",
+    size: "var(--type-text-2-size)",
+    line: "var(--type-text-2-line)",
+    weight: "var(--type-text-2-weight)",
   },
   {
     modifier: "caption",
@@ -64,6 +77,7 @@ const TYPE_SPECIMENS = [
 /** Canon token hex from task 2.1 / TZ §3.1 (regression). */
 const COLOR_TOKENS_REGRESSION = {
   "--color-primary": "#64b3f9",
+  "--color-primary-hover": "#79befc",
   "--color-secondary": "#ededed",
   "--color-white": "#fefefe",
   "--color-black": "#232323",
@@ -166,11 +180,11 @@ function startStaticServer() {
 }
 
 describe("TC-UNIT-01 Foundations swatch count", () => {
-  it("DOM has exactly six .ds-swatch and no GrayL swatch", () => {
+  it("DOM has exactly seven .ds-swatch and no GrayL swatch", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const block = foundationsBlock(html);
     const swatches = block.match(/class=["']ds-swatch["']/g) || [];
-    assert.equal(swatches.length, 6, `Expected 6 .ds-swatch, got ${swatches.length}`);
+    assert.equal(swatches.length, 7, `Expected 7 .ds-swatch, got ${swatches.length}`);
 
     assert.doesNotMatch(block, /data-token=["']gray-l["']/i);
     assert.doesNotMatch(block, /\bGrayL\b/);
@@ -179,7 +193,7 @@ describe("TC-UNIT-01 Foundations swatch count", () => {
 });
 
 describe("TC-E2E-01 Foundations catalog contract", () => {
-  it("six named swatches with hex; backgrounds via var(--color-*); 80×80", () => {
+  it("seven named swatches with hex; backgrounds via var(--color-*); 80×80", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const css = fs.readFileSync(SHOWCASE_CSS_PATH, "utf8");
     const block = foundationsBlock(html);
@@ -250,7 +264,7 @@ describe("TC-E2E-01 Foundations catalog contract", () => {
     );
   });
 
-  it("HTTP serves Foundations with six swatches and type labels", async () => {
+  it("HTTP serves Foundations with seven swatches and type labels", async () => {
     const { port, close } = await startStaticServer();
     try {
       const { status, body } = await httpGet(port, "/index.html");
@@ -258,8 +272,8 @@ describe("TC-E2E-01 Foundations catalog contract", () => {
       const html = body.toString("utf8");
       const block = foundationsBlock(html);
       const swatches = block.match(/class=["']ds-swatch["']/g) || [];
-      assert.equal(swatches.length, 6);
-      for (const label of ["Заголовок 1", "Заголовок 2", "Текст", "Подписи"]) {
+      assert.equal(swatches.length, 7);
+      for (const label of ["Заголовок 1", "Заголовок 2", "Текст 1", "Текст 2", "Подписи"]) {
         assert.ok(block.includes(label));
       }
       assert.doesNotMatch(block, /\bGrayL\b/);

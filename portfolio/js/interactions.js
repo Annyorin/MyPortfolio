@@ -17,9 +17,11 @@ const CARD_SELECTOR =
 const CRITICAL_IMG_SELECTOR =
   "img[data-media-slot], img.scene-comp__img, .scene-about__me img, .scene-about__macbook img";
 
-/** Hold duration before card enters grab/drag mode. */
+/** Hold duration before card enters grab/drag mode (stationary press). */
 export const CARD_LONG_PRESS_MS = 150;
-/** Pointer movement (px) that cancels a pending long-press. */
+/** With pointer moved past slop while held, arm drag after this delay from pointerdown. */
+export const CARD_DRAG_MOVE_ARM_MS = 10;
+/** Pointer movement (px) that signals drag intent (vs cancel / wait for long-press). */
 export const CARD_PRESS_SLOP_PX = 8;
 
 /**
@@ -123,6 +125,52 @@ function syncSuppress(inputMode) {
 }
 
 /**
+ * Activates a portfolio card: modal → no-op (a11y preventDefault);
+ * URL → open in a new tab. Shared by canvas interactions and mobile sheet.
+ *
+ * @param {HTMLElement|null|undefined} card
+ * @param {MouseEvent|KeyboardEvent|Event|null|undefined} [event]
+ * @returns {boolean} true if the hit was a card activate path
+ */
+export function activateCardHit(card, event) {
+  if (!card) {
+    return false;
+  }
+  if (card.classList?.contains?.("scene-about-cluster")) {
+    return false;
+  }
+  if (card.dataset?.cardAction === "modal") {
+    // Future: open project modal. Keep focusable but do not navigate yet.
+    if (event && event.type === "keydown") {
+      const key = /** @type {KeyboardEvent} */ (event).key;
+      if (key === "Enter" || key === " ") {
+        event.preventDefault?.();
+      }
+    }
+    return true;
+  }
+  const url = String(card.dataset?.cardUrl || "").trim();
+  if (!url) {
+    return false;
+  }
+  if (event && event.type === "keydown") {
+    const key = /** @type {KeyboardEvent} */ (event).key;
+    if (key !== "Enter" && key !== " ") {
+      return false;
+    }
+    event.preventDefault?.();
+  }
+  try {
+    if (typeof window !== "undefined" && typeof window.open === "function") {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  } catch {
+    /* harness / popup blocked */
+  }
+  return true;
+}
+
+/**
  * Registers interactive hits: Tapper ± zoom, contact no-nav, image errors,
  * suppress clicks while Space-pan, long-press card drag in world space.
  * `rootEl` should be the viewport (covers fixed chrome + world).
@@ -152,12 +200,17 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
   let pressPointerId = null;
   let pressStartX = 0;
   let pressStartY = 0;
+  let pressStartedAt = 0;
+  let pressLastX = 0;
+  let pressLastY = 0;
   /** @type {HTMLElement|null} */
   let dragCard = null;
   let dragLastX = 0;
   let dragLastY = 0;
   /** @type {string|null} */
   let dragBaseZ = null;
+  /** True if the current card press produced a drag move (skip click→URL). */
+  let cardDragMoved = false;
 
   function clearPressTimer() {
     if (pressTimer != null) {
@@ -166,6 +219,28 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     }
     pressCard = null;
     pressPointerId = null;
+  }
+
+  /**
+   * @param {number} delayMs
+   * @param {{ clientX: number, clientY: number, pointerId?: number }} point
+   */
+  function armPressTimer(delayMs, point) {
+    if (pressTimer != null) {
+      clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+    pressTimer = setTimeout(() => {
+      pressTimer = null;
+      if (!pressCard) {
+        return;
+      }
+      beginCardDrag(pressCard, {
+        clientX: point.clientX,
+        clientY: point.clientY,
+        pointerId: pressPointerId ?? point.pointerId,
+      });
+    }, Math.max(0, delayMs));
   }
 
   function endCardDrag() {
@@ -191,6 +266,7 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     dragLastX = e.clientX;
     dragLastY = e.clientY;
     dragBaseZ = card.style.zIndex || String(card.dataset?.nodeKind ? "2" : "");
+    cardDragMoved = false;
     inputMode.cardDragging = true;
     syncSuppress(inputMode);
     card.classList.add("is-card-grab", "is-card-dragging");
@@ -296,6 +372,37 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
   }
 
   /**
+   * Click / keyboard activate on Card with card.url opens the project in a new tab.
+   * Cards with data-card-action="modal" are reserved for a future modal (no-op for now).
+   * Skipped after a drag move so long-press pan does not navigate.
+   *
+   * @param {MouseEvent|KeyboardEvent|Event} event
+   */
+  function onCardActivate(event) {
+    if (inputMode.suppressClicks || inputMode.spaceDown || inputMode.isPanning) {
+      return;
+    }
+    if (cardDragMoved) {
+      cardDragMoved = false;
+      return;
+    }
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    if (!isInsideRoot(target, rootEl)) {
+      return;
+    }
+    const card = /** @type {HTMLElement|null} */ (
+      target.closest(".ds-card, [data-node-kind='card']")
+    );
+    if (!card || !isInsideRoot(card, rootEl)) {
+      return;
+    }
+    activateCardHit(card, event);
+  }
+
+  /**
    * @param {Event} event
    */
   function onCriticalImageError(event) {
@@ -345,17 +452,15 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     pressPointerId = event.pointerId != null ? event.pointerId : null;
     pressStartX = event.clientX;
     pressStartY = event.clientY;
-    pressTimer = setTimeout(() => {
-      pressTimer = null;
-      if (!pressCard) {
-        return;
-      }
-      beginCardDrag(pressCard, {
-        clientX: pressStartX,
-        clientY: pressStartY,
-        pointerId: pressPointerId ?? undefined,
-      });
-    }, CARD_LONG_PRESS_MS);
+    pressLastX = event.clientX;
+    pressLastY = event.clientY;
+    pressStartedAt = Date.now();
+    cardDragMoved = false;
+    armPressTimer(CARD_LONG_PRESS_MS, {
+      clientX: pressStartX,
+      clientY: pressStartY,
+      pointerId: pressPointerId ?? undefined,
+    });
   }
 
   /**
@@ -377,6 +482,7 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
       dragLastX = event.clientX;
       dragLastY = event.clientY;
       if (dxScreen !== 0 || dyScreen !== 0) {
+        cardDragMoved = true;
         const left = Number.parseFloat(String(dragCard.style.left || "0")) || 0;
         const top = Number.parseFloat(String(dragCard.style.top || "0")) || 0;
         dragCard.style.left = `${left + dxScreen / scale}px`;
@@ -399,7 +505,45 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
         event.clientY - pressStartY
       );
       if (dist > CARD_PRESS_SLOP_PX) {
-        clearPressTimer();
+        pressLastX = event.clientX;
+        pressLastY = event.clientY;
+        const elapsed = Date.now() - pressStartedAt;
+        const point = {
+          clientX: event.clientX,
+          clientY: event.clientY,
+          pointerId: pressPointerId ?? undefined,
+        };
+        if (elapsed >= CARD_DRAG_MOVE_ARM_MS) {
+          if (pressTimer != null) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+          }
+          const card = pressCard;
+          // Seed from press origin so this flick frame applies full delta.
+          beginCardDrag(card, {
+            clientX: pressStartX,
+            clientY: pressStartY,
+            pointerId: pressPointerId ?? undefined,
+          });
+          pressCard = null;
+          const scale =
+            camera && typeof camera.getState === "function"
+              ? Number(camera.getState().scale) || 1
+              : 1;
+          const dxScreen = event.clientX - pressStartX;
+          const dyScreen = event.clientY - pressStartY;
+          dragLastX = event.clientX;
+          dragLastY = event.clientY;
+          if ((dxScreen !== 0 || dyScreen !== 0) && card) {
+            const left = Number.parseFloat(String(card.style.left || "0")) || 0;
+            const top = Number.parseFloat(String(card.style.top || "0")) || 0;
+            card.style.left = `${left + dxScreen / scale}px`;
+            card.style.top = `${top + dyScreen / scale}px`;
+          }
+          event.preventDefault?.();
+        } else {
+          armPressTimer(CARD_DRAG_MOVE_ARM_MS - elapsed, point);
+        }
       }
     }
   }
@@ -433,6 +577,8 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
   rootEl.addEventListener("click", suppressInteractiveHit, captureOpts);
   rootEl.addEventListener("click", onTapperActivate);
   rootEl.addEventListener("click", onContactClick);
+  rootEl.addEventListener("click", onCardActivate);
+  rootEl.addEventListener("keydown", onCardActivate);
   rootEl.addEventListener("error", onCriticalImageError, captureOpts);
   rootEl.addEventListener("pointerdown", onCardPointerDown);
   rootEl.addEventListener("pointermove", onCardPointerMove);
@@ -457,6 +603,8 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     rootEl.removeEventListener("click", suppressInteractiveHit, captureOpts);
     rootEl.removeEventListener("click", onTapperActivate);
     rootEl.removeEventListener("click", onContactClick);
+    rootEl.removeEventListener("click", onCardActivate);
+    rootEl.removeEventListener("keydown", onCardActivate);
     rootEl.removeEventListener("error", onCriticalImageError, captureOpts);
     rootEl.removeEventListener("pointerdown", onCardPointerDown);
     rootEl.removeEventListener("pointermove", onCardPointerMove);

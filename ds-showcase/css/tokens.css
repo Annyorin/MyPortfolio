@@ -1,13 +1,14 @@
 /**
- * Foundations tokens (canonical values from TZ §3.1 / architecture §4.2).
+ * Foundations tokens (canonical values from Figma 41:1550 / 41:1558 / Ui kit 41:11520).
  */
 
 /* Font Delivery: Inter 400/500/600 only; A1 fallback sans-serif on body (showcase.css) */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 
 :root {
-  /* ColorToken */
+  /* ColorToken — Colors 41:1550 */
   --color-primary: #64b3f9;
+  --color-primary-hover: #79befc;
   --color-secondary: #ededed;
   --color-white: #fefefe;
   --color-black: #232323;
@@ -18,22 +19,27 @@
   /* ElevationToken — Shadow only (no alternate Card elevation token) */
   --shadow: 0 5px 9px #bbbbbd40;
 
-  /* TypographyStyle — H1: 20px / 24px / 600 */
+  /* TypographyStyle — H1: 20px / 24px / 600 (Заголовок 1) */
   --type-h1-size: 20px;
   --type-h1-line: 24px;
   --type-h1-weight: 600;
 
-  /* TypographyStyle — H2: 16px / 20px / 500 */
+  /* TypographyStyle — H2: 16px / 20px / 500 (Заголовок 2) */
   --type-h2-size: 16px;
   --type-h2-line: 20px;
   --type-h2-weight: 500;
 
-  /* TypographyStyle — Text: 16px / 20px / 400 */
+  /* TypographyStyle — Text 1: 16px / 20px / 400 */
   --type-text-size: 16px;
   --type-text-line: 20px;
   --type-text-weight: 400;
 
-  /* TypographyStyle — Caption: 12px / 16px / 500 */
+  /* TypographyStyle — Text 2: 14px / 18px / 400 */
+  --type-text-2-size: 14px;
+  --type-text-2-line: 18px;
+  --type-text-2-weight: 400;
+
+  /* TypographyStyle — Caption: 12px / 16px / 500 (Подписи) */
   --type-caption-size: 12px;
   --type-caption-line: 16px;
   --type-caption-weight: 500;

@@ -26,19 +26,17 @@ const CONTENT_LITERALS = [
   "Подуктовый дизайнер",
   "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.",
   "B2B",
-  "B2C",
-  "Design System",
-  "AI-prototyping",
-  "CV",
-  "Telegram",
-  "LinkedIn",
+  "Написать",
+  "Резюме",
+  "Почта",
   "Behance",
   "Link",
   "Обо мне",
-  "InnoDragon",
-  "· 2024-2026",
-  "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.",
+  "CityBike",
+  "· 2024",
+  "Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.",
   "Primary",
+  "Primary_hover",
   "Secondary",
   "Gray_dark",
   "Gray_text",
@@ -46,8 +44,10 @@ const CONTENT_LITERALS = [
   "White",
   "Заголовок 1",
   "Заголовок 2",
-  "Текст",
+  "Текст 1",
+  "Текст 2",
   "Подписи",
+  "Annyorina © 2026",
 ];
 
 const FORBIDDEN_KEYS = ["sidebar.chip.", "sidebar.contact.", "card.years"];
@@ -129,23 +129,18 @@ describe("TC-E2E-01 showcase shell inventory", () => {
     assert.ok(html.includes("ds-card--hover"), "Card hover");
 
     assert.ok(html.includes("ds-sidebar"), "Sidebar present");
-    assert.ok(html.includes("ds-sidebar__skills"), "Sidebar Skills");
-    assert.ok(html.includes("ds-sidebar__contacts"), "Sidebar Contacts");
+    assert.ok(html.includes("ds-sidebar__skills"), "Sidebar Skills/actions");
+    assert.ok(html.includes("ds-sidebar__copyright"), "Sidebar copyright");
+    assert.ok(html.includes("ds-button--primary"), "Primary button");
+    assert.ok(html.includes("ds-button--secondary"), "Secondary button");
 
-    const skillsBlock = /class="ds-sidebar__skills"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/i.exec(html);
-    assert.ok(skillsBlock, "Skills block parseable");
+    const skillsBlock = /class="ds-sidebar__skills"[\s\S]*?<\/div>/i.exec(html);
+    assert.ok(skillsBlock, "Actions block parseable");
     const skillsHtml = skillsBlock[0];
-    const skillChips = skillsHtml.match(/class="ds-chip\s+ds-chip--(?:active|default)"/g) || [];
-    assert.equal(skillChips.length, 4, "Skills must have 4 chips");
-    assert.ok(skillsHtml.includes("B2B") && skillsHtml.includes("B2C"));
-    assert.ok(skillsHtml.includes("Design System") && skillsHtml.includes("AI-prototyping"));
-    assert.ok(skillsHtml.includes("ds-chip--active") && skillsHtml.includes("ds-chip--default"));
-
-    const contactsBlock = /ds-sidebar__contacts[\s\S]*?<\/nav>/i.exec(html);
-    assert.ok(contactsBlock, "Contacts block parseable");
-    const contactsHtml = contactsBlock[0];
-    for (const label of ["CV", "Telegram", "LinkedIn", "Behance"]) {
-      assert.ok(contactsHtml.includes(label), `Contact missing: ${label}`);
+    const actionButtons = skillsHtml.match(/class="ds-button\s+ds-button--(?:primary|secondary)"/g) || [];
+    assert.equal(actionButtons.length, 4, "Skills must have 4 action buttons");
+    for (const label of ["Написать", "Резюме", "Behance", "Почта"]) {
+      assert.ok(skillsHtml.includes(label), `Action missing: ${label}`);
     }
 
     assert.ok(html.includes("Аня Ясинская"));
@@ -181,21 +176,21 @@ describe("TC-UNIT-01 content-package demo literals", () => {
     }
   });
 
-  it("foundations has exactly six swatches and four type labels", () => {
+  it("foundations has exactly seven swatches and five type labels", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const foundations = /aria-labelledby=["']section-foundations["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(foundations, "Foundations section missing");
     const block = foundations[0];
     const swatches = block.match(/class="ds-swatch"/g) || [];
-    assert.equal(swatches.length, 6);
-    for (const label of ["Заголовок 1", "Заголовок 2", "Текст", "Подписи"]) {
+    assert.equal(swatches.length, 7);
+    for (const label of ["Заголовок 1", "Заголовок 2", "Текст 1", "Текст 2", "Подписи"]) {
       assert.ok(block.includes(label), `Type label missing: ${label}`);
     }
   });
 
-  it("media slots cover img_bg, img_1, img_2, img_3, comp, me, macbook", () => {
+  it("media slots cover img_bg, img_1, img_2, img_3, comp, me, macbook, sitybike", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
-    for (const key of ["img_bg", "img_1", "img_2", "img_3", "comp", "me", "macbook"]) {
+    for (const key of ["img_bg", "img_1", "img_2", "img_3", "comp", "me", "macbook", "sitybike"]) {
       assert.ok(
         html.includes(`data-media="${key}"`) || html.includes(`alt="${key}"`) || html.includes(`aria-label="${key}"`),
         `Media slot missing: ${key}`

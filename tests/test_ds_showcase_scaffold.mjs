@@ -49,7 +49,12 @@ const REQUIRED_COMPONENT_SELECTORS = [
   ".ds-sidebar__profile",
   ".ds-sidebar__inform",
   ".ds-sidebar__skills",
-  ".ds-sidebar__contacts",
+  ".ds-sidebar__copyright",
+  ".ds-button",
+  ".ds-button--primary",
+  ".ds-button--secondary",
+  ".ds-profile--mobile",
+  ".ds-fab",
 ];
 
 const REQUIRED_SHOWCASE_SELECTORS = [
@@ -78,6 +83,10 @@ const REQUIRED_TOKEN_VARS = [
   "--type-text-size",
   "--type-text-line",
   "--type-text-weight",
+  "--type-text-2-size",
+  "--type-text-2-line",
+  "--type-text-2-weight",
+  "--color-primary-hover",
   "--type-caption-size",
   "--type-caption-line",
   "--type-caption-weight",

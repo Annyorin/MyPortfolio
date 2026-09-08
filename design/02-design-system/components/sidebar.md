@@ -2,8 +2,8 @@
 type: ds-component
 env: 02-design-system
 status: synced
-figma-node: "41:11675"
-updated: 2026-09-06
+figma-node: "158:11468"
+updated: 2026-09-08
 ---
 
 # Sidebar
@@ -12,7 +12,7 @@ updated: 2026-09-06
 Боковая панель профиля / навигации 310×561.
 
 ## Анатомия
-Profile, Chip-фильтры, ссылки, CTA (Tapper / Hover / Stiker) в колонке 310.
+Profile, Chip-фильтры, ссылки, CTA (Tapper / CursorHover / Button / Stiker) в колонке 310.
 
 ## Варианты
 | Вариант | Значения | Когда |

@@ -35,18 +35,15 @@ const DEMO_CONTENT_LITERALS = [
   "Подуктовый дизайнер",
   "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.",
   "B2B",
-  "B2C",
-  "Design System",
-  "AI-prototyping",
-  "CV",
-  "Telegram",
-  "LinkedIn",
+  "Написать",
+  "Резюме",
   "Behance",
+  "Почта",
   "Link",
   "Обо мне",
-  "InnoDragon",
-  "· 2024-2026",
-  "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.",
+  "CityBike",
+  "· 2024",
+  "Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.",
 ];
 
 /**
@@ -187,18 +184,18 @@ describe("TC-E2E-01 no-mock smoke entrypoint", () => {
       const iconsSection = /aria-labelledby=["']section-icons["'][\s\S]*?<\/section>/i.exec(html);
       assert.ok(iconsSection, "Icons section");
       const iconSlots = iconsSection[0].match(/class="ds-icon"/g) || [];
-      assert.equal(iconSlots.length, 6, "Icons×6 (close, Plus×2, Minus×2, arrow)");
+      assert.equal(iconSlots.length, 12, "Icons×12 (chrome×6 + social×5 + CursorFigma)");
 
       const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
       assert.ok(mediaSection, "Media section");
-      for (const key of ["img_bg", "img_1", "img_2", "img_3", "comp", "me", "macbook"]) {
+      for (const key of ["img_bg", "img_1", "img_2", "img_3", "comp", "me", "macbook", "sitybike"]) {
         assert.ok(
           mediaSection[0].includes(`data-media="${key}"`),
           `Media slot missing: ${key}`
         );
       }
       const mediaSlots = mediaSection[0].match(/data-media="/g) || [];
-      assert.equal(mediaSlots.length, 7, "Media×7");
+      assert.equal(mediaSlots.length, 8, "Media×8");
     } finally {
       await close();
     }

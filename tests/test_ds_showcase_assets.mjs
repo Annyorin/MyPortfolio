@@ -29,7 +29,10 @@ const MEDIA_ASSETS = [
   { key: "icon.minus.hover", rel: "assets/icons/minus-hover.svg" },
   { key: "icon.arrow-right", rel: "assets/icons/arrow-right.svg" },
   { key: "avatar", rel: "assets/images/avatar.png" },
-  { key: "card.image", rel: "assets/images/card-innodragon.png" },
+  { key: "card.image", rel: "assets/images/card-citybike.png" },
+  { key: "card.image.a", rel: "assets/images/img-1.png" },
+  { key: "card.image.b", rel: "assets/images/img-2.png" },
+  { key: "card.image.c", rel: "assets/images/card-citybike.png" },
   { key: "img_bg", rel: "assets/images/img-bg.png" },
   { key: "img_1", rel: "assets/images/img-1.png" },
   { key: "img_2", rel: "assets/images/img-2.png" },
@@ -48,6 +51,7 @@ const MEDIA_BOXES = {
   comp: { w: 149, h: 103 },
   me: { w: 254, h: 254 },
   macbook: { w: 451, h: 319 },
+  sitybike: { w: 308, h: 190 },
 };
 
 /**
@@ -131,7 +135,7 @@ describe("TC-UNIT-01 MediaAsset keys map to disk files", () => {
       const alt = /\balt\s*=\s*["']([^"']*)["']/i.exec(tag);
       assert.ok(alt, `raster img missing alt: ${tag}`);
       const isDecorative = /aria-hidden=["']true["']/i.test(html.slice(Math.max(0, html.indexOf(tag) - 200), html.indexOf(tag)));
-      if (!isDecorative && /avatar\.png|card-innodragon|img-|comp\.png/i.test(tag)) {
+      if (!isDecorative && /avatar\.png|card-citybike|img-|comp\.png/i.test(tag)) {
         assert.ok(alt[1].length > 0 || /alt=["']["']/.test(tag), `empty alt on significant img: ${tag}`);
       }
     }
@@ -216,7 +220,7 @@ describe("TC-E2E-02 missing asset keeps placeholder proportions (A2)", () => {
 });
 
 describe("Regression smoke inventory and foundations tokens", () => {
-  it("five sections and media×7 slots remain in index.html", () => {
+  it("five sections and media×8 slots remain in index.html", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const titles = [];
     const re = /<h2\b[^>]*>([^<]*)<\/h2>/gi;
@@ -228,7 +232,7 @@ describe("Regression smoke inventory and foundations tokens", () => {
 
     const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(mediaSection);
-    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 7);
+    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 8);
   });
 
   it("tokens.css still declares foundation color and shadow variables", () => {

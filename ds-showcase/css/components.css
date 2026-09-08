@@ -47,12 +47,12 @@
   display: block;
 }
 
-/* —— Avatar —— */
+/* —— Avatar (Figma Ui kit 41:11499 — 90×90) —— */
 .ds-avatar {
   box-sizing: border-box;
   display: block;
-  width: 48px;
-  height: 48px;
+  width: 90px;
+  height: 90px;
   flex-shrink: 0;
   overflow: hidden;
   border-radius: 50%;
@@ -65,15 +65,15 @@
   object-fit: cover;
 }
 
-/* —— Profile —— */
+/* —— Profile (column: avatar → name/role) —— */
 .ds-profile {
   box-sizing: border-box;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
   gap: 16px;
   width: 240px;
-  min-height: 48px;
 }
 
 .ds-sidebar .ds-profile,
@@ -106,6 +106,62 @@
   line-height: var(--type-text-line);
   font-weight: var(--type-text-weight);
   color: var(--color-gray-l);
+}
+
+/* —— ProfileMobile (Figma Ui kit 169:11933 — 240×48, Avatar@48) —— */
+.ds-profile--mobile {
+  flex-direction: row;
+  align-items: center;
+  height: 48px;
+}
+
+.ds-profile--mobile .ds-avatar {
+  width: 48px;
+  height: 48px;
+}
+
+/* —— FloatingAction (Figma Ui kit 169:13303 — 50×50, arrow −90°) —— */
+.ds-fab {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: none;
+  border-radius: 35px;
+  background-color: var(--color-black);
+  box-shadow: 0 5px 4.5px #bbbbbd40;
+  cursor: pointer;
+}
+
+.ds-fab .ds-icon {
+  position: absolute;
+  inset: 13px;
+  width: 24px;
+  height: 24px;
+  color: var(--color-white);
+  background-color: currentColor;
+  -webkit-mask-image: url("../assets/icons/arrow-right.svg");
+  mask-image: url("../assets/icons/arrow-right.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  transform: rotate(-90deg);
+}
+
+.ds-fab .ds-icon > img {
+  display: none;
+}
+
+.ds-fab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* —— Chip —— */
@@ -164,6 +220,86 @@
 .ds-link:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* —— Button (Figma Ui kit 158:11313 / 158:11314) —— */
+.ds-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 24px;
+  font-family: Inter, sans-serif;
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  font-weight: var(--type-caption-weight);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ds-button--primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.ds-button--primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.ds-button--secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-black);
+}
+
+/* Figma Button secondary hover 158:11311 — text/icon → Gray_text */
+.ds-button--secondary:hover {
+  color: var(--color-gray-text);
+}
+
+.ds-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.ds-button .ds-icon {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.ds-button .ds-icon[data-icon="telegram"] {
+  -webkit-mask-image: url("../assets/icons/telegram.svg");
+  mask-image: url("../assets/icons/telegram.svg");
+}
+
+.ds-button .ds-icon[data-icon="cv"] {
+  -webkit-mask-image: url("../assets/icons/cv.svg");
+  mask-image: url("../assets/icons/cv.svg");
+}
+
+.ds-button .ds-icon[data-icon="behance"] {
+  -webkit-mask-image: url("../assets/icons/behance.svg");
+  mask-image: url("../assets/icons/behance.svg");
+}
+
+.ds-button .ds-icon[data-icon="mail"] {
+  -webkit-mask-image: url("../assets/icons/mail.svg");
+  mask-image: url("../assets/icons/mail.svg");
+}
+
+.ds-button .ds-icon > img {
+  display: none;
 }
 
 /* —— Tooltip (Figma Ui kit 92:11490) —— */
@@ -385,6 +521,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Keep detail when the world is CSS-zoomed (high-res 4× assets). */
+  image-rendering: auto;
+  -webkit-user-drag: none;
 }
 
 .ds-card__body {
@@ -462,10 +601,21 @@
 
 .ds-sidebar__profile {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ProfileMobile inside Sidebar: keep row (desktop .ds-sidebar__profile is column). */
+.ds-sidebar__profile.ds-profile--mobile,
+.ds-sidebar .ds-profile.ds-profile--mobile {
   flex-direction: row;
   align-items: center;
   gap: 16px;
-  width: 100%;
+  height: 48px;
+  width: auto;
+  max-width: 100%;
 }
 
 .ds-sidebar__inform {
@@ -480,10 +630,10 @@
   margin: 0;
   width: 100%;
   font-family: Inter, sans-serif;
-  font-size: var(--type-text-size);
-  line-height: var(--type-text-line);
-  font-weight: var(--type-text-weight);
-  color: var(--color-gray-l);
+  font-size: var(--type-text-2-size);
+  line-height: var(--type-text-2-line);
+  font-weight: var(--type-text-2-weight);
+  color: var(--color-black);
 }
 
 .ds-sidebar__skills {
@@ -494,21 +644,13 @@
   width: 100%;
 }
 
-.ds-sidebar__contacts {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px;
+.ds-sidebar__copyright {
+  margin: 0;
   flex-shrink: 0;
-}
-
-.ds-sidebar__contacts .ds-link {
+  font-family: Inter, sans-serif;
   font-size: var(--type-caption-size);
   line-height: var(--type-caption-line);
   font-weight: var(--type-caption-weight);
-}
-
-.ds-sidebar__contacts .ds-link:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  color: var(--color-black);
+  white-space: nowrap;
 }

@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, it, before, after } from "node:test";
 import {
   CARD_LONG_PRESS_MS,
+  CARD_DRAG_MOVE_ARM_MS,
   CARD_PRESS_SLOP_PX,
 } from "../portfolio/js/interactions.js";
 
@@ -264,6 +265,7 @@ describe("card long-press drag", () => {
 
   it("long-press arms grab; drag moves card in world px; exports timing constants", async () => {
     assert.ok(CARD_LONG_PRESS_MS >= 150);
+    assert.equal(CARD_DRAG_MOVE_ARM_MS, 10);
     assert.ok(CARD_PRESS_SLOP_PX > 0);
 
     const shim = createShell();
@@ -338,6 +340,83 @@ describe("card long-press drag", () => {
     });
     assert.equal(inputMode.cardDragging, false);
     assert.equal(card.classList.contains("is-card-dragging"), false);
+
+    unbind();
+  });
+
+  it("move past slop after 10ms arms drag without waiting full long-press", async () => {
+    const shim = createShell();
+    globalThis.document = /** @type {any} */ (shim.document);
+
+    const mounted = sceneMod.mountScene(
+      shim.world,
+      layoutMod.sceneGraph,
+      contentMod.contentMap,
+      (key) => resolveMod.resolveAsset(key, { mode: "repo" }),
+      { chromeEl: shim.viewport }
+    );
+    assert.ok(mounted);
+
+    const camera = cameraMod.createCameraController(shim.world, {
+      getViewportSize: () => ({ width: 1024, height: 609 }),
+      getContentAABB: () => mounted.contentAABB,
+    });
+    const inputMode = {
+      spaceDown: false,
+      isPanning: false,
+      suppressClicks: false,
+      cardDragging: false,
+    };
+    const unbind = interactionsMod.bindInteractions(
+      shim.viewport,
+      camera,
+      inputMode
+    );
+
+    const card = mounted.nodesById.cardA;
+    const startLeft = Number.parseFloat(card.style.left);
+    const startTop = Number.parseFloat(card.style.top);
+
+    shim.viewport.dispatchEvent({
+      type: "pointerdown",
+      button: 0,
+      pointerId: 2,
+      clientX: 100,
+      clientY: 100,
+      target: card,
+      preventDefault() {},
+      stopPropagation() {},
+    });
+
+    await delay(CARD_DRAG_MOVE_ARM_MS + 5);
+    assert.equal(inputMode.cardDragging, false, "not yet dragging before move");
+
+    shim.viewport.dispatchEvent({
+      type: "pointermove",
+      pointerId: 2,
+      clientX: 100 + CARD_PRESS_SLOP_PX + 12,
+      clientY: 110,
+      target: card,
+      preventDefault() {},
+    });
+
+    assert.equal(inputMode.cardDragging, true, "drag arms on move after 10ms");
+    assert.ok(card.classList.contains("is-card-dragging"));
+    assert.equal(
+      Number.parseFloat(card.style.left),
+      startLeft + CARD_PRESS_SLOP_PX + 12
+    );
+    assert.equal(Number.parseFloat(card.style.top), startTop + 10);
+
+    shim.viewport.dispatchEvent({
+      type: "pointerup",
+      pointerId: 2,
+      clientX: 130,
+      clientY: 110,
+      target: card,
+      preventDefault() {},
+    });
+    assert.equal(inputMode.cardDragging, false);
 
     unbind();
   });

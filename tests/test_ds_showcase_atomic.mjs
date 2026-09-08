@@ -27,16 +27,19 @@ const SECTION_ORDER = ["Foundations", "Icons", "Atomic", "Composite", "Media"];
 /** Target sizes from screen-spec / task (±2px). */
 const SIZE_TARGETS = [
   { selector: ".ds-icon", width: 24, height: 24 },
-  { selector: ".ds-avatar", width: 48, height: 48 },
-  { selector: ".ds-profile", width: 240, height: null, minHeight: 48 },
+  { selector: ".ds-avatar", width: 90, height: 90 },
+  { selector: ".ds-profile", width: 240, height: null, minHeight: null },
+  { selector: ".ds-profile--mobile", width: null, height: 48 },
   { selector: ".ds-chip", height: 32, width: null },
   { selector: ".ds-tapper", width: 104, height: 40 },
   { selector: ".ds-stiker", width: 81, height: 32 },
   { selector: ".ds-hover", width: 114, height: 40 },
+  { selector: ".ds-fab", width: 50, height: 50 },
 ];
 
 const COLOR_TOKENS_REGRESSION = {
   "--color-primary": "#64b3f9",
+  "--color-primary-hover": "#79befc",
   "--color-secondary": "#ededed",
   "--color-white": "#fefefe",
   "--color-black": "#232323",
@@ -204,7 +207,20 @@ describe("TC-UNIT-02 accessible names for Tapper / icon buttons", () => {
 
     const icons = /aria-labelledby=["']section-icons["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(icons, "Icons section");
-    for (const name of ["close", "Plus", "Plus hover", "Minus", "Minus hover", "vuesax/linear/arrow-right"]) {
+    for (const name of [
+      "close",
+      "Plus",
+      "Plus hover",
+      "Minus",
+      "Minus hover",
+      "vuesax/linear/arrow-right",
+      "linkedin",
+      "behance",
+      "mail",
+      "cv",
+      "telegram",
+      "CursorFigma",
+    ]) {
       assert.ok(
         icons[0].includes(`aria-label="${name}"`),
         `Icon aria-label missing: ${name}`
@@ -227,23 +243,27 @@ describe("TC-E2E-01 Atomic + Icons inventory and sizes", () => {
 
     const icons = /aria-labelledby=["']section-icons["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(icons);
-    assert.equal((icons[0].match(/class="ds-icon"/g) || []).length, 6);
+    assert.equal((icons[0].match(/class="ds-icon"/g) || []).length, 12);
 
     const atomic = /aria-labelledby=["']section-atomic["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(atomic);
     for (const cls of [
       "ds-avatar",
       "ds-profile",
+      "ds-profile--mobile",
       "ds-chip",
+      "ds-button",
       "ds-link",
       "ds-tapper",
       "ds-stiker",
       "ds-hover",
+      "ds-fab",
     ]) {
       assert.ok(atomic[0].includes(cls), `Atomic missing ${cls}`);
     }
 
     assert.ok(atomic[0].includes("B2B"));
+    assert.ok(atomic[0].includes("Написать"));
     assert.ok(atomic[0].includes(">Link<") || atomic[0].includes(">Link</a>"));
     assert.ok(atomic[0].includes("Обо мне"));
     assert.ok(atomic[0].includes("Behance"));
@@ -280,6 +300,15 @@ describe("TC-E2E-01 Atomic + Icons inventory and sizes", () => {
     const role = ruleBody(css, ".ds-profile__role");
     assert.ok(role && /var\(--color-gray-l\)/.test(role));
 
+    const profileMobile = ruleBody(css, ".ds-profile--mobile");
+    assert.ok(profileMobile && /flex-direction\s*:\s*row/.test(profileMobile));
+    assertWithinTol(declaredPx(profileMobile, "height"), 48, ".ds-profile--mobile height");
+
+    const fab = ruleBody(css, ".ds-fab");
+    assert.ok(fab && /var\(--color-black\)/.test(fab));
+    assert.ok(fab && /0\s+5px\s+4\.5px/.test(fab));
+    assert.match(css, /\.ds-fab[\s\S]*?rotate\(-90deg\)/);
+
     // No component JS preference
     assert.doesNotMatch(html, /<script\b/i);
   });
@@ -301,6 +330,10 @@ describe("TC-E2E-01 Atomic + Icons inventory and sizes", () => {
         "/assets/icons/minus.svg",
         "/assets/icons/minus-hover.svg",
         "/assets/icons/arrow-right.svg",
+        "/assets/icons/telegram.svg",
+        "/assets/icons/cv.svg",
+        "/assets/icons/mail.svg",
+        "/assets/icons/cursor-figma.svg",
         "/assets/images/avatar.png",
       ]) {
         const res = await httpGet(port, p);

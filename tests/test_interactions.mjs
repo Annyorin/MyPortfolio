@@ -527,7 +527,9 @@ describe("portfolio interactive hits", () => {
 
   it("TC-E2E-03: Click contact opens mapped URL (no in-app location rewrite)", () => {
     const { nodesById, unbind } = mountInteractive();
-    const link = nodesById.sidebar.querySelector(".ds-sidebar__contacts a.ds-link");
+    const link = nodesById.sidebar.querySelector(
+      ".ds-sidebar__skills a.ds-button--primary"
+    );
     assert.ok(link);
     const href = link.getAttribute("href") ?? "";
     assert.ok(href.length > 0 && href !== "#");

@@ -24,6 +24,13 @@
           </div>
         </div>
         <div class="ds-swatch-item" role="listitem">
+          <div class="ds-swatch" data-token="primary-hover" aria-hidden="true"></div>
+          <div class="ds-swatch__meta">
+            <span class="ds-swatch__label">Primary_hover</span>
+            <span class="ds-swatch__hex">#79befc</span>
+          </div>
+        </div>
+        <div class="ds-swatch-item" role="listitem">
           <div class="ds-swatch" data-token="secondary" aria-hidden="true"></div>
           <div class="ds-swatch__meta">
             <span class="ds-swatch__label">Secondary</span>
@@ -63,7 +70,8 @@
       <div class="ds-type-specimens">
         <p class="ds-type ds-type--h1"><span class="ds-type__label">Заголовок 1</span></p>
         <p class="ds-type ds-type--h2"><span class="ds-type__label">Заголовок 2</span></p>
-        <p class="ds-type ds-type--text"><span class="ds-type__label">Текст</span></p>
+        <p class="ds-type ds-type--text"><span class="ds-type__label">Текст 1</span></p>
+        <p class="ds-type ds-type--text-2"><span class="ds-type__label">Текст 2</span></p>
         <p class="ds-type ds-type--caption"><span class="ds-type__label">Подписи</span></p>
       </div>
     </section>
@@ -94,6 +102,24 @@
         >
           <img src="assets/icons/arrow-right.svg" alt="" width="24" height="24">
         </span>
+        <span class="ds-icon" role="listitem" aria-label="linkedin" data-icon="linkedin">
+          <img src="assets/icons/linkedin.svg" alt="" width="20" height="20">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="behance" data-icon="behance">
+          <img src="assets/icons/behance.svg" alt="" width="20" height="20">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="mail" data-icon="mail">
+          <img src="assets/icons/mail.svg" alt="" width="20" height="20">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="cv" data-icon="cv">
+          <img src="assets/icons/cv.svg" alt="" width="20" height="20">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="telegram" data-icon="telegram">
+          <img src="assets/icons/telegram.svg" alt="" width="20" height="20">
+        </span>
+        <span class="ds-icon" role="listitem" aria-label="CursorFigma" data-icon="cursor-figma">
+          <img src="assets/icons/cursor-figma.svg" alt="" width="20" height="20">
+        </span>
       </div>
     </section>
 
@@ -101,10 +127,20 @@
       <h2 id="section-atomic">Atomic</h2>
 
       <div class="ds-avatar ds-placeholder">
-        <img src="assets/images/avatar.png" alt="Avatar of Аня Ясинская" width="48" height="48">
+        <img src="assets/images/avatar.png" alt="Avatar of Аня Ясинская" width="90" height="90">
       </div>
 
       <div class="ds-profile">
+        <div class="ds-avatar ds-placeholder" aria-hidden="true">
+          <img src="assets/images/avatar.png" alt="" width="90" height="90">
+        </div>
+        <div class="ds-profile__meta">
+          <span class="ds-profile__name">Аня Ясинская</span>
+          <span class="ds-profile__role">Подуктовый дизайнер</span>
+        </div>
+      </div>
+
+      <div class="ds-profile ds-profile--mobile">
         <div class="ds-avatar ds-placeholder" aria-hidden="true">
           <img src="assets/images/avatar.png" alt="" width="48" height="48">
         </div>
@@ -117,6 +153,21 @@
       <div class="ds-chip-samples">
         <span class="ds-chip ds-chip--default">B2B</span>
         <span class="ds-chip ds-chip--active">B2B</span>
+      </div>
+
+      <div class="ds-button-samples">
+        <a class="ds-button ds-button--primary" href="#">
+          <span class="ds-icon" aria-hidden="true" data-icon="telegram">
+            <img src="assets/icons/telegram.svg" alt="" width="20" height="20">
+          </span>
+          Написать
+        </a>
+        <a class="ds-button ds-button--secondary" href="#">
+          <span class="ds-icon" aria-hidden="true" data-icon="cv">
+            <img src="assets/icons/cv.svg" alt="" width="20" height="20">
+          </span>
+          Резюме
+        </a>
       </div>
 
       <div class="ds-link-samples">
@@ -154,6 +205,12 @@
           <img src="assets/icons/arrow-right.svg" alt="" width="24" height="24">
         </span>
       </button>
+
+      <button type="button" class="ds-fab" aria-label="FloatingAction">
+        <span class="ds-icon" aria-hidden="true" data-icon="vuesax/linear/arrow-right">
+          <img src="assets/icons/arrow-right.svg" alt="" width="24" height="24">
+        </span>
+      </button>
     </section>
 
     <section class="ds-section" aria-labelledby="section-composite">
@@ -162,26 +219,26 @@
       <div class="ds-card-samples">
         <article class="ds-card ds-card--default">
           <div class="ds-card__media ds-placeholder">
-            <img src="assets/images/card-innodragon.png" alt="InnoDragon project cover" width="310" height="190">
+            <img src="assets/images/card-citybike.png" alt="CityBike project cover" width="310" height="190">
           </div>
           <div class="ds-card__body">
             <div class="ds-card__header">
-              <h3 class="ds-card__title">InnoDragon</h3>
-              <p class="ds-card__meta">· 2024-2026</p>
+              <h3 class="ds-card__title">CityBike</h3>
+              <p class="ds-card__meta">· 2024</p>
             </div>
-            <p class="ds-card__description">Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.</p>
+            <p class="ds-card__description">Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.</p>
           </div>
         </article>
         <article class="ds-card ds-card--hover">
           <div class="ds-card__media ds-placeholder">
-            <img src="assets/images/card-innodragon.png" alt="InnoDragon project cover" width="310" height="190">
+            <img src="assets/images/card-citybike.png" alt="CityBike project cover" width="310" height="190">
           </div>
           <div class="ds-card__body">
             <div class="ds-card__header">
-              <h3 class="ds-card__title">InnoDragon</h3>
-              <p class="ds-card__meta">· 2024-2026</p>
+              <h3 class="ds-card__title">CityBike</h3>
+              <p class="ds-card__meta">· 2024</p>
             </div>
-            <p class="ds-card__description">Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.</p>
+            <p class="ds-card__description">Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.</p>
           </div>
         </article>
       </div>
@@ -190,7 +247,7 @@
         <div class="ds-sidebar__designer">
           <div class="ds-sidebar__profile ds-profile">
             <div class="ds-avatar ds-placeholder" aria-hidden="true">
-              <img src="assets/images/avatar.png" alt="" width="48" height="48">
+              <img src="assets/images/avatar.png" alt="" width="90" height="90">
             </div>
             <div class="ds-profile__meta">
               <span class="ds-profile__name">Аня Ясинская</span>
@@ -199,20 +256,35 @@
           </div>
           <div class="ds-sidebar__inform">
             <p class="ds-sidebar__bio">Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.</p>
-            <div class="ds-sidebar__skills">
-              <span class="ds-chip ds-chip--active">B2B</span>
-              <span class="ds-chip ds-chip--active">B2C</span>
-              <span class="ds-chip ds-chip--default">Design System</span>
-              <span class="ds-chip ds-chip--default">AI-prototyping</span>
+            <div class="ds-sidebar__skills" aria-label="Contacts">
+              <a class="ds-button ds-button--primary" href="#">
+                <span class="ds-icon" aria-hidden="true" data-icon="telegram">
+                  <img src="assets/icons/telegram.svg" alt="" width="20" height="20">
+                </span>
+                Написать
+              </a>
+              <a class="ds-button ds-button--secondary" href="#">
+                <span class="ds-icon" aria-hidden="true" data-icon="cv">
+                  <img src="assets/icons/cv.svg" alt="" width="20" height="20">
+                </span>
+                Резюме
+              </a>
+              <a class="ds-button ds-button--secondary" href="#">
+                <span class="ds-icon" aria-hidden="true" data-icon="behance">
+                  <img src="assets/icons/behance.svg" alt="" width="20" height="20">
+                </span>
+                Behance
+              </a>
+              <a class="ds-button ds-button--secondary" href="#">
+                <span class="ds-icon" aria-hidden="true" data-icon="mail">
+                  <img src="assets/icons/mail.svg" alt="" width="20" height="20">
+                </span>
+                Почта
+              </a>
             </div>
           </div>
         </div>
-        <nav class="ds-sidebar__contacts" aria-label="Contacts">
-          <a class="ds-link" href="#">CV</a>
-          <a class="ds-link" href="#">Telegram</a>
-          <a class="ds-link" href="#">LinkedIn</a>
-          <a class="ds-link" href="#">Behance</a>
-        </nav>
+        <p class="ds-sidebar__copyright">Annyorina © 2026</p>
       </aside>
     </section>
 
@@ -239,6 +311,9 @@
         </div>
         <div class="ds-placeholder" data-media="macbook" style="width:451px;aspect-ratio:451/319">
           <img src="assets/images/macbook.png" alt="Macbook media sample" width="451" height="319">
+        </div>
+        <div class="ds-placeholder" data-media="sitybike" style="width:308px;aspect-ratio:308/190">
+          <img src="assets/images/card-citybike.png" alt="SityBike / CityBike cover" width="308" height="190">
         </div>
       </div>
     </section>

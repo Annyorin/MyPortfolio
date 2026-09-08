@@ -26,7 +26,7 @@ const TOKENS_PATH = path.join(SHOWCASE_ROOT, "css", "tokens.css");
 const SECTION_ORDER = ["Foundations", "Icons", "Atomic", "Composite", "Media"];
 
 const CARD_DESCRIPTION =
-  "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.";
+  "Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.";
 
 const SIDEBAR_BIO =
   "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.";
@@ -40,6 +40,7 @@ const MEDIA_BOXES = {
   comp: { w: 149, h: 103 },
   me: { w: 254, h: 254 },
   macbook: { w: 451, h: 319 },
+  sitybike: { w: 308, h: 190 },
 };
 
 /**
@@ -212,20 +213,18 @@ describe("TC-UNIT-01 Card shadow contract", () => {
   });
 });
 
-describe("TC-UNIT-02 Contacts caption tokens", () => {
-  it("Sidebar Contacts links use var(--type-caption-*)", () => {
+describe("TC-UNIT-02 Sidebar action buttons", () => {
+  it("Sidebar Skills use .ds-button with caption tokens via button styles", () => {
     const css = fs.readFileSync(COMPONENTS_CSS_PATH, "utf8");
-    const body = ruleBody(css, ".ds-sidebar__contacts .ds-link");
-    assert.ok(body, ".ds-sidebar__contacts .ds-link rule required");
+    const body = ruleBody(css, ".ds-button");
+    assert.ok(body, ".ds-button rule required");
     assert.match(body, /var\(--type-caption-size\)/);
     assert.match(body, /var\(--type-caption-line\)/);
     assert.match(body, /var\(--type-caption-weight\)/);
-    assert.doesNotMatch(body, /var\(--type-text-size\)/);
 
-    assert.match(
-      css,
-      /\.ds-sidebar__contacts\s+\.ds-link:focus-visible\s*\{[^}]*outline/s
-    );
+    assert.match(css, /\.ds-button:focus-visible\s*\{[^}]*outline/s);
+    assert.match(css, /\.ds-button--primary:hover\s*\{[^}]*--color-primary-hover/s);
+    assert.match(css, /\.ds-button--secondary:hover\s*\{[^}]*--color-gray-text/s);
   });
 });
 
@@ -242,8 +241,8 @@ describe("TC-E2E-01 Card default vs hover", () => {
     assert.ok(/ds-card--hover/.test(block));
     assert.equal((block.match(/ds-card--(?:default|hover)/g) || []).length, 2);
 
-    assert.ok(block.includes("InnoDragon"));
-    assert.ok(block.includes("· 2024-2026"));
+    assert.ok(block.includes("CityBike"));
+    assert.ok(block.includes("· 2024"));
     assert.ok(block.includes(CARD_DESCRIPTION));
 
     const card = ruleBody(css, ".ds-card");
@@ -266,7 +265,7 @@ describe("TC-E2E-01 Card default vs hover", () => {
       assert.ok(html.includes("section-composite"));
       assert.ok(html.includes("ds-card--default"));
 
-      const cardImg = await httpGet(port, "/assets/images/card-innodragon.png");
+      const cardImg = await httpGet(port, "/assets/images/card-citybike.png");
       assert.equal(cardImg.status, 200);
       assert.ok(cardImg.body.length > 0);
 
@@ -279,8 +278,8 @@ describe("TC-E2E-01 Card default vs hover", () => {
   });
 });
 
-describe("TC-E2E-02 Sidebar structure and Skills matrix", () => {
-  it("box metrics ±2px; Skills gap 8; active/default matrix; Caption contacts; bio", () => {
+describe("TC-E2E-02 Sidebar structure and action buttons", () => {
+  it("box metrics ±2px; Skills gap 8; action buttons; Text2 bio; copyright", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const css = fs.readFileSync(COMPONENTS_CSS_PATH, "utf8");
 
@@ -291,18 +290,14 @@ describe("TC-E2E-02 Sidebar structure and Skills matrix", () => {
     assert.ok(block.includes(SIDEBAR_BIO), "bio must be verbatim");
     assert.ok(/ds-profile/.test(block), "reuses Profile");
     assert.ok(/ds-avatar/.test(block), "reuses Avatar");
+    assert.ok(/ds-sidebar__copyright/.test(block), "copyright");
 
     const skills = /class="ds-sidebar__skills"[\s\S]*?<\/div>/i.exec(block);
     assert.ok(skills);
-    assert.match(skills[0], /ds-chip--active[^>]*>\s*B2B/);
-    assert.match(skills[0], /ds-chip--active[^>]*>\s*B2C/);
-    assert.match(skills[0], /ds-chip--default[^>]*>\s*Design System/);
-    assert.match(skills[0], /ds-chip--default[^>]*>\s*AI-prototyping/);
-
-    const contacts = /ds-sidebar__contacts[\s\S]*?<\/nav>/i.exec(block);
-    assert.ok(contacts);
-    for (const label of ["CV", "Telegram", "LinkedIn", "Behance"]) {
-      assert.ok(contacts[0].includes(label), `contact missing: ${label}`);
+    assert.match(skills[0], /ds-button--primary/);
+    assert.match(skills[0], /ds-button--secondary/);
+    for (const label of ["Написать", "Резюме", "Behance", "Почта"]) {
+      assert.ok(skills[0].includes(label), `action missing: ${label}`);
     }
 
     const side = ruleBody(css, ".ds-sidebar");
@@ -319,21 +314,20 @@ describe("TC-E2E-02 Sidebar structure and Skills matrix", () => {
     assertWithinTol(declaredPx(skillsCss, "gap"), 8, "Skills gap");
 
     const bio = ruleBody(css, ".ds-sidebar__bio");
-    assert.ok(bio && /var\(--color-gray-l\)/.test(bio));
-    assert.ok(bio && /var\(--type-text-size\)/.test(bio));
+    assert.ok(bio && /var\(--color-black\)/.test(bio));
+    assert.ok(bio && /var\(--type-text-2-size\)/.test(bio));
 
-    // Chip styles reused (not redeclared fill inside sidebar skills)
-    assert.ok(ruleBody(css, ".ds-chip--active"));
-    assert.ok(ruleBody(css, ".ds-chip--default"));
+    assert.ok(ruleBody(css, ".ds-button--primary"));
+    assert.ok(ruleBody(css, ".ds-button--secondary"));
   });
 });
 
 describe("TC-E2E-03 Media proportions", () => {
-  it("seven slots keep target boxes; layout classes present", () => {
+  it("eight slots keep target boxes; layout classes present", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(mediaSection);
-    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 7);
+    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 8);
 
     for (const [key, box] of Object.entries(MEDIA_BOXES)) {
       const slotRe = new RegExp(

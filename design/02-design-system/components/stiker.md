@@ -2,8 +2,8 @@
 type: ds-component
 env: 02-design-system
 status: synced
-figma-node: "41:11676"
-updated: 2026-09-06
+figma-node: "41:1517"
+updated: 2026-09-08
 ---
 
 # Stiker
@@ -29,8 +29,8 @@ default
 | text | Caption |
 
 ## Правила применения
-Метка секции / профиля. Не путать с Chip (фильтр).
+Метка секции / профиля. Не путать с Chip (фильтр) и Tooltip.
 На сцене Портфолио · Главная (`41:1416`) размер сверять по bbox сцены, не только atomic 81×32 витрины.
 
 ## Чем не является
-Не Chip, не Tapper.
+Не Chip, не Tapper, не Tooltip.

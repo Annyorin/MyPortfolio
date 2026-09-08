@@ -3,8 +3,8 @@
  *
  * TC-E2E-01: world has 3 cards, about, tapper, bg; chrome has sidebar
  * TC-E2E-02: slot geometry Sidebar stretch, Card 310×310, Tapper 40×104 portrait
- * TC-E2E-03: profile.role and card.title match contentMap
- * TC-E2E-04: three Cards share InnoDragon content
+ * TC-E2E-03: profile.role and card.a.title match contentMap
+ * TC-E2E-04: three Cards — InnoDragon / Innophish / CityBike (Behance)
  * TC-UNIT-01: DOM child order follows ascending zIndex
  * TC-UNIT-02: contacts use href="#" or button without http URL
  */
@@ -455,39 +455,54 @@ describe("portfolio scene renderer", () => {
     assert.equal(byId.stiker.style.transform, "rotate(-3.89deg)");
   });
 
-  it("TC-E2E-03: profile.role and card.title match contentMap", () => {
+  it("TC-E2E-03: profile.role and card.a.title match contentMap", () => {
     const { nodesById } = mountFresh();
     const role = nodesById.sidebar.querySelector(".ds-profile__role");
     const title = nodesById.cardA.querySelector(".ds-card__title");
     assert.ok(role);
     assert.ok(title);
     assert.equal(role.textContent, contentMod.contentMap["profile.role"]);
-    assert.equal(title.textContent, contentMod.contentMap["card.title"]);
+    assert.equal(title.textContent, contentMod.contentMap["card.a.title"]);
   });
 
-  it("TC-E2E-04: three Cards share InnoDragon copy with distinct cover assets", () => {
+  it("TC-E2E-04: three Cards have distinct projects; CityBike opens Behance", () => {
     const { nodesById } = mountFresh();
-    const cards = [
-      { el: nodesById.cardA, file: "img-1.png" },
-      { el: nodesById.cardB, file: "img-2.png" },
-      { el: nodesById.cardC, file: "img-3.png" },
+    const expected = [
+      {
+        id: "cardA",
+        title: "InnoDragon",
+        file: "img-1.png",
+        url: "",
+        action: "modal",
+      },
+      {
+        id: "cardB",
+        title: "Innophish",
+        file: "img-2.png",
+        url: "",
+        action: "modal",
+      },
+      {
+        id: "cardC",
+        title: "CityBike",
+        file: "card-citybike.png",
+        url: contentMod.contentMap["card.c.url"],
+        action: "",
+      },
     ];
-    for (const { el: card, file } of cards) {
-      assert.equal(
-        card.querySelector(".ds-card__title")?.textContent,
-        "InnoDragon"
-      );
+    for (const row of expected) {
+      const card = nodesById[row.id];
+      assert.ok(card, row.id);
+      assert.equal(card.querySelector(".ds-card__title")?.textContent, row.title);
       assert.equal(
         card.querySelector(".ds-card__meta")?.textContent,
-        contentMod.contentMap["card.meta"]
+        contentMod.contentMap[`card.${row.id === "cardA" ? "a" : row.id === "cardB" ? "b" : "c"}.meta`]
       );
-      assert.equal(
-        card.querySelector(".ds-card__description")?.textContent,
-        contentMod.contentMap["card.description"]
-      );
+      assert.equal(card.dataset.cardUrl || "", row.url);
+      assert.equal(card.dataset.cardAction || "", row.action);
       const img = card.querySelector(".ds-card__media img");
       assert.ok(img);
-      assert.match(String(img.src), new RegExp(file.replace(".", "\\.")));
+      assert.match(String(img.src), new RegExp(row.file.replace(".", "\\.")));
       assert.equal(Number(img.height), 180);
     }
   });
@@ -510,18 +525,25 @@ describe("portfolio scene renderer", () => {
 
   it('TC-UNIT-02: contacts use contactUrls (http(s) or assets) with target=_blank', () => {
     const { nodesById } = mountFresh();
-    const links = nodesById.sidebar.querySelectorAll("a.ds-link");
+    const links = nodesById.sidebar.querySelectorAll(".ds-sidebar__skills a.ds-button");
     assert.equal(links.length, 4);
+    let withUrl = 0;
     for (const link of links) {
       const href = link.getAttribute("href") ?? "";
-      assert.ok(href.length > 0 && href !== "#");
+      assert.ok(href.length > 0);
+      if (href === "#") continue;
+      withUrl += 1;
       assert.ok(
-        href.startsWith("http") || href.startsWith("assets/"),
+        href.startsWith("http") ||
+          href.startsWith("assets/") ||
+          href.startsWith("mailto:"),
         `unexpected href: ${href}`
       );
+      if (href.startsWith("mailto:")) continue;
       assert.equal(link.getAttribute("target"), "_blank");
       assert.equal(link.getAttribute("rel"), "noopener noreferrer");
     }
+    assert.ok(withUrl >= 3, "at least telegram/cv/behance must have URLs");
   });
 
   it("mountScene returns contentAABB covering canvas slots (cards+about)", () => {

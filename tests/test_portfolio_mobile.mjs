@@ -1,21 +1,17 @@
 /**
- * Portfolio viewport start branches + no-mock entry smoke (task 3.2 / UC-02 A2).
+ * Portfolio mobile document mode (Figma Портфолио.360 / 169:12080).
  *
- * TC-E2E-05: wide ≥1024 → stage-fit 51:4107; narrow → fit; pan/zoom still work
- * No-mock: real portfolio entry over Vite (portfolio:dev) HTTP 200
+ * At width 360: ProfileMobile sheet, 2 contacts, 3 distinct cards, FAB scroll.
+ * At width ≥768: mobile sheet torn down; canvas scene present.
  */
 
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
-import http from "node:http";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, it, before, after } from "node:test";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
-const REF_W = 1024;
-const REF_H = 609;
 
 /**
  * @param {string} relativePath
@@ -28,7 +24,6 @@ function abs(relativePath) {
 /**
  * @param {number} width
  * @param {number} height
- * @returns {{ document: object, world: object, viewport: object }}
  */
 function createShell(width, height) {
   /** @type {WeakMap<object, Map<string, string>>} */
@@ -124,6 +119,7 @@ function createShell(width, height) {
     let classNameValue = "";
     let idValue = "";
     let hiddenValue = false;
+    let scrollTopValue = 0;
     /** @type {Map<string, Function[]>} */
     const listeners = new Map();
 
@@ -148,6 +144,20 @@ function createShell(width, height) {
       textContent: "",
       clientWidth: 0,
       clientHeight: 0,
+      get scrollTop() {
+        return scrollTopValue;
+      },
+      set scrollTop(v) {
+        scrollTopValue = Number(v) || 0;
+      },
+      scrollTo(opts) {
+        if (opts && typeof opts === "object" && "top" in opts) {
+          scrollTopValue = Number(opts.top) || 0;
+        }
+        for (const fn of [...(listeners.get("scroll") || [])]) {
+          fn({ type: "scroll", target: el });
+        }
+      },
       get id() {
         return idValue;
       },
@@ -277,6 +287,26 @@ function createShell(width, height) {
         }
         el.parentNode = null;
       },
+      closest(selector) {
+        let cur = el;
+        while (cur) {
+          if (matchOne(cur, selector)) {
+            return cur;
+          }
+          cur = cur.parentNode;
+        }
+        return null;
+      },
+      contains(node) {
+        let cur = node;
+        while (cur) {
+          if (cur === el) {
+            return true;
+          }
+          cur = cur.parentNode;
+        }
+        return false;
+      },
       querySelector(selector) {
         return queryAll(el, selector)[0] || null;
       },
@@ -300,16 +330,6 @@ function createShell(width, height) {
           fn(event);
         }
         return true;
-      },
-      contains(node) {
-        let cur = node;
-        while (cur) {
-          if (cur === el) {
-            return true;
-          }
-          cur = cur.parentNode;
-        }
-        return false;
       },
     };
 
@@ -335,6 +355,7 @@ function createShell(width, height) {
     return el;
   }
 
+  const body = createElement("body");
   const viewport = createElement("div");
   viewport.className = "viewport";
   viewport.clientWidth = width;
@@ -356,13 +377,20 @@ function createShell(width, height) {
 
   viewport.appendChild(pan);
   viewport.appendChild(mobile);
+  body.appendChild(viewport);
+
+  /** @type {Map<string, Function[]>} */
+  const windowListeners = new Map();
 
   const document = {
+    body,
     createElement,
-    body: null,
     querySelector(selector) {
       const parts = selector.split(",").map((s) => s.trim());
       for (const part of parts) {
+        if (part === "body" || part === "BODY") {
+          return body;
+        }
         if (matchOne(viewport, part)) {
           return viewport;
         }
@@ -376,136 +404,58 @@ function createShell(width, height) {
           return mobile;
         }
         const hit =
-          queryAll(viewport, part)[0] || queryAll(world, part)[0] || null;
+          queryAll(body, part)[0] ||
+          queryAll(viewport, part)[0] ||
+          null;
         if (hit) {
           return hit;
         }
       }
       return null;
     },
+    querySelectorAll(selector) {
+      return queryAll(body, selector);
+    },
   };
 
-  return { document, world, viewport, pan, mobile };
-}
-
-/**
- * @param {string} url
- * @returns {Promise<{ status: number, body: string }>}
- */
-function httpGet(url) {
-  return new Promise((resolve, reject) => {
-    http
-      .get(url, (res) => {
-        const chunks = [];
-        res.on("data", (c) => chunks.push(c));
-        res.on("end", () => {
-          resolve({
-            status: res.statusCode ?? 0,
-            body: Buffer.concat(chunks).toString("utf8"),
-          });
-        });
-      })
-      .on("error", reject);
-  });
-}
-
-/**
- * Starts Vite on a free port; returns base URL and kill fn.
- * @returns {Promise<{ baseUrl: string, stop: () => Promise<void> }>}
- */
-async function startViteDev() {
-  const port = 5173 + Math.floor(Math.random() * 200);
-  const viteBin = path.join(
-    REPO_ROOT,
-    "node_modules",
-    "vite",
-    "bin",
-    "vite.js"
-  );
-  const child = spawn(
-    process.execPath,
-    [viteBin, "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
-    {
-      cwd: REPO_ROOT,
-      stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, BROWSER: "none" },
-      windowsHide: true,
-    }
-  );
-
-  let stdout = "";
-  let stderr = "";
-  child.stdout?.on("data", (d) => {
-    stdout += String(d);
-  });
-  child.stderr?.on("data", (d) => {
-    stderr += String(d);
-  });
-
-  const baseUrl = `http://127.0.0.1:${port}`;
-  const deadline = Date.now() + 30000;
-
-  /**
-   * @returns {Promise<void>}
-   */
-  function stop() {
-    return new Promise((resolve) => {
-      if (child.exitCode != null) {
-        resolve();
-        return;
-      }
-      const done = () => resolve();
-      child.once("exit", done);
-      try {
-        if (process.platform === "win32" && child.pid) {
-          spawn("taskkill", ["/PID", String(child.pid), "/T", "/F"], {
-            stdio: "ignore",
-            windowsHide: true,
-          }).once("exit", done);
-        } else {
-          child.kill("SIGTERM");
-        }
-      } catch {
-        child.kill("SIGKILL");
-      }
-      setTimeout(() => {
-        try {
-          child.kill("SIGKILL");
-        } catch {
-          /* ignore */
-        }
-        resolve();
-      }, 3000);
-    });
-  }
-
-  while (Date.now() < deadline) {
-    if (child.exitCode != null) {
-      throw new Error(
-        `vite exited early (${child.exitCode}): ${stderr || stdout}`
+  const windowObj = {
+    addEventListener(type, fn) {
+      const list = windowListeners.get(type) || [];
+      list.push(fn);
+      windowListeners.set(type, list);
+    },
+    removeEventListener(type, fn) {
+      const list = windowListeners.get(type) || [];
+      windowListeners.set(
+        type,
+        list.filter((f) => f !== fn)
       );
-    }
-    try {
-      const res = await httpGet(`${baseUrl}/portfolio/main.html`);
-      if (res.status === 200) {
-        return { baseUrl, stop };
+    },
+    /**
+     * @param {string} type
+     */
+    dispatch(type) {
+      for (const fn of [...(windowListeners.get(type) || [])]) {
+        fn({ type });
       }
-    } catch {
-      /* retry */
-    }
-    await new Promise((r) => setTimeout(r, 200));
-  }
+    },
+    open() {
+      return null;
+    },
+  };
 
-  await stop();
-  throw new Error(`vite did not become ready: ${stderr || stdout}`);
+  return { document, body, viewport, pan, world, mobile, windowObj };
 }
 
-describe("portfolio viewport branches + entry smoke", () => {
+describe("portfolio mobile document mode", () => {
   /** @type {typeof globalThis.document | undefined} */
   let previousDocument;
+  /** @type {typeof globalThis.window | undefined} */
+  let previousWindow;
 
   before(() => {
     previousDocument = globalThis.document;
+    previousWindow = globalThis.window;
   });
 
   after(() => {
@@ -515,106 +465,125 @@ describe("portfolio viewport branches + entry smoke", () => {
     } else {
       globalThis.document = previousDocument;
     }
-  });
-
-  it("TC-E2E-05: wide ≥1024 → stage-fit 51:4107; narrow start fit; pan/zoom available", async () => {
-    const bust = `?t=${Date.now()}`;
-
-    // Wide branch (≥1024): 51:4107 + interactive stage fit (not idle 1,0,0)
-    const wide = createShell(REF_W, REF_H);
-    globalThis.document = /** @type {any} */ (wide.document);
-    const mainWide = await import(
-      pathToFileURL(abs("portfolio/js/main.js")).href + bust + "&w=1"
-    );
-    const wideInit = mainWide.initPortfolioStubs();
-    const wideState = wideInit.camera.getState();
-    assert.ok(wideState.scale > 0);
-    assert.ok(wideState.scale <= 1.05, "1024 stage scale near/below design");
-    assert.ok(wideInit.scene);
-    assert.equal(wide.world.children.length, 5);
-    assert.equal(wideInit.layoutId, "51:4107");
-
-    // 1366 artboard: larger stage → scale ≥ 1024 branch
-    const wide1366 = createShell(1366, 768);
-    globalThis.document = /** @type {any} */ (wide1366.document);
-    const main1366 = await import(
-      pathToFileURL(abs("portfolio/js/main.js")).href + bust + "&w1366=1"
-    );
-    const init1366 = main1366.initPortfolioStubs();
-    assert.equal(init1366.layoutId, "51:4107");
-    const state1366 = init1366.camera.getState();
-    assert.ok(state1366.scale >= wideState.scale);
-    assert.equal(
-      Number.parseFloat(String(init1366.scene.nodesById.cardA.style.left)),
-      475
-    );
-    assert.equal(init1366.scene.nodesById.sidebar.style.height, "auto");
-    assert.equal(
-      Number.parseFloat(String(init1366.scene.nodesById.sidebar.style.top)),
-      24
-    );
-    assert.equal(
-      Number.parseFloat(String(init1366.scene.nodesById.sidebar.style.bottom)),
-      24
-    );
-
-    // Narrow branch
-    const narrow = createShell(800, 500);
-    globalThis.document = /** @type {any} */ (narrow.document);
-    const mainNarrow = await import(
-      pathToFileURL(abs("portfolio/js/main.js")).href + bust + "&n=1"
-    );
-    const narrowInit = mainNarrow.initPortfolioStubs();
-    const narrowState = narrowInit.camera.getState();
-    assert.ok(
-      narrowState.scale < 1 ||
-        narrowState.translateX !== 0 ||
-        narrowState.translateY !== 0,
-      "narrow start must reach fit (scale/translate changed)"
-    );
-    assert.ok(narrowState.scale > 0);
-    assert.equal(narrowInit.layoutId, "41:1416");
-
-    const afterPan = narrowInit.camera.panBy(20, -10);
-    assert.ok(
-      afterPan.translateX !== narrowState.translateX ||
-        afterPan.translateY !== narrowState.translateY
-    );
-    const afterZoom = narrowInit.camera.zoomBy(0.1, "viewportCenter");
-    assert.ok(afterZoom.scale > afterPan.scale);
-
-    // Mobile document branch (<768): no canvas layout; sheet mounted
-    const mobile = createShell(360, 800);
-    globalThis.document = /** @type {any} */ (mobile.document);
-    const mainMobile = await import(
-      pathToFileURL(abs("portfolio/js/main.js")).href + bust + "&m=1"
-    );
-    const mobileInit = mainMobile.initPortfolioStubs();
-    assert.equal(mobileInit.mode, "mobile");
-    assert.equal(mobileInit.layoutId, null);
-    assert.equal(mobileInit.scene, null);
-    assert.ok(mobile.viewport.classList.contains("portfolio--mobile"));
-    assert.ok(mobile.mobile.querySelector(".ds-profile--mobile"));
-    assert.equal(mobile.mobile.querySelectorAll(".ds-card").length, 3);
-  });
-
-  it("no-mock entry: Vite serves portfolio/main.html (portfolio:dev)", async () => {
-    const { baseUrl, stop } = await startViteDev();
-    try {
-      const html = await httpGet(`${baseUrl}/portfolio/main.html`);
-      assert.equal(html.status, 200);
-      assert.match(html.body, /class=["'][^"']*\bviewport\b/);
-      assert.match(html.body, /id=["']world["']/);
-      assert.match(html.body, /js\/main\.js/);
-
-      const mainJs = await httpGet(`${baseUrl}/portfolio/js/main.js`);
-      assert.equal(mainJs.status, 200);
-      assert.match(mainJs.body, /initPortfolioStubs|mountScene/);
-
-      const tokens = await httpGet(`${baseUrl}/ds-showcase/css/tokens.css`);
-      assert.equal(tokens.status, 200);
-    } finally {
-      await stop();
+    if (previousWindow === undefined) {
+      // @ts-ignore
+      delete globalThis.window;
+    } else {
+      globalThis.window = previousWindow;
     }
+  });
+
+  it("width 360: ProfileMobile, 2 contacts, 3 distinct cards, FAB scroll", async () => {
+    const bust = `?t=${Date.now()}&mobile=1`;
+    const shell = createShell(360, 800);
+    globalThis.document = /** @type {any} */ (shell.document);
+    globalThis.window = /** @type {any} */ (shell.windowObj);
+
+    const main = await import(
+      pathToFileURL(abs("portfolio/js/main.js")).href + bust
+    );
+    const init = main.initPortfolioStubs();
+
+    assert.equal(init.mode, "mobile");
+    assert.equal(init.layoutId, null);
+    assert.equal(init.scene, null);
+    assert.ok(shell.viewport.classList.contains("portfolio--mobile"));
+    assert.ok(shell.mobile.classList.contains("portfolio-mobile"));
+    assert.equal(shell.mobile.hidden, false);
+
+    const profile = shell.mobile.querySelector(".ds-profile--mobile");
+    assert.ok(profile, "ProfileMobile present");
+    const avatarBox = shell.mobile.querySelector(".ds-avatar");
+    assert.ok(avatarBox);
+    const avatar = avatarBox.querySelector("img");
+    assert.ok(avatar);
+    assert.equal(avatar.width, 48);
+
+    const skills = shell.mobile.querySelector(".ds-sidebar__skills");
+    assert.ok(skills);
+    const buttons = skills.querySelectorAll(".ds-button");
+    assert.equal(buttons.length, 2);
+    assert.ok(buttons[0].classList.contains("ds-button--primary"));
+    const labels = buttons.map(
+      (b) => b.querySelector(".ds-button__label")?.textContent
+    );
+    assert.deepEqual(labels, ["Написать", "Резюме"]);
+    assert.equal(shell.mobile.querySelector(".ds-sidebar__copyright"), null);
+
+    const cards = shell.mobile.querySelectorAll(".ds-card");
+    assert.equal(cards.length, 3);
+    const titles = cards.map(
+      (c) => c.querySelector(".ds-card__title")?.textContent
+    );
+    assert.deepEqual(titles, ["InnoDragon", "Innophish", "CityBike"]);
+    const imgs = cards.map((c) => {
+      const media = c.querySelector(".ds-card__media");
+      return media?.querySelector("img")?.src || "";
+    });
+    assert.ok(imgs[0].includes("img-1"));
+    assert.ok(imgs[1].includes("img-2"));
+    assert.ok(imgs[2].includes("card-citybike"));
+    assert.notEqual(imgs[0], imgs[1]);
+    assert.notEqual(imgs[1], imgs[2]);
+
+    assert.equal(cards[0].dataset.cardAction, "modal");
+    assert.equal(cards[1].dataset.cardAction, "modal");
+    assert.ok(String(cards[2].dataset.cardUrl || "").includes("behance.net"));
+
+    const fab = shell.mobile.querySelector(".ds-fab");
+    assert.ok(fab);
+    assert.equal(fab.classList.contains("is-visible"), false);
+
+    shell.viewport.scrollTop = 80;
+    shell.viewport.dispatchEvent({ type: "scroll", target: shell.viewport });
+    assert.equal(fab.classList.contains("is-visible"), true);
+
+    fab.dispatchEvent({ type: "click", preventDefault() {} });
+    assert.equal(shell.viewport.scrollTop, 0);
+  });
+
+  it("width ≥768: mobile sheet gone / canvas scene present", async () => {
+    const bust = `?t=${Date.now()}&desktop=1`;
+    const shell = createShell(1024, 609);
+    globalThis.document = /** @type {any} */ (shell.document);
+    globalThis.window = /** @type {any} */ (shell.windowObj);
+
+    const main = await import(
+      pathToFileURL(abs("portfolio/js/main.js")).href + bust
+    );
+    const init = main.initPortfolioStubs();
+
+    assert.equal(init.mode, "canvas");
+    assert.equal(init.layoutId, "51:4107");
+    assert.ok(init.scene);
+    assert.ok(init.camera);
+    assert.equal(shell.viewport.classList.contains("portfolio--mobile"), false);
+    assert.equal(shell.mobile.hidden, true);
+    assert.equal(shell.mobile.querySelector(".ds-card"), null);
+    assert.ok(shell.world.children.length >= 4);
+  });
+
+  it("resize 360→1024 tears down mobile and mounts canvas", async () => {
+    const bust = `?t=${Date.now()}&resize=1`;
+    const shell = createShell(360, 800);
+    globalThis.document = /** @type {any} */ (shell.document);
+    globalThis.window = /** @type {any} */ (shell.windowObj);
+
+    const main = await import(
+      pathToFileURL(abs("portfolio/js/main.js")).href + bust
+    );
+    const init = main.initPortfolioStubs();
+    assert.equal(init.mode, "mobile");
+    assert.ok(shell.mobile.querySelector(".ds-card"));
+
+    shell.viewport.clientWidth = 1024;
+    shell.viewport.clientHeight = 609;
+    shell.windowObj.dispatch("resize");
+
+    // Re-read via a fresh init return is stale; inspect DOM after resize handler.
+    assert.equal(shell.viewport.classList.contains("portfolio--mobile"), false);
+    assert.equal(shell.mobile.hidden, true);
+    assert.equal(shell.mobile.querySelector(".ds-card"), null);
+    assert.ok(shell.world.children.length >= 4);
   });
 });

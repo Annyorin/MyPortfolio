@@ -22,6 +22,7 @@ const INDEX_PATH = path.join(SHOWCASE_ROOT, "index.html");
 /** Canonical ColorToken hex from TZ §3.1 / architecture §4.2 (case-insensitive). */
 const COLOR_TOKENS = {
   "--color-primary": "#64b3f9",
+  "--color-primary-hover": "#79befc",
   "--color-secondary": "#ededed",
   "--color-white": "#fefefe",
   "--color-black": "#232323",
@@ -42,6 +43,9 @@ const TYPE_TOKENS = {
   "--type-text-size": "16px",
   "--type-text-line": "20px",
   "--type-text-weight": "400",
+  "--type-text-2-size": "14px",
+  "--type-text-2-line": "18px",
+  "--type-text-2-weight": "400",
   "--type-caption-size": "12px",
   "--type-caption-line": "16px",
   "--type-caption-weight": "500",

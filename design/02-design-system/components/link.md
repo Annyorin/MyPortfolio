@@ -2,8 +2,8 @@
 type: ds-component
 env: 02-design-system
 status: synced
-figma-node: "41:11654"
-updated: 2026-09-06
+figma-node: "40:1199"
+updated: 2026-09-08
 ---
 
 # Link
@@ -17,8 +17,8 @@ updated: 2026-09-06
 ## Варианты
 | Вариант | node-id | Когда |
 |---------|---------|-------|
-| Property 1=default | `41:11655` | покой |
-| Property 1=hover | `41:11657` | наведение |
+| Property 1=default | `40:1198` | покой |
+| Property 1=hover | `40:1197` | наведение |
 
 ## Состояния
 default / hover
@@ -33,4 +33,4 @@ default / hover
 Инлайн-навигация и текстовые переходы.
 
 ## Чем не является
-Не Hover (кнопка «Behance»+arrow), не Chip.
+Не CursorHover (кнопка «Behance»+arrow), не Chip, не Button.

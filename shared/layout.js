@@ -66,7 +66,34 @@ const SIDEBAR_CONTENT_KEYS = [
   "contact.behance",
 ];
 
-const CARD_CONTENT_KEYS = ["card.title", "card.meta", "card.description"];
+const CARD_CONTENT_KEYS = [
+  "card.title",
+  "card.meta",
+  "card.description",
+  "card.url",
+  "card.action",
+];
+
+const CARD_A_CONTENT_KEYS = [
+  "card.a.title",
+  "card.a.meta",
+  "card.a.description",
+  "card.a.action",
+];
+
+const CARD_B_CONTENT_KEYS = [
+  "card.b.title",
+  "card.b.meta",
+  "card.b.description",
+  "card.b.action",
+];
+
+const CARD_C_CONTENT_KEYS = [
+  "card.c.title",
+  "card.c.meta",
+  "card.c.description",
+  "card.c.url",
+];
 
 /**
  * Figma 41:1416 «About me» (120:11877), origin = cluster top-left.
@@ -158,7 +185,7 @@ function buildNodes(geom) {
       width: 310,
       height: 310,
       zIndex: 2,
-      contentKeys: CARD_CONTENT_KEYS,
+      contentKeys: CARD_A_CONTENT_KEYS,
       assetKeys: ["card.image.a"],
     }),
     node({
@@ -169,7 +196,7 @@ function buildNodes(geom) {
       width: 310,
       height: 310,
       zIndex: 2,
-      contentKeys: CARD_CONTENT_KEYS,
+      contentKeys: CARD_B_CONTENT_KEYS,
       assetKeys: ["card.image.b"],
     }),
     node({
@@ -180,7 +207,7 @@ function buildNodes(geom) {
       width: 310,
       height: 310,
       zIndex: 2,
-      contentKeys: CARD_CONTENT_KEYS,
+      contentKeys: CARD_C_CONTENT_KEYS,
       assetKeys: ["card.image.c"],
     }),
     node({
@@ -246,6 +273,22 @@ export const STAGE_CHROME = Object.freeze({
   tapperWidth: 40,
 });
 
+/** Viewport width below this uses document/mobile portfolio (Figma Портфолио.360). */
+export const MOBILE_BREAKPOINT = 768;
+
+/**
+ * True when viewport width is below the mobile document breakpoint.
+ *
+ * @param {{ width?: number, height?: number, clientWidth?: number, clientHeight?: number }|null|undefined} viewport
+ * @returns {boolean}
+ */
+export function isMobileViewport(viewport) {
+  const width = Number(
+    viewport && (viewport.width ?? viewport.clientWidth)
+  );
+  return Number.isFinite(width) && width > 0 && width < MOBILE_BREAKPOINT;
+}
+
 /**
  * Interactive right stage (viewport minus sidebar + edge/tapper insets).
  * Cards+about are scaled and centered here for viewports ≥1024 wide.
@@ -271,12 +314,16 @@ export function interactiveStageRect(viewport) {
 
 /**
  * Picks artboard layout by viewport size.
- * ≥1024 wide → 51:4107 card arrangement; narrower → 41:1416 + fit-to-content.
+ * &lt;768 → null (document/mobile mode, no camera canvas);
+ * ≥1024 wide → 51:4107; 768–1023 → 41:1416 + fit-to-content.
  *
  * @param {{ width?: number, height?: number, clientWidth?: number, clientHeight?: number }|null|undefined} viewport
- * @returns {SceneLayout}
+ * @returns {SceneLayout|null}
  */
 export function selectSceneLayout(viewport) {
+  if (isMobileViewport(viewport)) {
+    return null;
+  }
   const width = Number(
     viewport && (viewport.width ?? viewport.clientWidth)
   );

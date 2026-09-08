@@ -446,17 +446,17 @@ describe("storybook DS inventory", () => {
     assert.ok(nameEl, "Sidebar profile name node required");
     assert.equal(nameEl.textContent, contentMap["profile.name"]);
 
-    const contacts = el.querySelector(".ds-sidebar__contacts");
-    assert.ok(contacts, "Sidebar contacts required");
-    const contactTexts = (contacts.children || []).map(
-      (c) => c.textContent || ""
+    const actions = el.querySelector(".ds-sidebar__skills");
+    assert.ok(actions, "Sidebar actions required");
+    const contactTexts = [...actions.querySelectorAll(".ds-button")].map(
+      (c) => (c.textContent || "").trim()
     );
     assert.ok(
       contactTexts.includes(contentMap["contact.cv"]),
       "Sidebar must include contact.cv"
     );
     assert.ok(el.querySelector(".ds-sidebar__bio"), "Sidebar bio required");
-    assert.ok(el.querySelector(".ds-sidebar__skills"), "Sidebar skills required");
+    assert.ok(el.querySelector(".ds-sidebar__copyright"), "Sidebar copyright required");
   });
 
   it("no duplicate string dictionary inside stories; only shared import", () => {

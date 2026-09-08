@@ -173,6 +173,11 @@ describe("portfolio / Storybook entrypoints (stubs)", () => {
   it("portfolio.css defines .viewport overflow and .world transform-origin without DS tokens", () => {
     const css = read("portfolio/css/portfolio.css");
     assert.match(css, /\.viewport\s*\{[^}]*overflow:\s*hidden/s);
+    assert.match(css, /cursor-figma\.png/);
+    assert.match(
+      css,
+      /\.scene-chrome(?:\.ds-sidebar|\[data-node-kind=["']sidebar["']\])[^}]*cursor:\s*auto/s
+    );
     assert.match(css, /\.camera-pan\s*\{[^}]*transform-origin:\s*0\s+0/s);
     assert.match(css, /\.world\s*\{[^}]*position:\s*relative/s);
     assert.match(css, /\.world\s*\{[^}]*transform-origin:\s*0\s+0/s);

@@ -6,18 +6,12 @@
 import { computeContentAABB, FIXED_CHROME_KINDS } from "../../shared/layout.js";
 import { fixHangingPrepositions } from "../../shared/typography.js";
 
-const CHIP_KEYS = [
-  "chip.b2b",
-  "chip.b2c",
-  "chip.design_system",
-  "chip.ai_prototyping",
-];
-
-const CONTACT_KEYS = [
-  "contact.cv",
-  "contact.telegram",
-  "contact.linkedin",
-  "contact.behance",
+/** Sidebar action buttons (Figma Ui kit Sidebar 158:11468). */
+const CONTACT_ACTIONS = [
+  { key: "contact.telegram", variant: "primary", icon: "icons.telegram" },
+  { key: "contact.cv", variant: "secondary", icon: "icons.cv" },
+  { key: "contact.behance", variant: "secondary", icon: "icons.behance" },
+  { key: "contact.mail", variant: "secondary", icon: "icons.mail" },
 ];
 
 const BG_TILE_WIDTH = 560;
@@ -101,16 +95,16 @@ function buildSidebar(content, resolveAsset) {
   avatar.className = "ds-avatar ds-placeholder";
   avatar.setAttribute("aria-hidden", "true");
   avatar.setAttribute("data-media-slot-box", "avatar");
-  avatar.style.width = "48px";
-  avatar.style.height = "48px";
-  avatar.style.minWidth = "48px";
-  avatar.style.minHeight = "48px";
+  avatar.style.width = "90px";
+  avatar.style.height = "90px";
+  avatar.style.minWidth = "90px";
+  avatar.style.minHeight = "90px";
   avatar.style.aspectRatio = "1 / 1";
   const avatarImg = document.createElement("img");
   avatarImg.src = resolveAsset("avatar");
   avatarImg.alt = "";
-  avatarImg.width = 48;
-  avatarImg.height = 48;
+  avatarImg.width = 90;
+  avatarImg.height = 90;
   avatarImg.setAttribute("data-media-slot", "avatar");
   avatar.appendChild(avatarImg);
 
@@ -131,57 +125,116 @@ function buildSidebar(content, resolveAsset) {
   bio.className = "ds-sidebar__bio";
   bio.textContent = textOf(content["sidebar.bio"]);
 
-  const skills = document.createElement("div");
-  skills.className = "ds-sidebar__skills";
-  const variants =
-    content && typeof content.chipVariants === "object" && content.chipVariants
-      ? content.chipVariants
-      : {};
-  for (const key of CHIP_KEYS) {
-    const chip = document.createElement("span");
-    const variant = variants[key] === "active" ? "active" : "default";
-    chip.className = `ds-chip ds-chip--${variant}`;
-    chip.textContent = textOf(content[key]);
-    skills.appendChild(chip);
-  }
-  inform.append(bio, skills);
-  designer.append(profile, inform);
-
-  const contacts = document.createElement("nav");
-  contacts.className = "ds-sidebar__contacts";
-  contacts.setAttribute("aria-label", "Contacts");
-  for (const key of CONTACT_KEYS) {
-    const link = document.createElement("a");
-    link.className = "ds-link";
+  const actions = document.createElement("div");
+  actions.className = "ds-sidebar__skills";
+  actions.setAttribute("aria-label", "Contacts");
+  for (const action of CONTACT_ACTIONS) {
+    const btn = document.createElement("a");
+    btn.className = `ds-button ds-button--${action.variant}`;
     const urls = content.contactUrls;
     const href =
-      urls && typeof urls[key] === "string" && urls[key] ? urls[key] : "#";
-    link.href = href;
-    link.tabIndex = 0;
-    link.textContent = textOf(content[key]);
-    if (href !== "#") {
-      link.setAttribute("target", "_blank");
-      link.setAttribute("rel", "noopener noreferrer");
-      if (key === "contact.cv") {
-        link.setAttribute("download", "CV-Yasinskaya.pdf");
+      urls && typeof urls[action.key] === "string" && urls[action.key]
+        ? urls[action.key]
+        : "#";
+    btn.href = href;
+    btn.tabIndex = 0;
+    if (href !== "#" && !href.startsWith("mailto:")) {
+      btn.setAttribute("target", "_blank");
+      btn.setAttribute("rel", "noopener noreferrer");
+      if (action.key === "contact.cv") {
+        btn.setAttribute("download", "CV-Yasinskaya.pdf");
       }
     }
-    contacts.appendChild(link);
+    const icon = document.createElement("span");
+    icon.className = "ds-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.dataset.icon = action.icon.replace(/^icons\./, "");
+    const iconImg = document.createElement("img");
+    iconImg.src = resolveAsset(action.icon);
+    iconImg.alt = "";
+    iconImg.width = 20;
+    iconImg.height = 20;
+    icon.appendChild(iconImg);
+    const label = document.createElement("span");
+    label.className = "ds-button__label";
+    label.textContent = textOf(content[action.key]);
+    btn.append(icon, label);
+    actions.appendChild(btn);
   }
+  inform.append(bio, actions);
+  designer.append(profile, inform);
 
-  aside.append(designer, contacts);
+  const copyright = document.createElement("p");
+  copyright.className = "ds-sidebar__copyright";
+  copyright.textContent = textOf(content["sidebar.copyright"]);
+
+  aside.append(designer, copyright);
   return aside;
+}
+
+/**
+ * @param {string} [nodeId]
+ * @returns {"card.a"|"card.b"|"card.c"|"card"}
+ */
+function cardKeyPrefix(nodeId) {
+  if (nodeId === "cardA") return "card.a";
+  if (nodeId === "cardB") return "card.b";
+  if (nodeId === "cardC") return "card.c";
+  return "card";
+}
+
+/**
+ * @param {object} content
+ * @param {string} prefix
+ * @param {string} field
+ * @returns {string}
+ */
+function cardField(content, prefix, field) {
+  const key = `${prefix}.${field}`;
+  if (content && Object.prototype.hasOwnProperty.call(content, key)) {
+    const value = content[key];
+    return typeof value === "string" ? value : "";
+  }
+  // Do not inherit shared card.url / card.action onto per-card prefixes.
+  if (field === "url" || field === "action") {
+    return "";
+  }
+  if (prefix !== "card") {
+    const fallback = content?.[`card.${field}`];
+    return typeof fallback === "string" ? fallback : "";
+  }
+  return "";
 }
 
 /**
  * @param {object} content
  * @param {(key: string) => string} resolveAsset
  * @param {string} [imageAssetKey="card.image"]
+ * @param {string} [nodeId]
  * @returns {HTMLElement}
  */
-function buildCard(content, resolveAsset, imageAssetKey = "card.image") {
+export function buildCard(content, resolveAsset, imageAssetKey = "card.image", nodeId) {
   const article = document.createElement("article");
   article.className = "ds-card ds-card--default";
+  if (nodeId) {
+    article.dataset.cardId = nodeId;
+  }
+
+  const prefix = cardKeyPrefix(nodeId);
+  const title = cardField(content, prefix, "title");
+  const meta = cardField(content, prefix, "meta");
+  const description = cardField(content, prefix, "description");
+  const cardUrl = cardField(content, prefix, "url").trim();
+  const action = cardField(content, prefix, "action").trim() || (cardUrl ? "link" : "");
+
+  if (cardUrl) {
+    article.dataset.cardUrl = cardUrl;
+    article.setAttribute("role", "link");
+    article.tabIndex = 0;
+  } else if (action === "modal") {
+    article.dataset.cardAction = "modal";
+    article.tabIndex = 0;
+  }
 
   const media = document.createElement("div");
   media.className = "ds-card__media ds-placeholder";
@@ -192,7 +245,7 @@ function buildCard(content, resolveAsset, imageAssetKey = "card.image") {
   media.style.aspectRatio = "310 / 180";
   const img = document.createElement("img");
   img.src = resolveAsset(imageAssetKey);
-  img.alt = `${textOf(content["card.title"])} project cover`;
+  img.alt = `${textOf(title)} project cover`;
   img.width = 310;
   img.height = 180;
   img.setAttribute("data-media-slot", "card");
@@ -202,17 +255,17 @@ function buildCard(content, resolveAsset, imageAssetKey = "card.image") {
   body.className = "ds-card__body";
   const header = document.createElement("div");
   header.className = "ds-card__header";
-  const title = document.createElement("h3");
-  title.className = "ds-card__title";
-  title.textContent = textOf(content["card.title"]);
-  const meta = document.createElement("p");
-  meta.className = "ds-card__meta";
-  meta.textContent = textOf(content["card.meta"]);
-  header.append(title, meta);
-  const description = document.createElement("p");
-  description.className = "ds-card__description";
-  description.textContent = textOf(content["card.description"]);
-  body.append(header, description);
+  const titleEl = document.createElement("h3");
+  titleEl.className = "ds-card__title";
+  titleEl.textContent = textOf(title);
+  const metaEl = document.createElement("p");
+  metaEl.className = "ds-card__meta";
+  metaEl.textContent = textOf(meta);
+  header.append(titleEl, metaEl);
+  const descriptionEl = document.createElement("p");
+  descriptionEl.className = "ds-card__description";
+  descriptionEl.textContent = textOf(description);
+  body.append(header, descriptionEl);
 
   article.append(media, body);
   return article;
@@ -429,7 +482,8 @@ function buildNodeElement(node, content, resolveAsset, opts = {}) {
         resolveAsset,
         Array.isArray(node.assetKeys) && node.assetKeys[0]
           ? node.assetKeys[0]
-          : "card.image"
+          : "card.image",
+        node.id
       );
       break;
     case "about":

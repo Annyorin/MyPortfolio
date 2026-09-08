@@ -18,8 +18,8 @@ export const Default = {
     const img = document.createElement("img");
     img.src = resolveAsset("avatar");
     img.alt = `Avatar of ${contentMap["profile.name"]}`;
-    img.width = 48;
-    img.height = 48;
+    img.width = 90;
+    img.height = 90;
     el.appendChild(img);
     return el;
   },

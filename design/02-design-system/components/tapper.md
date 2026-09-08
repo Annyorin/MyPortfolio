@@ -2,8 +2,8 @@
 type: ds-component
 env: 02-design-system
 status: synced
-figma-node: "41:11674"
-updated: 2026-09-06
+figma-node: "41:1311"
+updated: 2026-09-08
 ---
 
 # Tapper
@@ -29,7 +29,7 @@ default
 | text | H2 / Text |
 
 ## Правила применения
-CTA без стрелки. Со стрелкой — Hover.
+CTA без стрелки / без social-icon. Со стрелкой Behance — CursorHover. С icon+label — **Button**. FAB — **FloatingAction**.
 
 ## Чем не является
-Не Hover, не Chip, не Link.
+Не CursorHover, не Chip, не Link, не Button, не FloatingAction.
