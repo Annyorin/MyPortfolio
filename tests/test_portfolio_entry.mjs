@@ -73,6 +73,16 @@ describe("portfolio / Storybook entrypoints (stubs)", () => {
       /<script\s+type=["']module["']\s+src=["']js\/main\.js["']/,
       "module main.js required"
     );
+    assert.match(
+      html,
+      /Аня Ясинская — Продуктовый дизайнер · UX\/UI дизайнер/,
+      "document title required"
+    );
+    assert.match(
+      html,
+      /rel=["']icon["'][^>]*avatar\.png/,
+      "favicon Avatar90 required"
+    );
     const indexHtml = read("portfolio/index.html");
     assert.match(indexHtml, /main\.html/, "index.html redirects to main.html");
   });

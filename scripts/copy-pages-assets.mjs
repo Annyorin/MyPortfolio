@@ -43,7 +43,9 @@ const indexHtml = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Портфолио</title>
+  <title>Аня Ясинская — Продуктовый дизайнер · UX/UI дизайнер</title>
+  <link rel="icon" href="ds-showcase/assets/images/avatar.png" type="image/png" sizes="90x90">
+  <link rel="apple-touch-icon" href="ds-showcase/assets/images/avatar.png">
   <link rel="canonical" href="portfolio/main.html">
   <meta http-equiv="refresh" content="0; url=portfolio/main.html">
   <script>location.replace("portfolio/main.html" + location.search + location.hash);</script>
