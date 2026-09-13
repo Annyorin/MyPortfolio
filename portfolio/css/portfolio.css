@@ -94,6 +94,7 @@ body {
   transform-origin: center center;
   transition: transform 220ms ease;
   cursor: pointer;
+  z-index: 30;
 }
 
 .scene-about-cluster:hover,
@@ -102,15 +103,43 @@ body {
   transform: scale(1.03);
 }
 
+.scene-about-cluster.is-about-open,
+.scene-about-cluster.is-about-expanding {
+  transform: none;
+  cursor: zoom-out;
+  z-index: 45;
+}
+
+.scene-about-cluster.is-about-expanding,
+.scene-about-cluster.is-about-expanding .scene-about__item {
+  transition:
+    left 720ms cubic-bezier(0.32, 0.72, 0, 1),
+    top 720ms cubic-bezier(0.32, 0.72, 0, 1),
+    width 720ms cubic-bezier(0.32, 0.72, 0, 1),
+    height 720ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 720ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.scene-node[data-node-kind="card"].is-about-dimmed {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 480ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.scene-node[data-node-kind="card"]:not(.is-about-dimmed) {
+  transition: opacity 480ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
 .scene-about__item {
   overflow: visible;
+  will-change: left, top, width, height, transform;
 }
 
 .scene-about__me,
 .scene-about__macbook {
   display: block;
   overflow: visible;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .scene-about__me > img,
@@ -124,7 +153,7 @@ body {
 }
 
 .scene-about-cluster .ds-stiker {
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .scene-bg {
@@ -142,7 +171,6 @@ body {
 
 /* Media slots: keep box geometry before load / on broken src (UC-02 A1).
    Placeholder rules live here because portfolio does not load showcase.css. */
-.ds-card__media.ds-placeholder,
 .ds-avatar.ds-placeholder,
 .scene-comp.ds-placeholder,
 .ds-media-slot--broken {
@@ -153,9 +181,13 @@ body {
   background-color: #ededed;
 }
 
+/* Card Photo locked 172 (Figma 51:4107). Do not override height. */
 .ds-card__media.ds-placeholder {
-  min-height: 180px;
-  aspect-ratio: 310 / 180;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #ededed;
 }
 
 .ds-avatar.ds-placeholder {
@@ -371,4 +403,67 @@ body {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+}
+
+/* —— Case open: soft crossfade + light blur (duration = PAGE_CROSSFADE_MS) —— */
+body.is-page-crossfading {
+  overflow: hidden;
+}
+
+.portfolio-page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  background-color: #fefefe;
+  opacity: 0;
+  transition: opacity 240ms cubic-bezier(0.33, 0.05, 0.2, 1);
+}
+
+.portfolio-page-transition.is-active {
+  opacity: 1;
+}
+
+body.is-page-crossfading .viewport,
+body.is-page-crossfading .portfolio-mobile-host {
+  filter: blur(4px);
+  opacity: 0.55;
+  transition:
+    filter 240ms cubic-bezier(0.33, 0.05, 0.2, 1),
+    opacity 240ms cubic-bezier(0.33, 0.05, 0.2, 1);
+}
+
+html.is-page-enter-crossfade {
+  background-color: #fefefe;
+}
+
+html.is-page-enter-crossfade body {
+  animation: page-crossfade-in 240ms cubic-bezier(0.33, 0.05, 0.2, 1) both;
+}
+
+@keyframes page-crossfade-in {
+  from {
+    opacity: 0.72;
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.is-page-enter-crossfade body {
+    animation: none;
+  }
+
+  .portfolio-page-transition,
+  body.is-page-crossfading .viewport,
+  body.is-page-crossfading .portfolio-mobile-host,
+  .scene-about-cluster.is-about-expanding,
+  .scene-about-cluster.is-about-expanding .scene-about__item,
+  .scene-node[data-node-kind="card"].is-about-dimmed,
+  .scene-node[data-node-kind="card"]:not(.is-about-dimmed) {
+    transition: none !important;
+  }
 }

@@ -14,6 +14,15 @@ describe("russian hanging prepositions", () => {
     assert.equal(fixHangingPrepositions(fixed), fixed);
   });
 
+  it("does not glue hanging words across intentional newlines", () => {
+    const raw = "в области ИБ и устойчивости\nк атакам социальной инженерии.";
+    const fixed = fixHangingPrepositions(raw);
+    assert.equal(
+      fixed,
+      "в\u00A0области ИБ и\u00A0устойчивости\nк\u00A0атакам социальной инженерии."
+    );
+  });
+
   it("fixes sidebar.bio from contentMap", async () => {
     const { contentMap } = await import("../shared/content.js");
     const bio = contentMap["sidebar.bio"];

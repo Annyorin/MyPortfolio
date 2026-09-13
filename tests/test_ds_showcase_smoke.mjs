@@ -41,9 +41,9 @@ const DEMO_CONTENT_LITERALS = [
   "Почта",
   "Link",
   "Обо мне",
-  "CityBike",
-  "· 2024",
-  "Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.",
+  "Title",
+  "· 2024-2026",
+  "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.",
 ];
 
 /**
@@ -184,7 +184,7 @@ describe("TC-E2E-01 no-mock smoke entrypoint", () => {
       const iconsSection = /aria-labelledby=["']section-icons["'][\s\S]*?<\/section>/i.exec(html);
       assert.ok(iconsSection, "Icons section");
       const iconSlots = iconsSection[0].match(/class="ds-icon"/g) || [];
-      assert.equal(iconSlots.length, 12, "Icons×12 (chrome×6 + social×5 + CursorFigma)");
+      assert.equal(iconSlots.length, 14, "Icons×14 (chrome×8 + social×5 + CursorFigma)");
 
       const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
       assert.ok(mediaSection, "Media section");

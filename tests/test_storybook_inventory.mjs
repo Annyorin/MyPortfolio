@@ -28,6 +28,15 @@ const STORY_GROUPS = [
   "Hover",
   "Avatar",
   "Profile",
+  "ProfileMobile",
+  "Button",
+  "Header",
+  "Segments",
+  "TitleSidebar",
+  "SideNav",
+  "MenuMobile",
+  "FloatingAction",
+  "CursorFigma",
   "Icons",
   "Media",
 ];
@@ -44,6 +53,13 @@ const CONTENT_STORY_GROUPS = [
   "Hover",
   "Avatar",
   "Profile",
+  "ProfileMobile",
+  "Button",
+  "Header",
+  "Segments",
+  "TitleSidebar",
+  "SideNav",
+  "MenuMobile",
 ];
 
 /**

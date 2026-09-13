@@ -3,7 +3,7 @@ type: ds-component
 env: 02-design-system
 status: synced
 figma-node: "158:11468"
-updated: 2026-09-08
+updated: 2026-09-13
 ---
 
 # Sidebar
@@ -33,4 +33,4 @@ default (+ внутренняя тень Shadow по ТЗ)
 Композиция атомов; не дублировать Card.
 
 ## Чем не является
-Не Card.
+Не Card. Не **SideBar** TOC кейса (`227:16241`, файл `side-bar.md`).

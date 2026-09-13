@@ -4,7 +4,7 @@
  * TC-E2E-01: world has 3 cards, about, tapper, bg; chrome has sidebar
  * TC-E2E-02: slot geometry Sidebar stretch, Card 310×310, Tapper 40×104 portrait
  * TC-E2E-03: profile.role and card.a.title match contentMap
- * TC-E2E-04: three Cards — InnoDragon / Innophish / CityBike (Behance)
+ * TC-E2E-04: three Cards — InnoDragon / InnoPhish / CityBike (Behance)
  * TC-UNIT-01: DOM child order follows ascending zIndex
  * TC-UNIT-02: contacts use href="#" or button without http URL
  */
@@ -403,6 +403,7 @@ describe("portfolio scene renderer", () => {
     assert.ok(nodesById.sidebar.className.includes("scene-chrome"));
     assert.ok(nodesById.cardA.className.includes("ds-card"));
     assert.ok(nodesById.about.className.includes("scene-about-cluster"));
+    assert.ok(nodesById.about.dataset.aboutCollapsed);
     assert.ok(nodesById.tapper.className.includes("ds-tapper"));
     assert.ok(nodesById.tapper.className.includes("ds-tapper--portrait"));
     assert.ok(nodesById.tapper.className.includes("scene-chrome"));
@@ -472,12 +473,12 @@ describe("portfolio scene renderer", () => {
         id: "cardA",
         title: "InnoDragon",
         file: "img-1.png",
-        url: "",
-        action: "modal",
+        url: "case-dragon.html",
+        action: "",
       },
       {
         id: "cardB",
-        title: "Innophish",
+        title: "InnoPhish",
         file: "img-2.png",
         url: "",
         action: "modal",
@@ -503,8 +504,21 @@ describe("portfolio scene renderer", () => {
       const img = card.querySelector(".ds-card__media img");
       assert.ok(img);
       assert.match(String(img.src), new RegExp(row.file.replace(".", "\\.")));
-      assert.equal(Number(img.height), 180);
+      assert.equal(Number(img.width), 308);
+      assert.equal(Number(img.height), 172);
+      assert.equal(
+        card.querySelector(".ds-card__chip")?.textContent,
+        contentMod.contentMap[
+          `card.${row.id === "cardA" ? "a" : row.id === "cardB" ? "b" : "c"}.chip`
+        ]
+      );
     }
+    const phishDesc = nodesById.cardB.querySelector(".ds-card__description");
+    assert.ok(phishDesc?.classList.contains("ds-card__description--fixed-lines"));
+    assert.equal(
+      String(phishDesc?.textContent).split("\n").join(" "),
+      "Программа для\u00A0повышения осведомлённости сотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления их устойчивости к\u00A0кибератакам, основанным на\u00A0социальной инженерии."
+    );
   });
 
   it("TC-UNIT-01: world DOM children order follows ascending zIndex (canvas only)", () => {

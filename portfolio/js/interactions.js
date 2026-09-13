@@ -3,6 +3,13 @@
  * Space-pan click suppression, and long-press card drag (architecture InteractiveHits).
  */
 
+import {
+  isInternalPortfolioUrl,
+  navigateWithExpand,
+  prefetchCardIfInternal,
+} from "./pageTransition.js";
+import { getAboutExpandController } from "./aboutExpand.js";
+
 const SUPPRESSIBLE_SELECTOR = [
   ".ds-card",
   "[data-node-kind='card']",
@@ -126,7 +133,8 @@ function syncSuppress(inputMode) {
 
 /**
  * Activates a portfolio card: modal → no-op (a11y preventDefault);
- * URL → open in a new tab. Shared by canvas interactions and mobile sheet.
+ * internal URL → expand transition then same-window navigate;
+ * external URL → open in a new tab. Shared by canvas interactions and mobile sheet.
  *
  * @param {HTMLElement|null|undefined} card
  * @param {MouseEvent|KeyboardEvent|Event|null|undefined} [event]
@@ -136,7 +144,22 @@ export function activateCardHit(card, event) {
   if (!card) {
     return false;
   }
-  if (card.classList?.contains?.("scene-about-cluster")) {
+  if (
+    card.classList?.contains?.("scene-about-cluster") ||
+    card.dataset?.nodeKind === "about"
+  ) {
+    if (event && event.type === "keydown") {
+      const key = /** @type {KeyboardEvent} */ (event).key;
+      if (key !== "Enter" && key !== " ") {
+        return false;
+      }
+      event.preventDefault?.();
+    }
+    const about = getAboutExpandController();
+    if (about) {
+      about.toggle();
+      return true;
+    }
     return false;
   }
   if (card.dataset?.cardAction === "modal") {
@@ -161,7 +184,14 @@ export function activateCardHit(card, event) {
     event.preventDefault?.();
   }
   try {
-    if (typeof window !== "undefined" && typeof window.open === "function") {
+    if (typeof window === "undefined") {
+      return true;
+    }
+    if (isInternalPortfolioUrl(url)) {
+      navigateWithExpand(url, card);
+      return true;
+    }
+    if (typeof window.open === "function") {
       window.open(url, "_blank", "noopener,noreferrer");
     }
   } catch {
@@ -393,6 +423,13 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     if (!isInsideRoot(target, rootEl)) {
       return;
     }
+    const about = /** @type {HTMLElement|null} */ (
+      target.closest(".scene-about-cluster, [data-node-kind='about']")
+    );
+    if (about && isInsideRoot(about, rootEl)) {
+      activateCardHit(about, event);
+      return;
+    }
     const card = /** @type {HTMLElement|null} */ (
       target.closest(".ds-card, [data-node-kind='card']")
     );
@@ -400,6 +437,21 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
       return;
     }
     activateCardHit(card, event);
+  }
+
+  /**
+   * Escape closes expanded About me.
+   * @param {KeyboardEvent} event
+   */
+  function onAboutEscape(event) {
+    if (event.key !== "Escape") {
+      return;
+    }
+    const about = getAboutExpandController();
+    if (about?.isExpanded?.()) {
+      about.close();
+      event.preventDefault?.();
+    }
   }
 
   /**
@@ -446,6 +498,15 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     if (card.closest?.(".scene-chrome")) {
       return;
     }
+    // About me opens via click/keyboard — never enter long-press drag.
+    if (
+      card.classList?.contains?.("scene-about-cluster") ||
+      card.dataset?.nodeKind === "about" ||
+      card.classList?.contains?.("is-about-open") ||
+      card.classList?.contains?.("is-about-expanding")
+    ) {
+      return;
+    }
 
     clearPressTimer();
     pressCard = card;
@@ -456,11 +517,40 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     pressLastY = event.clientY;
     pressStartedAt = Date.now();
     cardDragMoved = false;
+    prefetchCardIfInternal(card);
     armPressTimer(CARD_LONG_PRESS_MS, {
       clientX: pressStartX,
       clientY: pressStartY,
       pointerId: pressPointerId ?? undefined,
     });
+  }
+
+  /**
+   * Hover / keyboard focus warms the case document before click.
+   *
+   * @param {PointerEvent|FocusEvent|Event} event
+   */
+  function onCardPrefetch(event) {
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    if (!isInsideRoot(target, rootEl)) {
+      return;
+    }
+    const card = /** @type {HTMLElement|null} */ (
+      target.closest(".ds-card, [data-node-kind='card']")
+    );
+    if (!card || !isInsideRoot(card, rootEl)) {
+      return;
+    }
+    const related = /** @type {Node|null} */ (
+      /** @type {PointerEvent} */ (event).relatedTarget
+    );
+    if (related && typeof card.contains === "function" && card.contains(related)) {
+      return;
+    }
+    prefetchCardIfInternal(card);
   }
 
   /**
@@ -579,11 +669,14 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
   rootEl.addEventListener("click", onContactClick);
   rootEl.addEventListener("click", onCardActivate);
   rootEl.addEventListener("keydown", onCardActivate);
+  rootEl.addEventListener("keydown", onAboutEscape);
   rootEl.addEventListener("error", onCriticalImageError, captureOpts);
   rootEl.addEventListener("pointerdown", onCardPointerDown);
   rootEl.addEventListener("pointermove", onCardPointerMove);
   rootEl.addEventListener("pointerup", onCardPointerUp);
   rootEl.addEventListener("pointercancel", onCardPointerUp);
+  rootEl.addEventListener("pointerover", onCardPrefetch);
+  rootEl.addEventListener("focusin", onCardPrefetch);
 
   /** @type {HTMLElement[]} */
   const imgs =
@@ -605,11 +698,14 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     rootEl.removeEventListener("click", onContactClick);
     rootEl.removeEventListener("click", onCardActivate);
     rootEl.removeEventListener("keydown", onCardActivate);
+    rootEl.removeEventListener("keydown", onAboutEscape);
     rootEl.removeEventListener("error", onCriticalImageError, captureOpts);
     rootEl.removeEventListener("pointerdown", onCardPointerDown);
     rootEl.removeEventListener("pointermove", onCardPointerMove);
     rootEl.removeEventListener("pointerup", onCardPointerUp);
     rootEl.removeEventListener("pointercancel", onCardPointerUp);
+    rootEl.removeEventListener("pointerover", onCardPrefetch);
+    rootEl.removeEventListener("focusin", onCardPrefetch);
     for (const img of imgs) {
       img.removeEventListener("error", onImageError);
     }

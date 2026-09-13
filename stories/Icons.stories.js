@@ -14,10 +14,16 @@ const ICONS = [
   { key: "icons.plus.hover", label: "Plus hover", dataIcon: "Plus" },
   { key: "icons.minus", label: "Minus", dataIcon: "Minus" },
   { key: "icons.minus.hover", label: "Minus hover", dataIcon: "Minus" },
+  { key: "icons.burger-menu", label: "Burger_menu", dataIcon: "Burger_menu" },
   {
     key: "icons.arrow-right",
     label: "arrow-right",
     dataIcon: "vuesax/linear/arrow-right",
+  },
+  {
+    key: "icons.arrow-left",
+    label: "arrow-left",
+    dataIcon: "vuesax/linear/arrow-left",
   },
 ];
 

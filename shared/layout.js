@@ -78,7 +78,7 @@ const CARD_A_CONTENT_KEYS = [
   "card.a.title",
   "card.a.meta",
   "card.a.description",
-  "card.a.action",
+  "card.a.url",
 ];
 
 const CARD_B_CONTENT_KEYS = [
@@ -107,8 +107,8 @@ const ABOUT_CHILDREN_1024 = [
     kind: "macbook",
     x: 85.23,
     y: 5,
-    width: 126.47,
-    height: 89.57,
+    width: 140.61,
+    height: 111.01,
     rotation: -10.44,
     assetKeys: ["macbook"],
   },
@@ -117,8 +117,8 @@ const ABOUT_CHILDREN_1024 = [
     kind: "me",
     x: 0,
     y: 18.2,
-    width: 83.45,
-    height: 83.45,
+    width: 99.64,
+    height: 99.64,
     rotation: 12.6,
     assetKeys: ["me"],
   },
@@ -127,12 +127,68 @@ const ABOUT_CHILDREN_1024 = [
     kind: "stiker",
     x: 24,
     y: 83.49,
-    width: 81,
-    height: 32,
+    width: 82.98,
+    height: 37.42,
     rotation: 3.89,
     contentKeys: ["stiker.label"],
   },
 ];
+
+/**
+ * Figma 201:19914 «Портфолио. О себе» — expanded Macbook composition.
+ * Children are relative to the expanded cluster origin (Macbook top-left).
+ * @typedef {{ x: number, y: number, width: number, height: number, rotation: number }} AboutChildGeom
+ * @typedef {{
+ *   cluster: { x: number, y: number, width: number, height: number },
+ *   children: { macbook: AboutChildGeom, me: AboutChildGeom, stiker: AboutChildGeom }
+ * }} AboutExpandedLayout
+ */
+
+/** @type {Omit<AboutExpandedLayout, "cluster">} */
+const ABOUT_EXPANDED_CHILDREN = {
+  children: {
+    macbook: { x: 0, y: 0, width: 570, height: 415.57, rotation: 0 },
+    me: {
+      x: 110,
+      y: 20.197784423828125,
+      width: 99.63565793613043,
+      height: 99.63565793613043,
+      rotation: 0,
+    },
+    stiker: {
+      x: 140,
+      y: 84.49113464355469,
+      width: 82.98299378156662,
+      height: 37.4175218641758,
+      rotation: 0,
+    },
+  },
+};
+
+/** Expanded About on 1024 artboard (Figma 201:19914). */
+export const ABOUT_EXPANDED_1024 = Object.freeze({
+  cluster: { x: 384, y: 92, width: 570, height: 415.57 },
+  children: ABOUT_EXPANDED_CHILDREN.children,
+});
+
+/** Expanded About on 1366 — same composition, centered in the wider frame. */
+export const ABOUT_EXPANDED_1366 = Object.freeze({
+  cluster: {
+    x: 384 + (1366 - 1024) / 2,
+    y: 92 + (768 - 609) / 2,
+    width: 570,
+    height: 415.57,
+  },
+  children: ABOUT_EXPANDED_CHILDREN.children,
+});
+
+/**
+ * @param {string|null|undefined} layoutId
+ * @returns {AboutExpandedLayout}
+ */
+export function getAboutExpandedLayout(layoutId) {
+  return layoutId === "51:4107" ? ABOUT_EXPANDED_1366 : ABOUT_EXPANDED_1024;
+}
 
 /**
  * @param {Partial<SceneNode> & Pick<SceneNode, "id"|"kind"|"x"|"y"|"width"|"height"|"zIndex">} base

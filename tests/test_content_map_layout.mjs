@@ -61,10 +61,15 @@ describe("content map / scene layout / resolveAsset", () => {
     assert.equal(contentMap["profile.role"], "Продуктовый дизайнер");
     assert.equal(contentMap["card.title"], "CityBike");
     assert.equal(contentMap["card.a.title"], "InnoDragon");
-    assert.equal(contentMap["card.b.title"], "Innophish");
+    assert.equal(contentMap["card.b.title"], "InnoPhish");
     assert.equal(contentMap["card.c.title"], "CityBike");
-    assert.equal(contentMap["card.a.action"], "modal");
+    assert.equal(contentMap["card.a.url"], "case-dragon.html");
     assert.equal(contentMap["card.b.action"], "modal");
+    assert.equal(
+      String(contentMap["card.b.description"]).split("\n").join(" "),
+      "Программа для\u00A0повышения осведомлённости сотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления их устойчивости к\u00A0кибератакам, основанным на\u00A0социальной инженерии."
+    );
+    assert.equal(contentMap["case.dragon.context_title"], "Контекст задачи");
     assert.equal(contentMap["card.meta"], "· 2024");
     assert.match(
       contentMap["card.c.url"],

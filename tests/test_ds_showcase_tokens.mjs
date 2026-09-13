@@ -32,6 +32,7 @@ const COLOR_TOKENS = {
 };
 
 const SHADOW_VALUE = "0 5px 9px #bbbbbd40";
+const SHADOW_MOBILE_VALUE = "0 3px 9px #8b8b8e40";
 
 const TYPE_TOKENS = {
   "--type-h1-size": "20px",
@@ -169,6 +170,12 @@ describe("TC-UNIT-01 token table vs TZ §3.1", () => {
       normalizeShadow(SHADOW_VALUE),
       `--shadow expected ${SHADOW_VALUE}`
     );
+    assert.ok(props.has("--shadow-mobile"), "Missing --shadow-mobile");
+    assert.equal(
+      normalizeShadow(props.get("--shadow-mobile")),
+      normalizeShadow(SHADOW_MOBILE_VALUE),
+      `--shadow-mobile expected ${SHADOW_MOBILE_VALUE}`
+    );
 
     for (const [name, expected] of Object.entries(TYPE_TOKENS)) {
       assert.ok(props.has(name), `Missing type token: ${name}`);
@@ -187,8 +194,9 @@ describe("TC-UNIT-01 token table vs TZ §3.1", () => {
     assert.equal(normalizeHex(props.get("--color-black")), "#232323");
 
     const declaredNames = [...props.keys()];
+    const allowedElevation = new Set(["--shadow", "--shadow-mobile"]);
     const forbiddenElevation = declaredNames.filter(
-      (n) => n !== "--shadow" && /shadow|elevation|vv|вв/i.test(n)
+      (n) => !allowedElevation.has(n) && /shadow|elevation|vv|вв/i.test(n)
     );
     assert.deepEqual(
       forbiddenElevation,
@@ -219,6 +227,10 @@ describe("TC-E2E-01 :root computed contract via served tokens.css", () => {
       assert.equal(
         normalizeShadow(props.get("--shadow") || ""),
         normalizeShadow(SHADOW_VALUE)
+      );
+      assert.equal(
+        normalizeShadow(props.get("--shadow-mobile") || ""),
+        normalizeShadow(SHADOW_MOBILE_VALUE)
       );
       assert.equal(normalizeHex(props.get("--color-black") || ""), "#232323");
 

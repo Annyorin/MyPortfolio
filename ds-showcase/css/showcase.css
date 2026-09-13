@@ -201,6 +201,8 @@ body {
 .ds-button-samples,
 .ds-link-samples,
 .ds-tooltip-samples,
+.ds-title-sidebar-samples,
+.ds-segments-samples,
 .ds-card-samples,
 .ds-media {
   display: flex;
@@ -219,19 +221,32 @@ body {
 .ds-section[aria-labelledby="section-atomic"] > .ds-avatar,
 .ds-section[aria-labelledby="section-atomic"] > .ds-profile,
 .ds-section[aria-labelledby="section-atomic"] > .ds-chip-samples,
+.ds-section[aria-labelledby="section-atomic"] > .ds-button-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-link-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-tapper,
 .ds-section[aria-labelledby="section-atomic"] > .ds-tooltip-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-stiker,
 .ds-section[aria-labelledby="section-atomic"] > .ds-hover,
-.ds-section[aria-labelledby="section-atomic"] > .ds-fab {
+.ds-section[aria-labelledby="section-atomic"] > .ds-fab,
+.ds-section[aria-labelledby="section-atomic"] > .ds-title-sidebar-samples {
   margin-top: 12px;
 }
 
-/* Composite: Card samples + Sidebar */
+/* Composite: Header / Segments / Menu / MenuMobile / Card / Sidebar */
+.ds-section[aria-labelledby="section-composite"] > .ds-header,
+.ds-section[aria-labelledby="section-composite"] > .ds-segments-samples,
+.ds-section[aria-labelledby="section-composite"] > .ds-side-nav,
+.ds-section[aria-labelledby="section-composite"] > .ds-menu-mobile,
 .ds-section[aria-labelledby="section-composite"] > .ds-card-samples,
 .ds-section[aria-labelledby="section-composite"] > .ds-sidebar {
   margin-top: 12px;
+}
+
+.ds-segments-samples {
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 620px;
 }
 
 /* Media: screen-spec / Figma Ui kit boxes (inline style keeps A2 proportions) */
@@ -258,8 +273,8 @@ body {
 }
 
 .ds-media > [data-media="macbook"] {
-  width: 451px;
-  aspect-ratio: 451 / 319;
+  width: 389px;
+  aspect-ratio: 389 / 283;
 }
 
 .ds-media > [data-media="sitybike"] {

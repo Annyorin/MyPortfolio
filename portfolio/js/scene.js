@@ -239,15 +239,14 @@ export function buildCard(content, resolveAsset, imageAssetKey = "card.image", n
   const media = document.createElement("div");
   media.className = "ds-card__media ds-placeholder";
   media.setAttribute("data-media-slot-box", "card");
-  // Figma Photo slot 308×180 (card 310×310, InfoCard 128).
+  // Figma Card Photo 40:1112 — 308×172; assets @3× (924×516) for sharp CSS zoom.
   media.style.width = "100%";
-  media.style.minHeight = "180px";
-  media.style.aspectRatio = "310 / 180";
   const img = document.createElement("img");
   img.src = resolveAsset(imageAssetKey);
   img.alt = `${textOf(title)} project cover`;
-  img.width = 310;
-  img.height = 180;
+  img.width = 308;
+  img.height = 172;
+  img.decoding = "async";
   img.setAttribute("data-media-slot", "card");
   media.appendChild(img);
 
@@ -255,16 +254,31 @@ export function buildCard(content, resolveAsset, imageAssetKey = "card.image", n
   body.className = "ds-card__body";
   const header = document.createElement("div");
   header.className = "ds-card__header";
+  const titleGroup = document.createElement("div");
+  titleGroup.className = "ds-card__title-group";
   const titleEl = document.createElement("h3");
   titleEl.className = "ds-card__title";
   titleEl.textContent = textOf(title);
   const metaEl = document.createElement("p");
   metaEl.className = "ds-card__meta";
   metaEl.textContent = textOf(meta);
-  header.append(titleEl, metaEl);
+  titleGroup.append(titleEl, metaEl);
+  header.appendChild(titleGroup);
+
+  const chipLabel = cardField(content, prefix, "chip").trim();
+  if (chipLabel) {
+    const chip = document.createElement("span");
+    chip.className = "ds-chip ds-chip--default ds-card__chip";
+    chip.textContent = textOf(chipLabel);
+    header.appendChild(chip);
+  }
+
   const descriptionEl = document.createElement("p");
-  descriptionEl.className = "ds-card__description";
-  descriptionEl.textContent = textOf(description);
+  const descriptionText = textOf(description);
+  descriptionEl.className = descriptionText.includes("\n")
+    ? "ds-card__description ds-card__description--fixed-lines"
+    : "ds-card__description";
+  descriptionEl.textContent = descriptionText;
   body.append(header, descriptionEl);
 
   article.append(media, body);
@@ -319,6 +333,8 @@ function buildAboutCluster(content, resolveAsset, node) {
   root.setAttribute("aria-label", "Обо мне");
 
   const children = Array.isArray(node.children) ? node.children : [];
+  /** @type {Record<string, { x: number, y: number, width: number, height: number, rotation: number }>} */
+  const collapsedChildren = {};
   for (const child of children) {
     /** @type {HTMLElement} */
     let el;
@@ -351,8 +367,26 @@ function buildAboutCluster(content, resolveAsset, node) {
       el.style.transform = `rotate(${-child.rotation}deg)`;
       el.style.transformOrigin = "0 0";
     }
+    collapsedChildren[child.kind] = {
+      x: child.x,
+      y: child.y,
+      width: child.width,
+      height: child.height,
+      rotation: Number.isFinite(child.rotation) ? Number(child.rotation) : 0,
+    };
     root.appendChild(el);
   }
+
+  // Snapshot for expand/collapse morph (Figma 201:19914).
+  root.dataset.aboutCollapsed = JSON.stringify({
+    cluster: {
+      x: Number(node.x) || 0,
+      y: Number(node.y) || 0,
+      width: Number(node.width) || 0,
+      height: Number(node.height) || 0,
+    },
+    children: collapsedChildren,
+  });
 
   return root;
 }

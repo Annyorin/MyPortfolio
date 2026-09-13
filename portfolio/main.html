@@ -9,6 +9,13 @@
   <link rel="stylesheet" href="../ds-showcase/css/tokens.css">
   <link rel="stylesheet" href="../ds-showcase/css/components.css">
   <link rel="stylesheet" href="css/portfolio.css">
+  <script>
+    try {
+      if (sessionStorage.getItem("portfolio-page-enter") === "crossfade") {
+        document.documentElement.classList.add("is-page-enter-crossfade");
+      }
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <div class="viewport" tabindex="0">

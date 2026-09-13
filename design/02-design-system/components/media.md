@@ -3,7 +3,7 @@ type: ds-component
 env: 02-design-system
 status: synced
 figma-node: "41:11477"
-updated: 2026-09-08
+updated: 2026-09-13
 ---
 
 # Media
@@ -23,7 +23,7 @@ updated: 2026-09-08
 | IMG_3 | `41:11476` | 345×345 | фото квадрат |
 | Comp | `41:11511` | ~160×120 | композитный превью-блок |
 | me | `105:11564` | 254×254 | портрет / about |
-| Macbook | `105:11869` | 389×276 | девайс-мок |
+| Macbook | `105:11869` | 389×283 | девайс-мок |
 | SityBike | `164:11800` | 308×190 | cover CityBike — см. `sitybike.md` |
 
 ## Состояния

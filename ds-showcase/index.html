@@ -97,10 +97,26 @@
         <span
           class="ds-icon"
           role="listitem"
+          aria-label="Burger_menu"
+          data-icon="Burger_menu"
+        >
+          <img src="assets/icons/burger-menu.svg" alt="" width="24" height="24">
+        </span>
+        <span
+          class="ds-icon"
+          role="listitem"
           aria-label="vuesax/linear/arrow-right"
           data-icon="vuesax/linear/arrow-right"
         >
           <img src="assets/icons/arrow-right.svg" alt="" width="24" height="24">
+        </span>
+        <span
+          class="ds-icon"
+          role="listitem"
+          aria-label="vuesax/linear/arrow-left"
+          data-icon="vuesax/linear/arrow-left"
+        >
+          <img src="assets/icons/arrow-left.svg" alt="" width="24" height="24">
         </span>
         <span class="ds-icon" role="listitem" aria-label="linkedin" data-icon="linkedin">
           <img src="assets/icons/linkedin.svg" alt="" width="20" height="20">
@@ -168,6 +184,18 @@
           </span>
           Резюме
         </a>
+        <a class="ds-button ds-button--text" href="#">
+          <span class="ds-icon" aria-hidden="true" data-icon="vuesax/linear/arrow-left">
+            <img src="assets/icons/arrow-left.svg" alt="" width="20" height="20">
+          </span>
+          На главную
+        </a>
+        <a class="ds-button ds-button--text ds-button--hover" href="#">
+          <span class="ds-icon" aria-hidden="true" data-icon="vuesax/linear/arrow-left">
+            <img src="assets/icons/arrow-left.svg" alt="" width="20" height="20">
+          </span>
+          На главную
+        </a>
       </div>
 
       <div class="ds-link-samples">
@@ -211,34 +239,89 @@
           <img src="assets/icons/arrow-right.svg" alt="" width="24" height="24">
         </span>
       </button>
+
+      <div class="ds-title-sidebar-samples" aria-label="TitleSidebar samples">
+        <span class="ds-title-sidebar">Контекст</span>
+        <span class="ds-title-sidebar ds-title-sidebar--hover">Контекст</span>
+      </div>
     </section>
 
     <section class="ds-section" aria-labelledby="section-composite">
       <h2 id="section-composite">Composite</h2>
 
+      <header class="ds-header">
+        <a class="ds-button ds-button--text" href="#">
+          <span class="ds-icon" aria-hidden="true" data-icon="vuesax/linear/arrow-left">
+            <img src="assets/icons/arrow-left.svg" alt="" width="20" height="20">
+          </span>
+          На главную
+        </a>
+        <p class="ds-header__title">Аня Ясинская· Портфолио</p>
+        <button type="button" class="ds-header__burger" aria-label="Открыть меню">
+          <span class="ds-icon" aria-hidden="true" data-icon="burger-menu">
+            <img src="assets/icons/burger-menu.svg" alt="" width="24" height="24">
+          </span>
+        </button>
+      </header>
+
+      <div class="ds-segments-samples" aria-label="SegmentsControl samples">
+        <div class="ds-segments" data-active="0" role="tablist" aria-label="Длинная версия активна">
+          <span class="ds-segments__thumb" aria-hidden="true"></span>
+          <button type="button" class="ds-segments__item ds-segments__item--active" role="tab" aria-selected="true">Длинная версия</button>
+          <button type="button" class="ds-segments__item" role="tab" aria-selected="false" tabindex="-1">Короткая версия</button>
+        </div>
+        <div class="ds-segments" data-active="1" role="tablist" aria-label="Короткая версия активна">
+          <span class="ds-segments__thumb" aria-hidden="true"></span>
+          <button type="button" class="ds-segments__item" role="tab" aria-selected="false" tabindex="-1">Длинная версия</button>
+          <button type="button" class="ds-segments__item ds-segments__item--active" role="tab" aria-selected="true">Короткая версия</button>
+        </div>
+      </div>
+
+      <nav class="ds-side-nav" aria-label="Menu">
+        <a class="ds-title-sidebar" href="#context">Контекст</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#analysis">Анализ</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#hypotheses">Гипотезы и решения</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#conclusions">Выводы</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#contacts">Контакты</a>
+      </nav>
+
+      <nav class="ds-menu-mobile" aria-label="MenuMobile">
+        <a class="ds-title-sidebar" href="#context">Контекст</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#analysis">Анализ</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#hypotheses">Гипотезы и решения</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#conclusions">Выводы</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#contacts">Контакты</a>
+      </nav>
+
       <div class="ds-card-samples">
         <article class="ds-card ds-card--default">
           <div class="ds-card__media ds-placeholder">
-            <img src="assets/images/card-citybike.png" alt="CityBike project cover" width="310" height="190">
+            <img src="assets/images/card-default.png" alt="Card default cover" width="308" height="172">
           </div>
           <div class="ds-card__body">
             <div class="ds-card__header">
-              <h3 class="ds-card__title">CityBike</h3>
-              <p class="ds-card__meta">· 2024</p>
+              <div class="ds-card__title-group">
+                <h3 class="ds-card__title">Title</h3>
+                <p class="ds-card__meta">· 2024-2026</p>
+              </div>
+              <span class="ds-chip ds-chip--default ds-card__chip">B2C</span>
             </div>
-            <p class="ds-card__description">Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.</p>
+            <p class="ds-card__description">Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.</p>
           </div>
         </article>
         <article class="ds-card ds-card--hover">
           <div class="ds-card__media ds-placeholder">
-            <img src="assets/images/card-citybike.png" alt="CityBike project cover" width="310" height="190">
+            <img src="assets/images/card-default.png" alt="Card hover cover" width="308" height="172">
           </div>
           <div class="ds-card__body">
             <div class="ds-card__header">
-              <h3 class="ds-card__title">CityBike</h3>
-              <p class="ds-card__meta">· 2024</p>
+              <div class="ds-card__title-group">
+                <h3 class="ds-card__title">Title</h3>
+                <p class="ds-card__meta">· 2024-2026</p>
+              </div>
+              <span class="ds-chip ds-chip--default ds-card__chip">B2C</span>
             </div>
-            <p class="ds-card__description">Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.</p>
+            <p class="ds-card__description">Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.</p>
           </div>
         </article>
       </div>
@@ -309,8 +392,8 @@
         <div class="ds-placeholder" data-media="me" style="width:254px;aspect-ratio:254/254">
           <img src="assets/images/me.png" alt="me media sample" width="254" height="254">
         </div>
-        <div class="ds-placeholder" data-media="macbook" style="width:451px;aspect-ratio:451/319">
-          <img src="assets/images/macbook.png" alt="Macbook media sample" width="451" height="319">
+        <div class="ds-placeholder" data-media="macbook" style="width:389px;aspect-ratio:389/283">
+          <img src="assets/images/macbook.png" alt="Macbook media sample" width="389" height="283">
         </div>
         <div class="ds-placeholder" data-media="sitybike" style="width:308px;aspect-ratio:308/190">
           <img src="assets/images/card-citybike.png" alt="SityBike / CityBike cover" width="308" height="190">
@@ -319,5 +402,9 @@
     </section>
 
   </main>
+  <script type="module">
+    import { bindAllSegmentsControls } from "./js/segments.js";
+    bindAllSegmentsControls(document);
+  </script>
 </body>
 </html>

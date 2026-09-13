@@ -1,7 +1,7 @@
 ---
 type: registry
 env: 02-design-system
-updated: 2026-09-08
+updated: 2026-09-13
 mcp: remote https://mcp.figma.com/mcp
 account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 ---
@@ -34,11 +34,13 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Компонент | node-id | fileKey | Назначение | Варианты | Локальный файл | Статус | Синк |
 |-----------|---------|---------|------------|----------|----------------|--------|------|
 | Ui kit (frame) | `41:11520` | xboMnqU5JURL0xlzxN7edN | Витрина foundations + компонентов | — | — | synced | 2026-09-08 |
-| Icons | `41:11521` | xboMnqU5JURL0xlzxN7edN | Группа иконок 24×24 | close, Plus, Minus, arrow-right | `components/icons.md` | synced | 2026-09-08 |
+| Icons | `41:11521` | xboMnqU5JURL0xlzxN7edN | Группа иконок 24×24 | close, Plus, Minus, arrow-right, arrow-left, Burger_menu | `components/icons.md` | synced | 2026-09-13 |
 | close | `40:1179` | xboMnqU5JURL0xlzxN7edN | Закрытие | — | `components/icons.md` | synced | 2026-09-08 |
 | Plus (set) | `55:9404` | xboMnqU5JURL0xlzxN7edN | Добавить | default, hover | `components/icons.md` | synced | 2026-09-08 |
 | Minus (set) | `55:9407` | xboMnqU5JURL0xlzxN7edN | Убрать | default, hover | `components/icons.md` | synced | 2026-09-08 |
 | vuesax/linear/arrow-right | `41:1530` | xboMnqU5JURL0xlzxN7edN | Стрелка вправо | — | `components/icons.md` | synced | 2026-09-08 |
+| vuesax/linear/arrow-left | `194:15522` | xboMnqU5JURL0xlzxN7edN | Стрелка влево | — | `components/icons.md` | synced | 2026-09-13 |
+| Burger_menu | `204:15709` | xboMnqU5JURL0xlzxN7edN | Меню · vuesax/linear/menu | — | `components/icons.md` | synced | 2026-09-13 |
 | linkedin-box-fill | `158:11220` | xboMnqU5JURL0xlzxN7edN | Social 20×20 | — | `components/icons.md` | synced | 2026-09-08 |
 | behance | `158:11208` | xboMnqU5JURL0xlzxN7edN | Social 20×20 | — | `components/icons.md` | synced | 2026-09-08 |
 | mail | `158:11262` | xboMnqU5JURL0xlzxN7edN | Social 20×20 | — | `components/icons.md` | synced | 2026-09-08 |
@@ -54,27 +56,38 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Link | `40:1199` | xboMnqU5JURL0xlzxN7edN | Текстовая ссылка | default, hover | `components/link.md` | synced | 2026-09-08 |
 | Link / default | `40:1198` | xboMnqU5JURL0xlzxN7edN | Link покой | Property 1=default | `components/link.md` | synced | 2026-09-08 |
 | Link / hover | `40:1197` | xboMnqU5JURL0xlzxN7edN | Link наведение | Property 1=hover | `components/link.md` | synced | 2026-09-08 |
-| Button | `158:11315` | xboMnqU5JURL0xlzxN7edN | CTA icon+label | primary/secondary × default/hover | `components/button.md` | synced | 2026-09-08 |
+| Button | `158:11315` | xboMnqU5JURL0xlzxN7edN | CTA icon+label | primary/secondary/Text × default/hover | `components/button.md` | synced | 2026-09-13 |
 | Button / secondary default | `158:11314` | xboMnqU5JURL0xlzxN7edN | Secondary покой | Property 1=secondary, 2=default | `components/button.md` | synced | 2026-09-08 |
 | Button / secondary hover | `158:11311` | xboMnqU5JURL0xlzxN7edN | Secondary hover | Property 1=secondary, 2=hover | `components/button.md` | synced | 2026-09-08 |
 | Button / primary default | `158:11313` | xboMnqU5JURL0xlzxN7edN | Primary покой | Property 1=primary, 2=default | `components/button.md` | synced | 2026-09-08 |
 | Button / primary hover | `158:11312` | xboMnqU5JURL0xlzxN7edN | Primary hover | Property 1=primary, 2=hover | `components/button.md` | synced | 2026-09-08 |
+| Button / Text default | `226:15947` | xboMnqU5JURL0xlzxN7edN | Text покой · no fill · H2 | Property 1=Text, 2=default | `components/button.md` | synced | 2026-09-13 |
+| Button / Text hover | `227:15952` | xboMnqU5JURL0xlzxN7edN | Text hover · Gray_text | Property 1=Text, 2=hover | `components/button.md` | synced | 2026-09-13 |
 | Tapper | `41:1311` | xboMnqU5JURL0xlzxN7edN | Кнопка 104×40 | default | `components/tapper.md` | synced | 2026-09-08 |
 | Stiker | `41:1517` | xboMnqU5JURL0xlzxN7edN | Бейдж «Обо мне» 81×32 | default | `components/stiker.md` | synced | 2026-09-08 |
 | Tooltip | `92:11490` | xboMnqU5JURL0xlzxN7edN | Подсказка pill | default | `components/tooltip.md` | synced | 2026-09-08 |
 | CursorHover (Hover) | `41:1548` | xboMnqU5JURL0xlzxN7edN | CTA Behance+arrow 114×40 | default | `components/hover.md` | synced | 2026-09-08 |
 | FloatingAction | `169:13303` | xboMnqU5JURL0xlzxN7edN | FAB 50×50 arrow-up | default | `components/floating-action.md` | synced | 2026-09-08 |
-| Card | `40:1209` | xboMnqU5JURL0xlzxN7edN | Карточка 310×310 | default, hover | `components/card.md` | synced | 2026-09-08 |
-| Card / default | `40:1208` | xboMnqU5JURL0xlzxN7edN | Card покой | Property 1=default | `components/card.md` | synced | 2026-09-08 |
-| Card / hover | `40:1207` | xboMnqU5JURL0xlzxN7edN | Card наведение | Property 1=hover | `components/card.md` | synced | 2026-09-08 |
-| Sidebar | `158:11468` | xboMnqU5JURL0xlzxN7edN | Сайдбар 310×561 | default | `components/sidebar.md` | synced | 2026-09-08 |
+| Card | `40:1209` | xboMnqU5JURL0xlzxN7edN | Карточка 310×310 | default, hover | `components/card.md` | synced | 2026-09-13 |
+| Card / default | `40:1208` | xboMnqU5JURL0xlzxN7edN | Card покой · Shadow | Property 1=default | `components/card.md` | synced | 2026-09-13 |
+| Card / hover | `40:1207` | xboMnqU5JURL0xlzxN7edN | Card наведение · Shadow | Property 1=hover | `components/card.md` | synced | 2026-09-08 |
+| Sidebar (profile) | `158:11468` | xboMnqU5JURL0xlzxN7edN | Сайдбар профиля 310×561 | default | `components/sidebar.md` | synced | 2026-09-13 |
+| Header | `226:15768` | xboMnqU5JURL0xlzxN7edN | Шапка кейса 620×85 | default | `components/header.md` | synced | 2026-09-13 |
+| SegmentsControl (Segmets_control) | `226:15785` | xboMnqU5JURL0xlzxN7edN | Сегмент-переключатель 620×42 | long, short | `components/segments-control.md` | synced | 2026-09-13 |
+| SegmentsControl / long | `226:15785` | xboMnqU5JURL0xlzxN7edN | Active «Длинная версия» | Property 1=long | `components/segments-control.md` | synced | 2026-09-13 |
+| SegmentsControl / short | `226:15784` | xboMnqU5JURL0xlzxN7edN | Active «Короткая версия» | Property 1=short | `components/segments-control.md` | synced | 2026-09-13 |
+| TitleSidebar (set) | `227:16230` | xboMnqU5JURL0xlzxN7edN | Пункт TOC | default, hover | `components/title-sidebar.md` | synced | 2026-09-13 |
+| TitleSidebar / default | `227:16228` | xboMnqU5JURL0xlzxN7edN | TOC текущий · Black H2 | State=default | `components/title-sidebar.md` | synced | 2026-09-13 |
+| TitleSidebar / hover | `227:16229` | xboMnqU5JURL0xlzxN7edN | TOC наведение · Gray_text H2 | State=hover | `components/title-sidebar.md` | synced | 2026-09-13 |
+| Menu / SideBar (TOC) | `227:16241` | xboMnqU5JURL0xlzxN7edN | TOC-колонка кейса 262×212 (Figma: Menu) | default | `components/side-bar.md` | synced | 2026-09-13 |
+| MenuMobile | `245:17643` | xboMnqU5JURL0xlzxN7edN | Mobile/tablet TOC 167×224 · BurgerMenu | default | `components/menu-mobile.md` | synced | 2026-09-13 |
 | IMG_BG | `41:11477` | xboMnqU5JURL0xlzxN7edN | Медиа фон 345×230 | — | `components/media.md` | synced | 2026-09-08 |
 | IMG_1 | `41:11479` | xboMnqU5JURL0xlzxN7edN | Медиа 345×230 | — | `components/media.md` | synced | 2026-09-08 |
 | IMG_2 | `41:11478` | xboMnqU5JURL0xlzxN7edN | Медиа 345×230 | — | `components/media.md` | synced | 2026-09-08 |
 | IMG_3 | `41:11476` | xboMnqU5JURL0xlzxN7edN | Медиа 345×345 | — | `components/media.md` | synced | 2026-09-08 |
 | Comp | `41:11511` | xboMnqU5JURL0xlzxN7edN | Композитный превью | — | `components/media.md` | synced | 2026-09-08 |
 | me | `105:11564` | xboMnqU5JURL0xlzxN7edN | Портрет 254×254 | — | `components/media.md` | synced | 2026-09-08 |
-| Macbook | `105:11869` | xboMnqU5JURL0xlzxN7edN | Девайс-мок 389×276 | — | `components/media.md` | synced | 2026-09-08 |
+| Macbook | `105:11869` | xboMnqU5JURL0xlzxN7edN | Девайс-мок 389×283 | — | `components/media.md` | synced | 2026-09-13 |
 | SityBike | `164:11800` | xboMnqU5JURL0xlzxN7edN | Cover CityBike 308×190 | — | `components/sitybike.md` | synced | 2026-09-08 |
 
 Статусы: `draft` → `in-figma` → `synced` → `deprecated`.
@@ -84,8 +97,8 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Группа | node-id / коллекция | Назначение | Локальный файл | Синк |
 |--------|---------------------|------------|----------------|------|
 | Color | Ui kit `41:11520` | Primary, Secondary, White, Black, Gray_text, Gray_dark, GrayL, Primary_hover | `foundations/color.md` | 2026-09-08 |
-| Typography | Ui kit `41:11520` | H1, H2, Text/Text1, Caption (Inter) | `foundations/typography.md` | 2026-09-08 |
-| Effects | Ui kit `41:11520` | Shadow; вв (не к Card); FAB blur 4.5 | `foundations/elevation.md` | 2026-09-08 |
+| Typography | Ui kit `41:11520` | H1, H2, Text/Text1, Caption (Inter); Text2 14/18 на SegmentsControl | `foundations/typography.md` | 2026-09-08 |
+| Effects | Ui kit `41:11520` | Shadow (Card default+hover, Sidebar, SegmentsControl pill); Mobile (MenuMobile); вв (не к Card); FAB blur 4.5 | `foundations/elevation.md` | 2026-09-13 |
 
 ## Страницы библиотеки
 

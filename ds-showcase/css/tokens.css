@@ -18,6 +18,8 @@
 
   /* ElevationToken — Shadow only (no alternate Card elevation token) */
   --shadow: 0 5px 9px #bbbbbd40;
+  /* Mobile menu elevation (Figma MenuMobile 245:17643 «Mobile») */
+  --shadow-mobile: 0 3px 9px #8b8b8e40;
 
   /* TypographyStyle — H1: 20px / 24px / 600 (Заголовок 1) */
   --type-h1-size: 20px;

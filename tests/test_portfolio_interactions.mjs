@@ -437,7 +437,7 @@ describe("portfolio interactions e2e (UC-05 / UC-02 A1)", () => {
     assert.ok(media);
     assert.ok(img);
     const minHBefore = media.style.minHeight;
-    assert.ok(minHBefore);
+    assert.ok(img.height > 0, "img has height attr for broken-slot fallback");
 
     const warns = [];
     const prevWarn = console.warn;
@@ -447,7 +447,7 @@ describe("portfolio interactions e2e (UC-05 / UC-02 A1)", () => {
     try {
       img.dispatchEvent(makeEvent({ type: "error", target: img }));
       assert.ok(media.classList.contains("ds-media-slot--broken"));
-      assert.equal(media.style.minHeight, minHBefore);
+      assert.equal(media.style.minHeight, minHBefore || `${img.height}px`);
       assert.notEqual(media.style.minHeight, "0px");
       assert.ok(warns.length >= 1);
       assert.match(String(warns[0].join(" ")), /media image failed|portfolio/i);

@@ -243,7 +243,7 @@ describe("TC-E2E-01 Atomic + Icons inventory and sizes", () => {
 
     const icons = /aria-labelledby=["']section-icons["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(icons);
-    assert.equal((icons[0].match(/class="ds-icon"/g) || []).length, 12);
+    assert.equal((icons[0].match(/class="ds-icon"/g) || []).length, 14);
 
     const atomic = /aria-labelledby=["']section-atomic["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(atomic);

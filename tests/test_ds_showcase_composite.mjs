@@ -4,7 +4,7 @@
  * TC-E2E-01: Card default vs hover (shadow matrix §3.1; InnoDragon texts).
  * TC-E2E-02: Sidebar sizes, Skills gap/matrix, Contacts Caption, bio.
  * TC-E2E-03: Media five slots with target proportions.
- * TC-UNIT-01: Card default has no box-shadow (except none); hover uses var(--shadow).
+ * TC-UNIT-01: Card default and hover use var(--shadow); no Tapper «вв» on Card.
  * TC-UNIT-02: Contacts use caption tokens.
  * Regression: atomic 2.4 Chip reuse; foundations 2.2; tokens 2.1; smoke 1.3.
  */
@@ -26,12 +26,12 @@ const TOKENS_PATH = path.join(SHOWCASE_ROOT, "css", "tokens.css");
 const SECTION_ORDER = ["Foundations", "Icons", "Atomic", "Composite", "Media"];
 
 const CARD_DESCRIPTION =
-  "Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.";
+  "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.";
 
 const SIDEBAR_BIO =
   "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.";
 
-/** Figma / mirror / screen-spec: BG/1/2 = 345×230; IMG_3 = 345×345; Comp ≈149×103; me 254; Macbook 451×319. */
+/** Figma / mirror / screen-spec: BG/1/2 = 345×230; IMG_3 = 345×345; Comp ≈149×103; me 254; Macbook 389×283. */
 const MEDIA_BOXES = {
   img_bg: { w: 345, h: 230 },
   img_1: { w: 345, h: 230 },
@@ -39,7 +39,7 @@ const MEDIA_BOXES = {
   img_3: { w: 345, h: 345 },
   comp: { w: 149, h: 103 },
   me: { w: 254, h: 254 },
-  macbook: { w: 451, h: 319 },
+  macbook: { w: 389, h: 283 },
   sitybike: { w: 308, h: 190 },
 };
 
@@ -181,7 +181,7 @@ function assertShadowTokenOnly(body) {
 }
 
 describe("TC-UNIT-01 Card shadow contract", () => {
-  it("default has no drop-shadow; hover/static-hover use var(--shadow)", () => {
+  it("default and hover/static-hover use var(--shadow); base may reset to none", () => {
     const css = fs.readFileSync(COMPONENTS_CSS_PATH, "utf8");
 
     const base = ruleBody(css, ".ds-card");
@@ -189,18 +189,18 @@ describe("TC-UNIT-01 Card shadow contract", () => {
     assert.ok(base, ".ds-card rule required");
     assert.ok(def, ".ds-card--default rule required");
 
-    for (const [label, body] of [
-      [".ds-card", base],
-      [".ds-card--default", def],
-    ]) {
-      const shadow = /box-shadow\s*:\s*([^;]+)/i.exec(body);
-      assert.ok(shadow, `${label} must declare box-shadow`);
-      const val = shadow[1].trim().toLowerCase();
-      assert.ok(
-        val === "none" || val === "unset" || val === "initial",
-        `${label} must not use drop-shadow (got ${shadow[1]})`
-      );
-    }
+    const baseShadow = /box-shadow\s*:\s*([^;]+)/i.exec(base);
+    assert.ok(baseShadow, ".ds-card must declare box-shadow");
+    const baseVal = baseShadow[1].trim().toLowerCase();
+    assert.ok(
+      baseVal === "none" ||
+        baseVal === "unset" ||
+        baseVal === "initial" ||
+        baseVal === "var(--shadow)",
+      `.ds-card unexpected box-shadow ${baseShadow[1]}`
+    );
+
+    assertShadowTokenOnly(def);
 
     const hoverStatic = ruleBody(css, ".ds-card--hover");
     assert.ok(hoverStatic, ".ds-card--hover rule required");
@@ -241,8 +241,8 @@ describe("TC-E2E-01 Card default vs hover", () => {
     assert.ok(/ds-card--hover/.test(block));
     assert.equal((block.match(/ds-card--(?:default|hover)/g) || []).length, 2);
 
-    assert.ok(block.includes("CityBike"));
-    assert.ok(block.includes("· 2024"));
+    assert.ok(block.includes("Title"));
+    assert.ok(block.includes("· 2024-2026"));
     assert.ok(block.includes(CARD_DESCRIPTION));
 
     const card = ruleBody(css, ".ds-card");
@@ -251,6 +251,26 @@ describe("TC-E2E-01 Card default vs hover", () => {
     assertWithinTol(declaredPx(card, "height"), 310, "Card height");
     assertWithinTol(declaredPx(card, "border-radius"), 24, "Card radius");
     assert.match(card, /border\s*:[^;]*var\(--color-secondary\)/);
+
+    const infoCard = ruleBody(css, ".ds-card__body");
+    assert.ok(infoCard, ".ds-card__body (InfoCard) rule required");
+    assert.match(
+      infoCard,
+      /padding\s*:\s*16px(?:\s+16px){0,3}/,
+      "InfoCard padding must be 16px (Figma 40:1114)"
+    );
+    assertWithinTol(declaredPx(infoCard, "gap"), 8, "InfoCard gap");
+    assertWithinTol(declaredPx(infoCard, "height"), 136, "InfoCard height");
+    assert.match(infoCard, /flex\s*:\s*0\s+0\s+136px/);
+
+    const photo = ruleBody(css, ".ds-card__media");
+    assert.ok(photo, ".ds-card__media (Photo) rule required");
+    assertWithinTol(declaredPx(photo, "height"), 172, "Photo height");
+
+    const desc = ruleBody(css, ".ds-card__description");
+    assert.ok(desc, ".ds-card__description rule required");
+    assertWithinTol(declaredPx(desc, "height"), 64, "description height");
+    assert.match(desc, /white-space\s*:\s*pre-line/);
 
     assert.match(css, /\.ds-card:hover/);
     assert.match(css, /box-shadow\s*:\s*var\(--shadow\)/);
@@ -265,7 +285,7 @@ describe("TC-E2E-01 Card default vs hover", () => {
       assert.ok(html.includes("section-composite"));
       assert.ok(html.includes("ds-card--default"));
 
-      const cardImg = await httpGet(port, "/assets/images/card-citybike.png");
+      const cardImg = await httpGet(port, "/assets/images/card-default.png");
       assert.equal(cardImg.status, 200);
       assert.ok(cardImg.body.length > 0);
 

@@ -28,8 +28,10 @@ const MEDIA_ASSETS = [
   { key: "icon.minus", rel: "assets/icons/minus.svg" },
   { key: "icon.minus.hover", rel: "assets/icons/minus-hover.svg" },
   { key: "icon.arrow-right", rel: "assets/icons/arrow-right.svg" },
+  { key: "icon.arrow-left", rel: "assets/icons/arrow-left.svg" },
+  { key: "icon.burger-menu", rel: "assets/icons/burger-menu.svg" },
   { key: "avatar", rel: "assets/images/avatar.png" },
-  { key: "card.image", rel: "assets/images/card-citybike.png" },
+  { key: "card.image", rel: "assets/images/card-default.png" },
   { key: "card.image.a", rel: "assets/images/img-1.png" },
   { key: "card.image.b", rel: "assets/images/img-2.png" },
   { key: "card.image.c", rel: "assets/images/card-citybike.png" },
@@ -50,7 +52,7 @@ const MEDIA_BOXES = {
   img_3: { w: 345, h: 345 },
   comp: { w: 149, h: 103 },
   me: { w: 254, h: 254 },
-  macbook: { w: 451, h: 319 },
+  macbook: { w: 389, h: 283 },
   sitybike: { w: 308, h: 190 },
 };
 
@@ -135,7 +137,7 @@ describe("TC-UNIT-01 MediaAsset keys map to disk files", () => {
       const alt = /\balt\s*=\s*["']([^"']*)["']/i.exec(tag);
       assert.ok(alt, `raster img missing alt: ${tag}`);
       const isDecorative = /aria-hidden=["']true["']/i.test(html.slice(Math.max(0, html.indexOf(tag) - 200), html.indexOf(tag)));
-      if (!isDecorative && /avatar\.png|card-citybike|img-|comp\.png/i.test(tag)) {
+      if (!isDecorative && /avatar\.png|card-default|card-citybike|img-|comp\.png/i.test(tag)) {
         assert.ok(alt[1].length > 0 || /alt=["']["']/.test(tag), `empty alt on significant img: ${tag}`);
       }
     }

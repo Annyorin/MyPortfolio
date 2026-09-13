@@ -521,7 +521,7 @@ describe("portfolio interactive hits", () => {
       "utf8"
     );
     assert.match(componentsCss, /\.ds-card:hover\s*\{[^}]*box-shadow:\s*var\(--shadow\)/s);
-    assert.match(componentsCss, /\.ds-card--default\s*\{[^}]*box-shadow:\s*none/s);
+    assert.match(componentsCss, /\.ds-card--default\s*\{[^}]*box-shadow:\s*var\(--shadow\)/s);
     unbind();
   });
 
@@ -587,7 +587,7 @@ describe("portfolio interactive hits", () => {
     assert.ok(img);
 
     const minHBefore = media.style.minHeight;
-    assert.ok(minHBefore, "slot has min-height before load");
+    assert.ok(img.height > 0, "img has height attr for broken-slot fallback");
 
     img.dispatchEvent(
       makeEvent({
@@ -598,7 +598,8 @@ describe("portfolio interactive hits", () => {
 
     assert.ok(media.classList.contains("ds-media-slot--broken"));
     assert.ok(media.classList.contains("ds-placeholder"));
-    assert.equal(media.style.minHeight, minHBefore);
+    // onImageError copies img height → minHeight when slot had none
+    assert.equal(media.style.minHeight, minHBefore || `${img.height}px`);
     assert.notEqual(media.style.minHeight, "0px");
     assert.notEqual(media.style.minHeight, "");
     assert.deepEqual(camera.getState(), before);

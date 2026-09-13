@@ -1,7 +1,7 @@
 ﻿---
 type: notes
 env: 02-design-system
-updated: 2026-09-08
+updated: 2026-09-13
 ---
 
 # Рабочие заметки
@@ -9,7 +9,7 @@ updated: 2026-09-08
 Прогресс длинных задач этой среды. Читается и дополняется только внутри среды.
 
 ## Активная задача
-_нет_ — manifest **v0.1.3** (синк Ui kit `41:11520` + новые компоненты).
+_нет_ — manifest **v0.1.5** (MenuMobile + shadow-mobile; Menu/SideBar).
 
 ## Открытые вопросы
 _нет_
@@ -23,3 +23,8 @@ _нет_
 - 2026-09-08: Ui kit root **`41:11520`** (вместо `41:11646`); node-id атомов обновлены.
 - 2026-09-08: Hover в Figma = **CursorHover**; Avatar = **Avatar90**; **SityBike** = продукт CityBike.
 - 2026-09-08: добавлены ProfileMobile, FloatingAction, SityBike, Button, Tooltip, CursorFigma; media me/Macbook.
+- 2026-09-13: **SideBar** (`227:16241`) ≠ **Sidebar** профиля (`158:11468`); Figma name **Menu**.
+- 2026-09-13: **MenuMobile** (`245:17643`) — burger panel ≤1365.
+- 2026-09-13: Figma **Segmets_control** → продукт **SegmentsControl**.
+- 2026-09-13: Card default тоже имеет Shadow (не только hover).
+- 2026-09-13: Button + variant **Text** (arrow-left + H2, no fill).

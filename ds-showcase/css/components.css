@@ -260,6 +260,22 @@
   color: var(--color-gray-text);
 }
 
+/* Figma Button Text 226:15947 / hover 227:15952 — H2, no fill, Gray_text on hover */
+.ds-button--text {
+  background-color: transparent;
+  color: var(--color-black);
+  gap: 4px;
+  padding: 8px 0;
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-line);
+  font-weight: var(--type-h2-weight);
+}
+
+.ds-button--text:hover,
+.ds-button--text.ds-button--hover {
+  color: var(--color-gray-text);
+}
+
 .ds-button:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -296,6 +312,18 @@
 .ds-button .ds-icon[data-icon="mail"] {
   -webkit-mask-image: url("../assets/icons/mail.svg");
   mask-image: url("../assets/icons/mail.svg");
+}
+
+.ds-button .ds-icon[data-icon="vuesax/linear/arrow-left"],
+.ds-button .ds-icon[data-icon="arrow-left"] {
+  -webkit-mask-image: url("../assets/icons/arrow-left.svg");
+  mask-image: url("../assets/icons/arrow-left.svg");
+}
+
+.ds-button .ds-icon[data-icon="vuesax/linear/arrow-right"],
+.ds-button .ds-icon[data-icon="arrow-right"] {
+  -webkit-mask-image: url("../assets/icons/arrow-right.svg");
+  mask-image: url("../assets/icons/arrow-right.svg");
 }
 
 .ds-button .ds-icon > img {
@@ -488,8 +516,9 @@
   pointer-events: none;
 }
 
+/* Figma Card default 40:1208 — Shadow 0 5px 9px #BBBBBD40 */
 .ds-card--default {
-  box-shadow: none;
+  box-shadow: var(--shadow);
 }
 
 .ds-card--hover {
@@ -509,9 +538,13 @@
 }
 
 .ds-card__media {
-  flex: 1 1 auto;
-  min-height: 0;
+  /* Figma Photo 40:1112 / 51:4107 — locked 308×172 */
+  box-sizing: border-box;
+  flex: 0 0 172px;
   width: 100%;
+  height: 172px;
+  min-height: 172px;
+  max-height: 172px;
   position: relative;
   overflow: hidden;
 }
@@ -521,27 +554,43 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Keep detail when the world is CSS-zoomed (high-res 4× assets). */
+  object-position: top center;
+  /* Assets @3× (924×516) stay sharp under CSS zoom */
   image-rendering: auto;
+  -ms-interpolation-mode: bicubic;
   -webkit-user-drag: none;
 }
 
 .ds-card__body {
+  /* Figma InfoCard 40:1114 / 51:4107 — locked 136, padding 16, gap 8 */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
   width: 100%;
+  height: 136px;
+  flex: 0 0 136px;
   padding: 16px;
-  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .ds-card__header {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.ds-card__title-group {
+  display: flex;
+  flex-direction: row;
   align-items: baseline;
   gap: 4px;
+  min-width: 0;
   white-space: nowrap;
 }
 
@@ -563,13 +612,26 @@
   color: var(--color-gray-text);
 }
 
+.ds-card__chip {
+  flex-shrink: 0;
+}
+
 .ds-card__description {
   margin: 0;
+  width: 100%;
+  height: 64px;
+  overflow: hidden;
+  white-space: pre-line;
   font-family: Inter, sans-serif;
   font-size: var(--type-caption-size);
   line-height: var(--type-caption-line);
   font-weight: var(--type-caption-weight);
   color: var(--color-gray-text);
+}
+
+.ds-card__description--fixed-lines {
+  /* Locked wraps: CSS zoom must not reflow Innophish to a 5th line */
+  white-space: pre;
 }
 
 /* —— Sidebar —— */
@@ -653,4 +715,225 @@
   font-weight: var(--type-caption-weight);
   color: var(--color-black);
   white-space: nowrap;
+}
+
+/* —— Header (Figma Ui kit 226:15768) —— */
+.ds-header {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 620px;
+  max-width: 100%;
+  padding: 24px 24px 24px 0;
+  border-bottom: 1px solid var(--color-gray-dark);
+  background-color: transparent;
+}
+
+.ds-header__title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  max-width: calc(100% - 220px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: Inter, sans-serif;
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-line);
+  font-weight: var(--type-h2-weight);
+  color: var(--color-gray-text);
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Figma BurgerMenu Item 01 — 48×48 hit · icon 24 */
+.ds-header__burger {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-black);
+  cursor: pointer;
+}
+
+.ds-header__burger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.ds-header__burger .ds-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.ds-header__burger .ds-icon > img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+/* —— SegmentsControl (Figma Segmets_control 226:15785 / 226:15784) —— */
+.ds-segments {
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  width: 620px;
+  max-width: 100%;
+  padding: 4px;
+  border-radius: 20px;
+  background-color: var(--color-secondary);
+  overflow: visible;
+}
+
+.ds-segments__thumb {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 0;
+  top: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 2);
+  height: calc(100% - 8px);
+  border-radius: 20px;
+  background-color: var(--color-white);
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  transform: translateX(0);
+  transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+}
+
+.ds-segments[data-active="1"] .ds-segments__thumb {
+  transform: translateX(100%);
+}
+
+.ds-segments__item {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  font-family: Inter, sans-serif;
+  font-size: var(--type-text-2-size);
+  line-height: var(--type-text-2-line);
+  font-weight: var(--type-text-2-weight);
+  color: var(--color-black);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.ds-segments__item--active {
+  /* Active state is the sliding thumb; keep class for a11y / tests. */
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.ds-segments__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* —— TitleSidebar (Figma 227:16228 / 227:16229) —— */
+.ds-title-sidebar {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-line);
+  font-weight: var(--type-h2-weight);
+  color: var(--color-black);
+  white-space: nowrap;
+}
+
+.ds-title-sidebar--hover,
+.ds-title-sidebar--muted {
+  color: var(--color-gray-text);
+}
+
+.ds-title-sidebar:hover {
+  color: var(--color-gray-text);
+}
+
+/* —— Menu / SideBar TOC (Figma Menu 227:16241) —— */
+.ds-side-nav {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: 262px;
+  max-width: 100%;
+  padding: 24px 48px;
+}
+
+.ds-side-nav .ds-title-sidebar {
+  width: 100%;
+}
+
+/* —— MenuMobile (Figma 245:17643) — burger panel for mobile/tablet —— */
+.ds-menu-mobile {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  width: 167px;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: var(--color-white);
+  box-shadow: var(--shadow-mobile);
+}
+
+.ds-menu-mobile .ds-title-sidebar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 143px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0;
+  font-size: var(--type-text-2-size);
+  line-height: var(--type-text-2-line);
+  font-weight: var(--type-text-2-weight);
+  white-space: normal;
+  text-decoration: none;
+  color: var(--color-gray-text);
+}
+
+.ds-menu-mobile .ds-title-sidebar.is-active,
+.ds-menu-mobile .ds-title-sidebar:not(.ds-title-sidebar--muted) {
+  color: var(--color-black);
+}
+
+.ds-menu-mobile .ds-title-sidebar:hover,
+.ds-menu-mobile .ds-title-sidebar--muted:hover {
+  color: var(--color-gray-text);
+}
+
+.ds-menu-mobile .ds-title-sidebar:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

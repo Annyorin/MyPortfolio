@@ -78,22 +78,51 @@ export const contentMap = {
   "card.url":
     "https://www.behance.net/gallery/211908269/E-bike-Rental-Mobile-App-for-Android",
 
+  /* Figma Card Property 1=default 40:1208 — DS showcase / Storybook kit sample */
+  "card.kit.title": "Title",
+  "card.kit.meta": "· 2024-2026",
+  "card.kit.description":
+    "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.",
+  "card.kit.chip": "B2C",
+
   "card.a.title": "InnoDragon",
   "card.a.meta": "· 2024-2026",
   "card.a.description":
     "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.",
-  "card.a.action": "modal",
+  "card.a.chip": "B2B",
+  "card.a.url": "case-dragon.html",
 
-  "card.b.title": "Innophish",
+  "case.dragon.period_label": "Период выполнения",
+  "case.dragon.period_value": "2024–2026 год",
+  "case.dragon.platforms_label": "Платформы",
+  "case.dragon.platforms_value": "Desktop",
+  "case.dragon.role_label": "Моя роль",
+  "case.dragon.team_label": "Команда",
+  "case.dragon.context_title": "Контекст задачи",
+  "case.dragon.context_body":
+    "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.",
+  "case.dragon.intro_title": "Вводные",
+  "case.dragon.intro_body":
+    "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.",
+  "case.dragon.contact_heading": "Свяжитесь со мной",
+  "case.dragon.contact_sub":
+    "Буду рада познакомиться и обсудить новые проекты",
+  "case.dragon.next_label": "Далее",
+  "case.dragon.toolbar_title": "InnoDragon",
+  "case.dragon.header_brand": "Аня Ясинская· Портфолио",
+
+  "card.b.title": "InnoPhish",
   "card.b.meta": "· 2024-2026",
   "card.b.description":
-    "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.",
+    "Программа для\u00A0повышения осведомлённости\nсотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления\nих устойчивости к\u00A0кибератакам, основанным\nна\u00A0социальной инженерии.",
+  "card.b.chip": "B2B",
   "card.b.action": "modal",
 
   "card.c.title": "CityBike",
   "card.c.meta": "· 2024",
   "card.c.description":
     "Приложение для аренды электрических велосипедов. Удобный и экологичный транспорт по доступным ценам. Экономия времени в одно касание.",
+  "card.c.chip": "B2C",
   "card.c.url":
     "https://www.behance.net/gallery/211908269/E-bike-Rental-Mobile-App-for-Android",
 
@@ -104,6 +133,24 @@ export const contentMap = {
   "tooltip.zoom_out": "Отдалить",
 
   "tooltip.zoom_in": "Приблизить",
+
+  "button.home": "На главную",
+
+  "header.title": "Аня Ясинская· Портфолио",
+
+  "segments.long": "Длинная версия",
+
+  "segments.short": "Короткая версия",
+
+  "sidenav.context": "Контекст",
+
+  "sidenav.analysis": "Анализ",
+
+  "sidenav.hypotheses": "Гипотезы и решения",
+
+  "sidenav.conclusions": "Выводы",
+
+  "sidenav.contacts": "Контакты",
 
   "foundations.swatch_labels":
 
@@ -147,19 +194,21 @@ export const contentMap = {
     avatar: { pathFromDsRoot: "images/avatar.png" },
 
     "card.image": {
-      pathFromDsRoot: "images/card-citybike.png",
-      intrinsicWidth: 1232,
-      intrinsicHeight: 760,
+      pathFromDsRoot: "images/card-default.png",
+      intrinsicWidth: 924,
+      intrinsicHeight: 516,
     },
 
-    "card.image.a": { pathFromDsRoot: "images/img-1.png" },
+    "card.image.a": { pathFromDsRoot: "images/img-1.png", intrinsicWidth: 924, intrinsicHeight: 516 },
 
-    "card.image.b": { pathFromDsRoot: "images/img-2.png" },
+    "case.dragon.hero": { pathFromDsRoot: "images/case-dragon-hero.png" },
+
+    "card.image.b": { pathFromDsRoot: "images/img-2.png", intrinsicWidth: 924, intrinsicHeight: 516 },
 
     "card.image.c": {
       pathFromDsRoot: "images/card-citybike.png",
-      intrinsicWidth: 1232,
-      intrinsicHeight: 760,
+      intrinsicWidth: 924,
+      intrinsicHeight: 516,
     },
 
     img_bg: { pathFromDsRoot: "images/img-bg.png" },
@@ -187,6 +236,10 @@ export const contentMap = {
     "icons.minus.hover": { pathFromDsRoot: "icons/minus-hover.svg" },
 
     "icons.arrow-right": { pathFromDsRoot: "icons/arrow-right.svg" },
+
+    "icons.arrow-left": { pathFromDsRoot: "icons/arrow-left.svg" },
+
+    "icons.burger-menu": { pathFromDsRoot: "icons/burger-menu.svg" },
 
     "icons.telegram": { pathFromDsRoot: "icons/telegram.svg" },
 

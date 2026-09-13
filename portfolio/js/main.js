@@ -6,11 +6,13 @@
  */
 import { contentMap } from "../../shared/content.js";
 import { isMobileViewport, selectSceneLayout } from "../../shared/layout.js";
+import { bindAboutExpand } from "./aboutExpand.js";
 import { createCameraController } from "./camera.js";
 import { createInfiniteBg } from "./infiniteBg.js";
 import { bindInput } from "./input.js";
 import { bindInteractions } from "./interactions.js";
 import { mountMobilePortfolio } from "./mobile.js";
+import { consumeEnterCrossfade } from "./pageTransition.js";
 import { resolveAsset } from "./resolveAsset.js";
 import { mountScene } from "./scene.js";
 
@@ -70,6 +72,7 @@ function readViewportSize(viewportEl) {
  * }}
  */
 export function initPortfolioStubs() {
+  consumeEnterCrossfade();
   const viewportEl =
     typeof document !== "undefined"
       ? document.querySelector(".viewport")
@@ -119,6 +122,8 @@ export function initPortfolioStubs() {
   let unbindInteractions = null;
   /** @type {(() => void)|null} */
   let unbindMobile = null;
+  /** @type {ReturnType<typeof bindAboutExpand>|null} */
+  let aboutExpand = null;
 
   /** Shared InputMode for gesture layer + interactive hits (suppressClicks during Space-pan). */
   const inputMode = {
@@ -157,10 +162,22 @@ export function initPortfolioStubs() {
     if (!worldEl || !layout) {
       return null;
     }
+    aboutExpand?.destroy?.();
+    aboutExpand = null;
     scene = mountScene(worldEl, layout, contentMap, resolveAsset, {
       chromeEl: viewportEl,
     });
     layoutId = layout.id;
+    const aboutEl = scene?.nodesById?.about;
+    if (aboutEl) {
+      aboutExpand = bindAboutExpand({
+        aboutEl,
+        worldEl,
+        camera,
+        layoutId,
+        viewportEl,
+      });
+    }
     return scene;
   }
 
@@ -178,6 +195,8 @@ export function initPortfolioStubs() {
   }
 
   function teardownCanvas() {
+    aboutExpand?.destroy?.();
+    aboutExpand = null;
     if (unbindInput) {
       unbindInput();
       unbindInput = null;

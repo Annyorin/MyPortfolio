@@ -3,7 +3,7 @@ type: ds-component
 env: 02-design-system
 status: synced
 figma-node: "41:11521"
-updated: 2026-09-08
+updated: 2026-09-13
 ---
 
 # Icons
@@ -21,6 +21,8 @@ updated: 2026-09-08
 | Plus (символы + варианты) | `55:9404` (set) · `55:9403` default · `55:9402` hover | добавить |
 | Minus (символы + варианты) | `55:9407` (set) · `55:9406` default · `55:9405` hover | убрать |
 | vuesax/linear/arrow-right | `41:1530` | переход / CTA / FAB (rotate) |
+| vuesax/linear/arrow-left | `194:15522` | назад / Button Text |
+| Burger_menu | `204:15709` | меню · внутренний `vuesax/linear/menu` |
 
 ## Варианты — 20×20 (social / tool)
 | Вариант | node-id | Когда |
@@ -42,7 +44,7 @@ default; Plus/Minus — default / hover.
 | size social/tool | 20×20 fixed |
 
 ## Правила применения
-Не растягивать. Стрелка — в CursorHover / FloatingAction (−90°). Social 20×20 — в **Button** и ряд контактов.
+Не растягивать. Стрелка вправо — в CursorHover / FloatingAction (−90°). Стрелка влево — в **Button** Text / **Header**. Burger_menu — мобильное меню. Social 20×20 — в **Button** и ряд контактов.
 
 ## Чем не является
 Не декоративные иллюстрации (Comp / IMG_* / SityBike).

@@ -33,6 +33,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           portfolio: path.resolve(rootDir, "portfolio/main.html"),
+          caseDragon: path.resolve(rootDir, "portfolio/case-dragon.html"),
         },
       },
     },

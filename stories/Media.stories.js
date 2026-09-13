@@ -55,8 +55,8 @@ const MEDIA_SLOTS = [
     key: "macbook",
     dataMedia: "macbook",
     label: "Macbook",
-    width: 451,
-    height: 319,
+    width: 389,
+    height: 283,
   },
 ];
 

@@ -515,7 +515,7 @@ describe("portfolio mobile document mode", () => {
     const titles = cards.map(
       (c) => c.querySelector(".ds-card__title")?.textContent
     );
-    assert.deepEqual(titles, ["InnoDragon", "Innophish", "CityBike"]);
+    assert.deepEqual(titles, ["InnoDragon", "InnoPhish", "CityBike"]);
     const imgs = cards.map((c) => {
       const media = c.querySelector(".ds-card__media");
       return media?.querySelector("img")?.src || "";
@@ -526,7 +526,8 @@ describe("portfolio mobile document mode", () => {
     assert.notEqual(imgs[0], imgs[1]);
     assert.notEqual(imgs[1], imgs[2]);
 
-    assert.equal(cards[0].dataset.cardAction, "modal");
+    assert.equal(cards[0].dataset.cardUrl, "case-dragon.html");
+    assert.equal(cards[0].dataset.cardAction, undefined);
     assert.equal(cards[1].dataset.cardAction, "modal");
     assert.ok(String(cards[2].dataset.cardUrl || "").includes("behance.net"));
 

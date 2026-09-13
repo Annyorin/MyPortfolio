@@ -5,6 +5,7 @@
 
 import { fixHangingPrepositions } from "../../shared/typography.js";
 import { activateCardHit } from "./interactions.js";
+import { prefetchCardIfInternal } from "./pageTransition.js";
 import { buildCard } from "./scene.js";
 
 /** Scroll distance (px) before FAB becomes visible. */
@@ -262,17 +263,38 @@ export function mountMobilePortfolio(rootEl, content, resolveAsset, options = {}
     activateCardHit(card, event);
   }
 
+  /**
+   * @param {PointerEvent|Event} event
+   */
+  function onCardPrefetch(event) {
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    const card = /** @type {HTMLElement|null} */ (
+      target.closest(".ds-card, [data-card-id]")
+    );
+    if (!card || !rootEl.contains?.(card)) {
+      return;
+    }
+    prefetchCardIfInternal(card);
+  }
+
   syncFabVisibility();
   scrollEl.addEventListener?.("scroll", onScroll, { passive: true });
   fab.addEventListener("click", onFabClick);
   rootEl.addEventListener("click", onCardActivate);
   rootEl.addEventListener("keydown", onCardActivate);
+  rootEl.addEventListener("pointerdown", onCardPrefetch);
+  rootEl.addEventListener("pointerover", onCardPrefetch);
 
   return function teardown() {
     scrollEl.removeEventListener?.("scroll", onScroll);
     fab.removeEventListener("click", onFabClick);
     rootEl.removeEventListener("click", onCardActivate);
     rootEl.removeEventListener("keydown", onCardActivate);
+    rootEl.removeEventListener("pointerdown", onCardPrefetch);
+    rootEl.removeEventListener("pointerover", onCardPrefetch);
     rootEl.replaceChildren();
     rootEl.classList.remove("portfolio-mobile");
     if ("hidden" in rootEl) {
