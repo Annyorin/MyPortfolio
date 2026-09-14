@@ -31,7 +31,7 @@ const CARD_DESCRIPTION =
 const SIDEBAR_BIO =
   "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.";
 
-/** Figma / mirror / screen-spec: BG/1/2 = 345×230; IMG_3 = 345×345; Comp ≈149×103; me 254; Macbook 389×283. */
+/** Figma / mirror / screen-spec: BG/1/2 = 345×230; IMG_3 = 345×345; Comp ≈149×103; me 254; Macbook 388×283. */
 const MEDIA_BOXES = {
   img_bg: { w: 345, h: 230 },
   img_1: { w: 345, h: 230 },
@@ -39,8 +39,16 @@ const MEDIA_BOXES = {
   img_3: { w: 345, h: 345 },
   comp: { w: 149, h: 103 },
   me: { w: 254, h: 254 },
-  macbook: { w: 389, h: 283 },
+  macbook: { w: 388, h: 283 },
   sitybike: { w: 308, h: 190 },
+  dragon: { w: 308, h: 190 },
+  phish: { w: 308, h: 190 },
+  anime: { w: 100, h: 91 },
+  books: { w: 84, h: 73 },
+  create: { w: 62, h: 62 },
+  question: { w: 59, h: 69 },
+  seal: { w: 144, h: 60 },
+  sport: { w: 102, h: 87 },
 };
 
 /**
@@ -343,11 +351,11 @@ describe("TC-E2E-02 Sidebar structure and action buttons", () => {
 });
 
 describe("TC-E2E-03 Media proportions", () => {
-  it("eight slots keep target boxes; layout classes present", () => {
+  it("sixteen slots keep target boxes; layout classes present", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(mediaSection);
-    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 8);
+    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 16);
 
     for (const [key, box] of Object.entries(MEDIA_BOXES)) {
       const slotRe = new RegExp(
@@ -387,7 +395,9 @@ describe("Regression atomic Chip + tokens + smoke", () => {
     assert.equal(tokens.get("--type-caption-line"), "16px");
     assert.equal(tokens.get("--type-caption-weight"), "500");
 
-    assert.doesNotMatch(html, /<script\b/i);
+    // SegmentsControl demo needs a module bind; no other inline script payloads.
+    assert.match(html, /<script\s+type=["']module["']>/i);
+    assert.equal((html.match(/<script\b/gi) || []).length, 1);
   });
 });
 

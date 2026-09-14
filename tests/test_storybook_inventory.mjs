@@ -31,6 +31,7 @@ const STORY_GROUPS = [
   "ProfileMobile",
   "Button",
   "Header",
+  "Toolbar",
   "Segments",
   "TitleSidebar",
   "SideNav",
@@ -56,6 +57,7 @@ const CONTENT_STORY_GROUPS = [
   "ProfileMobile",
   "Button",
   "Header",
+  "Toolbar",
   "Segments",
   "TitleSidebar",
   "SideNav",
@@ -429,7 +431,7 @@ describe("storybook DS inventory", () => {
     assert.equal(typeof mediaMod.Default?.render, "function");
     const root = mediaMod.Default.render();
     const imgs = [...root.querySelectorAll("img")];
-    assert.equal(imgs.length, 7, "Media must render IMG_BG…Comp + me + Macbook");
+    assert.equal(imgs.length, 16, "Media must render IMG_*…Comp + me + Macbook + covers + stickers");
 
     const mediaSrc = read("stories/Media.stories.js");
     assert.match(

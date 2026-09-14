@@ -188,9 +188,26 @@ describe("TC-UNIT-01 content-package demo literals", () => {
     }
   });
 
-  it("media slots cover img_bg, img_1, img_2, img_3, comp, me, macbook, sitybike", () => {
+  it("media slots cover img_bg…sitybike, dragon, phish, stickers", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
-    for (const key of ["img_bg", "img_1", "img_2", "img_3", "comp", "me", "macbook", "sitybike"]) {
+    for (const key of [
+      "img_bg",
+      "img_1",
+      "img_2",
+      "img_3",
+      "comp",
+      "me",
+      "macbook",
+      "sitybike",
+      "dragon",
+      "phish",
+      "anime",
+      "books",
+      "create",
+      "question",
+      "seal",
+      "sport",
+    ]) {
       assert.ok(
         html.includes(`data-media="${key}"`) || html.includes(`alt="${key}"`) || html.includes(`aria-label="${key}"`),
         `Media slot missing: ${key}`

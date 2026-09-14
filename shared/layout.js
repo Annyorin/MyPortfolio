@@ -110,7 +110,7 @@ const ABOUT_CHILDREN_1024 = [
     width: 140.61,
     height: 111.01,
     rotation: -10.44,
-    assetKeys: ["macbook"],
+    assetKeys: ["macbook", "macbook.lid"],
   },
   {
     id: "me",
@@ -135,8 +135,8 @@ const ABOUT_CHILDREN_1024 = [
 ];
 
 /**
- * Figma 201:19914 «Портфолио. О себе» — expanded Macbook composition.
- * Children are relative to the expanded cluster origin (Macbook top-left).
+ * Figma 248:17178 / 248:19301 — expanded Macbook with stickers (787×574 on 1366).
+ * Covers ~58% of frame width; children relative to Macbook top-left.
  * @typedef {{ x: number, y: number, width: number, height: number, rotation: number }} AboutChildGeom
  * @typedef {{
  *   cluster: { x: number, y: number, width: number, height: number },
@@ -144,43 +144,107 @@ const ABOUT_CHILDREN_1024 = [
  * }} AboutExpandedLayout
  */
 
-/** @type {Omit<AboutExpandedLayout, "cluster">} */
-const ABOUT_EXPANDED_CHILDREN = {
-  children: {
-    macbook: { x: 0, y: 0, width: 570, height: 415.57, rotation: 0 },
-    me: {
-      x: 110,
-      y: 20.197784423828125,
-      width: 99.63565793613043,
-      height: 99.63565793613043,
-      rotation: 0,
-    },
-    stiker: {
-      x: 140,
-      y: 84.49113464355469,
-      width: 82.98299378156662,
-      height: 37.4175218641758,
-      rotation: 0,
-    },
-  },
-};
-
-/** Expanded About on 1024 artboard (Figma 201:19914). */
-export const ABOUT_EXPANDED_1024 = Object.freeze({
-  cluster: { x: 384, y: 92, width: 570, height: 415.57 },
-  children: ABOUT_EXPANDED_CHILDREN.children,
+/** Figma Macbook 248:19301 on home 1366×768. */
+export const ABOUT_EXPANDED_MACBOOK = Object.freeze({
+  width: 787,
+  height: 574,
+  /** Figma frame used as the screen-fraction reference. */
+  refFrameW: 1366,
+  refFrameH: 768,
+  /** Absolute top-left on the 1366 home frame. */
+  refX: 430,
+  refY: 96,
 });
 
-/** Expanded About on 1366 — same composition, centered in the wider frame. */
-export const ABOUT_EXPANDED_1366 = Object.freeze({
-  cluster: {
-    x: 384 + (1366 - 1024) / 2,
-    y: 92 + (768 - 609) / 2,
-    width: 570,
-    height: 415.57,
-  },
-  children: ABOUT_EXPANDED_CHILDREN.children,
-});
+/**
+ * Build expanded About geometry so Macbook keeps the Figma screen fraction
+ * (~787/1366 of width) on any artboard size.
+ *
+ * @param {number} frameW
+ * @param {number} frameH
+ * @param {{ x?: number, y?: number }} [pos]
+ * @returns {AboutExpandedLayout}
+ */
+export function buildAboutExpandedLayout(frameW, frameH, pos = {}) {
+  const aspect =
+    ABOUT_EXPANDED_MACBOOK.width / ABOUT_EXPANDED_MACBOOK.height;
+  const fracW =
+    ABOUT_EXPANDED_MACBOOK.width / ABOUT_EXPANDED_MACBOOK.refFrameW;
+  const fracH =
+    ABOUT_EXPANDED_MACBOOK.height / ABOUT_EXPANDED_MACBOOK.refFrameH;
+  let width = frameW * fracW;
+  let height = width / aspect;
+  const maxH = frameH * fracH;
+  if (height > maxH) {
+    height = maxH;
+    width = height * aspect;
+  }
+  const scale = width / ABOUT_EXPANDED_MACBOOK.width;
+  const x =
+    Number.isFinite(pos.x)
+      ? /** @type {number} */ (pos.x)
+      : Number.isFinite(frameW) && frameW > 0
+        ? (frameW - width) / 2
+        : ABOUT_EXPANDED_MACBOOK.refX * (frameW / ABOUT_EXPANDED_MACBOOK.refFrameW);
+  const y =
+    Number.isFinite(pos.y)
+      ? /** @type {number} */ (pos.y)
+      : ABOUT_EXPANDED_MACBOOK.refY *
+        (frameH / ABOUT_EXPANDED_MACBOOK.refFrameH);
+  return {
+    cluster: { x, y, width, height },
+    children: {
+      macbook: { x: 0, y: 0, width, height, rotation: 0 },
+      me: {
+        x: 110 * (ABOUT_EXPANDED_MACBOOK.width / 570) * scale,
+        y: 20.197784423828125 * (ABOUT_EXPANDED_MACBOOK.width / 570) * scale,
+        width: 99.63565793613043,
+        height: 99.63565793613043,
+        rotation: 0,
+      },
+      stiker: {
+        x: 140 * (ABOUT_EXPANDED_MACBOOK.width / 570) * scale,
+        y: 84.49113464355469 * (ABOUT_EXPANDED_MACBOOK.width / 570) * scale,
+        width: 82.98299378156662,
+        height: 37.4175218641758,
+        rotation: 0,
+      },
+    },
+  };
+}
+
+/** Expanded About on 1024 — larger Macbook, same center as prior 570×415.57 @ (384, 92). */
+export const ABOUT_EXPANDED_1024 = Object.freeze(
+  (() => {
+    const prev = { x: 384, y: 92, width: 570, height: 415.57 };
+    const fitted = buildAboutExpandedLayout(1024, 609);
+    const cx = prev.x + prev.width / 2;
+    const cy = prev.y + prev.height / 2;
+    return buildAboutExpandedLayout(1024, 609, {
+      x: cx - fitted.cluster.width / 2,
+      y: cy - fitted.cluster.height / 2,
+    });
+  })()
+);
+
+/** Expanded About on 1366 — larger Macbook, same center as prior kit offset layout. */
+export const ABOUT_EXPANDED_1366 = Object.freeze(
+  (() => {
+    const prev = {
+      x: 384 + (1366 - 1024) / 2,
+      y: 92 + (768 - 609) / 2,
+      width: 570,
+      height: 415.57,
+    };
+    const fitted = buildAboutExpandedLayout(1366, 768);
+    const cx = prev.x + prev.width / 2;
+    const cy = prev.y + prev.height / 2;
+    return buildAboutExpandedLayout(1366, 768, {
+      x: cx - fitted.cluster.width / 2,
+      y: cy - fitted.cluster.height / 2,
+    });
+  })()
+);
 
 /**
  * @param {string|null|undefined} layoutId

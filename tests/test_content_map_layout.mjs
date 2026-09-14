@@ -75,6 +75,10 @@ describe("content map / scene layout / resolveAsset", () => {
       contentMap["card.c.url"],
       /behance\.net\/gallery\/211908269/
     );
+    assert.equal(contentMap["hover.label"], "Behance");
+    assert.equal(contentMap["hover.label.view"], "Посмотреть");
+    assert.equal(contentMap["card.c.hover.labelIdle"], "Посмотреть");
+    assert.equal(contentMap["card.c.hover.label"], "Behance");
   });
 
   it("TC-E2E-02: layout has 7 slots with zIndex paint order BG→…→Tapper", async () => {

@@ -47,6 +47,7 @@ const STORY_GROUPS = [
   "ProfileMobile",
   "Button",
   "Header",
+  "Toolbar",
   "Segments",
   "TitleSidebar",
   "SideNav",

@@ -1,7 +1,9 @@
 /**
- * About-me Macbook expand (Figma 201:19914).
+ * About-me Macbook expand (Figma 248:17178).
  */
 import assert from "node:assert/strict";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, it } from "node:test";
 import {
   ABOUT_EXPANDED_1024,
@@ -12,6 +14,17 @@ import {
   ABOUT_EXPAND_MS,
   createAboutExpand,
 } from "../portfolio/js/aboutExpand.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dirname, "..");
+
+/**
+ * @param {string} relativePath
+ * @returns {string}
+ */
+function abs(relativePath) {
+  return path.join(REPO_ROOT, relativePath);
+}
 
 /**
  * Minimal DOM shim for about cluster + cards.
@@ -112,14 +125,30 @@ function makeAboutDom() {
   return { world, about, byKind };
 }
 
-describe("about expanded layout (Figma 201:19914)", () => {
-  it("exports 570×415.57 Macbook composition for 1024 and 1366", () => {
-    assert.equal(ABOUT_EXPANDED_1024.cluster.width, 570);
-    assert.equal(ABOUT_EXPANDED_1024.cluster.height, 415.57);
-    assert.equal(ABOUT_EXPANDED_1024.cluster.x, 384);
-    assert.equal(ABOUT_EXPANDED_1024.cluster.y, 92);
-    assert.equal(ABOUT_EXPANDED_1024.children.macbook.rotation, 0);
-    assert.ok(ABOUT_EXPANDED_1366.cluster.x > ABOUT_EXPANDED_1024.cluster.x);
+describe("about expanded layout (Figma 248:17178 Macbook)", () => {
+  it("keeps prior expand center while using larger Macbook fraction", () => {
+    const prev1024 = { x: 384, y: 92, width: 570, height: 415.57 };
+    const prev1366 = {
+      x: 384 + (1366 - 1024) / 2,
+      y: 92 + (768 - 609) / 2,
+      width: 570,
+      height: 415.57,
+    };
+    const c1024 = {
+      x: ABOUT_EXPANDED_1024.cluster.x + ABOUT_EXPANDED_1024.cluster.width / 2,
+      y: ABOUT_EXPANDED_1024.cluster.y + ABOUT_EXPANDED_1024.cluster.height / 2,
+    };
+    const c1366 = {
+      x: ABOUT_EXPANDED_1366.cluster.x + ABOUT_EXPANDED_1366.cluster.width / 2,
+      y: ABOUT_EXPANDED_1366.cluster.y + ABOUT_EXPANDED_1366.cluster.height / 2,
+    };
+    assert.ok(Math.abs(c1024.x - (prev1024.x + prev1024.width / 2)) < 0.01);
+    assert.ok(Math.abs(c1024.y - (prev1024.y + prev1024.height / 2)) < 0.01);
+    assert.ok(Math.abs(c1366.x - (prev1366.x + prev1366.width / 2)) < 0.01);
+    assert.ok(Math.abs(c1366.y - (prev1366.y + prev1366.height / 2)) < 0.01);
+    assert.ok(ABOUT_EXPANDED_1024.cluster.width > 580);
+    assert.equal(ABOUT_EXPANDED_1366.cluster.width, 787);
+    assert.equal(ABOUT_EXPANDED_1366.cluster.height, 574);
     assert.equal(getAboutExpandedLayout("51:4107"), ABOUT_EXPANDED_1366);
     assert.equal(getAboutExpandedLayout("41:1416"), ABOUT_EXPANDED_1024);
   });
@@ -147,11 +176,14 @@ describe("createAboutExpand", () => {
     }
 
     assert.equal(ctrl.isExpanded(), true);
-    assert.equal(about.style.width, "570px");
-    assert.equal(about.style.height, "415.57px");
-    assert.equal(about.style.left, "384px");
-    assert.equal(byKind.get("macbook").style.width, "570px");
-    assert.equal(byKind.get("macbook").style.height, "415.57px");
+    const expectedW = ABOUT_EXPANDED_1024.cluster.width;
+    const expectedH = ABOUT_EXPANDED_1024.cluster.height;
+    assert.equal(about.style.width, `${expectedW}px`);
+    assert.equal(about.style.height, `${expectedH}px`);
+    assert.equal(about.style.left, `${ABOUT_EXPANDED_1024.cluster.x}px`);
+    assert.equal(about.style.top, `${ABOUT_EXPANDED_1024.cluster.y}px`);
+    assert.equal(byKind.get("macbook").style.width, `${expectedW}px`);
+    assert.equal(byKind.get("macbook").style.height, `${expectedH}px`);
     assert.equal(byKind.get("macbook").style.transform, "none");
     assert.ok(about.classList.contains("is-about-open"));
     assert.equal(about.getAttribute("aria-expanded"), "true");
@@ -196,5 +228,76 @@ describe("createAboutExpand", () => {
       globalThis.matchMedia = origMatch;
       ctrl.destroy();
     }
+  });
+
+  it("clears sticker inert when open and restores when closed", () => {
+    const { world, about, byKind } = makeAboutDom();
+    const stickers = {
+      className: "scene-about__stickers",
+      attributes: /** @type {Record<string, string>} */ ({ inert: "" }),
+      children: [],
+      setAttribute(k, v) {
+        this.attributes[k] = String(v);
+      },
+      removeAttribute(k) {
+        delete this.attributes[k];
+      },
+      hasAttribute(k) {
+        return Object.hasOwn(this.attributes, k);
+      },
+      querySelectorAll() {
+        return this.children;
+      },
+    };
+    about.querySelector = (sel) => {
+      if (String(sel).includes("scene-about__stickers")) {
+        return stickers;
+      }
+      const m = /data-node-kind=['"]([^'"]+)['"]/.exec(String(sel));
+      if (m) {
+        return byKind.get(m[1]) || null;
+      }
+      return null;
+    };
+
+    const ctrl = createAboutExpand({
+      aboutEl: /** @type {any} */ (about),
+      worldEl: /** @type {any} */ (world),
+      layoutId: "41:1416",
+    });
+    const origMatch = globalThis.matchMedia;
+    globalThis.matchMedia = () => ({ matches: true, addListener() {}, removeListener() {} });
+    try {
+      assert.equal(stickers.hasAttribute("inert"), true);
+      ctrl.open();
+      assert.equal(stickers.hasAttribute("inert"), false);
+      ctrl.close();
+      assert.equal(stickers.hasAttribute("inert"), true);
+    } finally {
+      globalThis.matchMedia = origMatch;
+      ctrl.destroy();
+    }
+  });
+});
+
+describe("Macbook sticker content", () => {
+  it("contentMap has Hint strings and layered Macbook asset keys", async () => {
+    const { contentMap } = await import(
+      pathToFileURL(abs("shared/content.js")).href + `?t=${Date.now()}`
+    );
+    for (const id of ["create", "question", "sport", "anime", "seal", "books"]) {
+      assert.equal(typeof contentMap[`hint.${id}`], "string");
+      assert.ok(contentMap[`hint.${id}`].length > 0);
+      assert.ok(contentMap.assets[`macbook.sticker.${id}`]?.pathFromDsRoot);
+    }
+    assert.equal(
+      contentMap.assets["macbook.lid"]?.pathFromDsRoot,
+      "images/macbook-lid.png"
+    );
+    assert.equal(
+      contentMap.assets.macbook?.pathFromDsRoot,
+      "images/macbook-248-17115.png"
+    );
+    assert.match(contentMap.assets.anime.pathFromDsRoot, /\.svg$/);
   });
 });

@@ -92,7 +92,7 @@ body {
   overflow: visible;
   transform: scale(1);
   transform-origin: center center;
-  transition: transform 220ms ease;
+  transition: transform 480ms cubic-bezier(0.22, 0.8, 0.2, 1);
   cursor: pointer;
   z-index: 30;
 }
@@ -108,6 +108,14 @@ body {
   transform: none;
   cursor: zoom-out;
   z-index: 45;
+}
+
+.scene-about-cluster.is-about-open.is-card-grab {
+  cursor: grab;
+}
+
+.scene-about-cluster.is-about-open.is-card-dragging {
+  cursor: grabbing;
 }
 
 .scene-about-cluster.is-about-expanding,
@@ -130,6 +138,50 @@ body {
   transition: opacity 480ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+/* Card CursorHover — follows pointer bottom-right (like Macbook Hint); may leave card. */
+.ds-card[data-card-hover] {
+  overflow: visible;
+}
+
+.ds-card[data-card-hover] .ds-card__media {
+  overflow: hidden;
+  border-radius: 23px 23px 0 0;
+}
+
+.ds-card__cursor-hover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  margin: 0;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: none;
+  transition:
+    opacity 120ms ease,
+    visibility 0s linear 120ms;
+}
+
+.ds-card.is-card-cursor-hover:not(.is-card-dragging) > .ds-card__cursor-hover {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 120ms ease,
+    visibility 0s linear 0s;
+}
+
+.ds-card__cursor-hover .ds-hover {
+  pointer-events: none;
+  cursor: inherit;
+}
+
+@media (hover: none) {
+  .ds-card__cursor-hover {
+    display: none;
+  }
+}
+
 .scene-about__item {
   overflow: visible;
   will-change: left, top, width, height, transform;
@@ -143,7 +195,7 @@ body {
 }
 
 .scene-about__me > img,
-.scene-about__macbook > img {
+.scene-about__macbook-lid {
   display: block;
   width: 100%;
   height: 100%;
@@ -152,8 +204,148 @@ body {
   -webkit-user-drag: none;
 }
 
+.scene-about__stickers {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.scene-about__sticker {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.scene-about-cluster.is-about-open .scene-about__stickers:not([inert]),
+.scene-about-cluster.is-about-open .scene-about__sticker {
+  pointer-events: auto;
+}
+
+.scene-about__sticker[data-sticker="sport"] {
+  top: 6.2%;
+  right: 26.89%;
+  bottom: 57.05%;
+  left: 41.66%;
+}
+
+.scene-about__sticker[data-sticker="seal"] {
+  top: 68.2%;
+  right: 53.87%;
+  bottom: 10.6%;
+  left: 9.02%;
+}
+
+.scene-about__sticker[data-sticker="question"] {
+  top: 45.49%;
+  right: 9.01%;
+  bottom: 37.55%;
+  left: 80.68%;
+}
+
+.scene-about__sticker[data-sticker="create"] {
+  top: 7%;
+  right: 10.14%;
+  bottom: 71.8%;
+  left: 74.14%;
+}
+
+.scene-about__sticker[data-sticker="books"] {
+  top: 68.2%;
+  right: 14.95%;
+  bottom: 7.42%;
+  left: 64.43%;
+}
+
+.scene-about__sticker[data-sticker="anime"] {
+  top: 25.28%;
+  right: 67.79%;
+  bottom: 42.31%;
+  left: 6.43%;
+}
+
+.scene-about__sticker > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transform-origin: center center;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease;
+}
+
+.scene-about-cluster.is-about-open .scene-about__sticker:hover > img,
+.scene-about-cluster.is-about-open .scene-about__sticker:focus-visible > img,
+.scene-about-cluster.is-about-open .scene-about__sticker.is-hint-open > img {
+  transform: scale(1.04);
+  filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.25));
+}
+
+.scene-about__sticker:focus-visible {
+  outline: 2px solid #232323;
+  outline-offset: 2px;
+}
+
+/* Hint follows pointer via body portal (.scene-about__hint-float); keep in-DOM tip for a11y only. */
+.scene-about__sticker > .ds-hint {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Floating Hint — bottom-right of cursor; enter like Ricky (scale 0→1, tip origin). */
+.scene-about__hint-float {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10000;
+  margin: 0;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0);
+  transform-origin: -12px -12px;
+  transition:
+    opacity 180ms ease,
+    transform 480ms cubic-bezier(0.34, 1.45, 0.64, 1),
+    visibility 0s linear 400ms;
+}
+
+.scene-about__hint-float.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  transition:
+    opacity 180ms ease,
+    transform 480ms cubic-bezier(0.34, 1.45, 0.64, 1),
+    visibility 0s linear 0s;
+}
+
 .scene-about-cluster .ds-stiker {
   pointer-events: auto;
+  z-index: 2;
+}
+
+.scene-about__me {
+  z-index: 2;
 }
 
 .scene-bg {
@@ -379,6 +571,7 @@ body {
 }
 
 .portfolio-mobile__card.ds-card {
+  position: relative;
   width: 100%;
   height: 322px;
   max-width: none;

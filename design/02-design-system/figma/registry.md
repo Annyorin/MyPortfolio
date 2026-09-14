@@ -1,7 +1,7 @@
 ---
 type: registry
 env: 02-design-system
-updated: 2026-09-13
+updated: 2026-09-14
 mcp: remote https://mcp.figma.com/mcp
 account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 ---
@@ -66,13 +66,15 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Tapper | `41:1311` | xboMnqU5JURL0xlzxN7edN | Кнопка 104×40 | default | `components/tapper.md` | synced | 2026-09-08 |
 | Stiker | `41:1517` | xboMnqU5JURL0xlzxN7edN | Бейдж «Обо мне» 81×32 | default | `components/stiker.md` | synced | 2026-09-08 |
 | Tooltip | `92:11490` | xboMnqU5JURL0xlzxN7edN | Подсказка pill | default | `components/tooltip.md` | synced | 2026-09-08 |
+| Hint | `251:21308` | xboMnqU5JURL0xlzxN7edN | Белая tip у стикеров Macbook · max ~252 · radius 0 25 25 25 | default | `components/hint.md` | synced | 2026-09-14 |
 | CursorHover (Hover) | `41:1548` | xboMnqU5JURL0xlzxN7edN | CTA Behance+arrow 114×40 | default | `components/hover.md` | synced | 2026-09-08 |
 | FloatingAction | `169:13303` | xboMnqU5JURL0xlzxN7edN | FAB 50×50 arrow-up | default | `components/floating-action.md` | synced | 2026-09-08 |
 | Card | `40:1209` | xboMnqU5JURL0xlzxN7edN | Карточка 310×310 | default, hover | `components/card.md` | synced | 2026-09-13 |
 | Card / default | `40:1208` | xboMnqU5JURL0xlzxN7edN | Card покой · Shadow | Property 1=default | `components/card.md` | synced | 2026-09-13 |
 | Card / hover | `40:1207` | xboMnqU5JURL0xlzxN7edN | Card наведение · Shadow | Property 1=hover | `components/card.md` | synced | 2026-09-08 |
 | Sidebar (profile) | `158:11468` | xboMnqU5JURL0xlzxN7edN | Сайдбар профиля 310×561 | default | `components/sidebar.md` | synced | 2026-09-13 |
-| Header | `226:15768` | xboMnqU5JURL0xlzxN7edN | Шапка кейса 620×85 | default | `components/header.md` | synced | 2026-09-13 |
+| Header | `226:15768` | xboMnqU5JURL0xlzxN7edN | Шапка кейса 620×81 · py 16 | default | `components/header.md` | synced | 2026-09-14 |
+| Toolbar | `247:16546` | xboMnqU5JURL0xlzxN7edN | Mobile case bar 360×48 · взамен Header ≤480 | default | `components/toolbar.md` | synced | 2026-09-14 |
 | SegmentsControl (Segmets_control) | `226:15785` | xboMnqU5JURL0xlzxN7edN | Сегмент-переключатель 620×42 | long, short | `components/segments-control.md` | synced | 2026-09-13 |
 | SegmentsControl / long | `226:15785` | xboMnqU5JURL0xlzxN7edN | Active «Длинная версия» | Property 1=long | `components/segments-control.md` | synced | 2026-09-13 |
 | SegmentsControl / short | `226:15784` | xboMnqU5JURL0xlzxN7edN | Active «Короткая версия» | Property 1=short | `components/segments-control.md` | synced | 2026-09-13 |
@@ -87,8 +89,16 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | IMG_3 | `41:11476` | xboMnqU5JURL0xlzxN7edN | Медиа 345×345 | — | `components/media.md` | synced | 2026-09-08 |
 | Comp | `41:11511` | xboMnqU5JURL0xlzxN7edN | Композитный превью | — | `components/media.md` | synced | 2026-09-08 |
 | me | `105:11564` | xboMnqU5JURL0xlzxN7edN | Портрет 254×254 | — | `components/media.md` | synced | 2026-09-08 |
-| Macbook | `105:11869` | xboMnqU5JURL0xlzxN7edN | Девайс-мок 389×283 | — | `components/media.md` | synced | 2026-09-13 |
+| Macbook | `248:17115` | xboMnqU5JURL0xlzxN7edN | Девайс-мок + стикеры 388×283 (был `247:16308`) | — | `components/media.md` | synced | 2026-09-14 |
 | SityBike | `164:11800` | xboMnqU5JURL0xlzxN7edN | Cover CityBike 308×190 | — | `components/sitybike.md` | synced | 2026-09-08 |
+| Dragon | `232:16826` | xboMnqU5JURL0xlzxN7edN | Cover InnoDragon 308×190 | — | `components/dragon.md` | synced | 2026-09-14 |
+| Phish | `232:16829` | xboMnqU5JURL0xlzxN7edN | Cover InnoPhish 308×190 | — | `components/phish.md` | synced | 2026-09-14 |
+| anime | `244:17347` | xboMnqU5JURL0xlzxN7edN | Стикер About ~100×91 | — | `components/media.md` | synced | 2026-09-14 |
+| books | `244:17349` | xboMnqU5JURL0xlzxN7edN | Стикер About ~84×73 | — | `components/media.md` | synced | 2026-09-14 |
+| create | `244:17346` | xboMnqU5JURL0xlzxN7edN | Стикер About ~62×62 | — | `components/media.md` | synced | 2026-09-14 |
+| question | `244:17348` | xboMnqU5JURL0xlzxN7edN | Стикер About ~59×69 | — | `components/media.md` | synced | 2026-09-14 |
+| seal | `244:17350` | xboMnqU5JURL0xlzxN7edN | Стикер About 144×60 | — | `components/media.md` | synced | 2026-09-14 |
+| sport | `245:17642` | xboMnqU5JURL0xlzxN7edN | Стикер About ~102×87 | — | `components/media.md` | synced | 2026-09-14 |
 
 Статусы: `draft` → `in-figma` → `synced` → `deprecated`.
 

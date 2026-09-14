@@ -41,8 +41,55 @@ const MEDIA_ASSETS = [
   { key: "img_3", rel: "assets/images/img-3.png" },
   { key: "comp", rel: "assets/images/comp.png" },
   { key: "me", rel: "assets/images/me.png" },
-  { key: "macbook", rel: "assets/images/macbook.png" },
+  { key: "macbook", rel: "assets/images/macbook-248-17115.png" },
+  { key: "macbook.lid", rel: "assets/images/macbook-lid.png" },
+  { key: "dragon", rel: "assets/images/dragon.png" },
+  { key: "phish", rel: "assets/images/phish.png" },
+  { key: "anime", rel: "assets/images/stickers/anime.svg" },
+  { key: "books", rel: "assets/images/stickers/books.svg" },
+  { key: "create", rel: "assets/images/stickers/create.svg" },
+  { key: "question", rel: "assets/images/stickers/question.svg" },
+  { key: "seal", rel: "assets/images/stickers/seal.svg" },
+  { key: "sport", rel: "assets/images/stickers/sport.svg" },
+  { key: "macbook.sticker.anime", rel: "assets/images/stickers/anime.png" },
+  { key: "macbook.sticker.books", rel: "assets/images/stickers/books.png" },
+  { key: "macbook.sticker.create", rel: "assets/images/stickers/create.png" },
+  { key: "macbook.sticker.question", rel: "assets/images/stickers/question.png" },
+  { key: "macbook.sticker.seal", rel: "assets/images/stickers/seal.png" },
+  { key: "macbook.sticker.sport", rel: "assets/images/stickers/sport.png" },
 ];
+
+/** Keys required in index.html media/showcase references (SVG stickers + composite macbook). */
+const INDEX_MEDIA_KEYS = new Set([
+  "icon.close",
+  "icon.plus",
+  "icon.plus.hover",
+  "icon.minus",
+  "icon.minus.hover",
+  "icon.arrow-right",
+  "icon.arrow-left",
+  "icon.burger-menu",
+  "avatar",
+  "card.image",
+  "card.image.a",
+  "card.image.b",
+  "card.image.c",
+  "img_bg",
+  "img_1",
+  "img_2",
+  "img_3",
+  "comp",
+  "me",
+  "macbook",
+  "dragon",
+  "phish",
+  "anime",
+  "books",
+  "create",
+  "question",
+  "seal",
+  "sport",
+]);
 
 /** Display boxes from screen-spec / Figma Ui kit for Media section. */
 const MEDIA_BOXES = {
@@ -52,8 +99,16 @@ const MEDIA_BOXES = {
   img_3: { w: 345, h: 345 },
   comp: { w: 149, h: 103 },
   me: { w: 254, h: 254 },
-  macbook: { w: 389, h: 283 },
+  macbook: { w: 388, h: 283 },
   sitybike: { w: 308, h: 190 },
+  dragon: { w: 308, h: 190 },
+  phish: { w: 308, h: 190 },
+  anime: { w: 100, h: 91 },
+  books: { w: 84, h: 73 },
+  create: { w: 62, h: 62 },
+  question: { w: 59, h: 69 },
+  seal: { w: 144, h: 60 },
+  sport: { w: 102, h: 87 },
 };
 
 /**
@@ -127,6 +182,9 @@ describe("TC-UNIT-01 MediaAsset keys map to disk files", () => {
   it("index.html references each MediaAsset path and meaningful alt on raster imgs", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     for (const { key, rel } of MEDIA_ASSETS) {
+      if (!INDEX_MEDIA_KEYS.has(key)) {
+        continue;
+      }
       assert.ok(html.includes(rel), `index.html missing src path for ${key}: ${rel}`);
     }
 
@@ -222,7 +280,7 @@ describe("TC-E2E-02 missing asset keeps placeholder proportions (A2)", () => {
 });
 
 describe("Regression smoke inventory and foundations tokens", () => {
-  it("five sections and media×8 slots remain in index.html", () => {
+  it("five sections and media×16 slots remain in index.html", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const titles = [];
     const re = /<h2\b[^>]*>([^<]*)<\/h2>/gi;
@@ -234,7 +292,7 @@ describe("Regression smoke inventory and foundations tokens", () => {
 
     const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(mediaSection);
-    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 8);
+    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 16);
   });
 
   it("tokens.css still declares foundation color and shadow variables", () => {

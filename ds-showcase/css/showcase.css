@@ -201,6 +201,7 @@ body {
 .ds-button-samples,
 .ds-link-samples,
 .ds-tooltip-samples,
+.ds-hint-samples,
 .ds-title-sidebar-samples,
 .ds-segments-samples,
 .ds-card-samples,
@@ -225,6 +226,7 @@ body {
 .ds-section[aria-labelledby="section-atomic"] > .ds-link-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-tapper,
 .ds-section[aria-labelledby="section-atomic"] > .ds-tooltip-samples,
+.ds-section[aria-labelledby="section-atomic"] > .ds-hint-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-stiker,
 .ds-section[aria-labelledby="section-atomic"] > .ds-hover,
 .ds-section[aria-labelledby="section-atomic"] > .ds-fab,
@@ -234,6 +236,7 @@ body {
 
 /* Composite: Header / Segments / Menu / MenuMobile / Card / Sidebar */
 .ds-section[aria-labelledby="section-composite"] > .ds-header,
+.ds-section[aria-labelledby="section-composite"] > .ds-toolbar,
 .ds-section[aria-labelledby="section-composite"] > .ds-segments-samples,
 .ds-section[aria-labelledby="section-composite"] > .ds-side-nav,
 .ds-section[aria-labelledby="section-composite"] > .ds-menu-mobile,
@@ -273,13 +276,45 @@ body {
 }
 
 .ds-media > [data-media="macbook"] {
-  width: 389px;
-  aspect-ratio: 389 / 283;
+  width: 388px;
+  aspect-ratio: 388 / 283;
 }
 
-.ds-media > [data-media="sitybike"] {
+.ds-media > [data-media="sitybike"],
+.ds-media > [data-media="dragon"],
+.ds-media > [data-media="phish"] {
   width: 308px;
   aspect-ratio: 308 / 190;
+}
+
+.ds-media > [data-media="anime"] {
+  width: 100px;
+  aspect-ratio: 100 / 91;
+}
+
+.ds-media > [data-media="books"] {
+  width: 84px;
+  aspect-ratio: 84 / 73;
+}
+
+.ds-media > [data-media="create"] {
+  width: 62px;
+  aspect-ratio: 62 / 62;
+}
+
+.ds-media > [data-media="question"] {
+  width: 59px;
+  aspect-ratio: 59 / 69;
+}
+
+.ds-media > [data-media="seal"] {
+  width: 144px;
+  aspect-ratio: 144 / 60;
+}
+
+.ds-media > [data-media="sport"] {
+  width: 102px;
+  aspect-ratio: 102 / 87;
 }
 /**
  * MediaAsset / Avatar box: keeps screen-spec proportions when the file is

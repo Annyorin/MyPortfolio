@@ -76,59 +76,14 @@ body.is-page-crossfading .case-page__fab {
     opacity 240ms cubic-bezier(0.33, 0.05, 0.2, 1);
 }
 
-/* —— Legacy mobile toolbar (unused; Header covers 768–1920 per Figma) —— */
-.case-page__toolbar {
-  box-sizing: border-box;
+/* —— Toolbar mobile (Figma 247:16546) — visible ≤480 instead of Header —— */
+.case-page__toolbar.ds-toolbar {
   display: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
   position: sticky;
   top: 0;
   z-index: 80;
-  height: 48px;
-  padding: 0 16px;
-  background-color: var(--color-white);
-  border-bottom: 1px solid var(--color-gray-dark);
-}
-
-.case-page__toolbar-back,
-.case-page__toolbar-burger {
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--color-black);
-  cursor: pointer;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-
-.case-page__toolbar-back:focus-visible,
-.case-page__toolbar-burger:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-.case-page__toolbar-title {
-  margin: 0;
-  flex: 1 1 auto;
-  min-width: 0;
-  text-align: center;
-  font-family: Inter, sans-serif;
-  font-size: var(--type-h2-size);
-  line-height: var(--type-h2-line);
-  font-weight: var(--type-h2-weight);
-  color: var(--color-black);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: 100%;
+  max-width: none;
 }
 
 .case-page__backdrop {
@@ -303,9 +258,9 @@ body.is-page-crossfading .case-page__fab {
 .case-page__meta-value {
   margin: 0;
   font-family: Inter, sans-serif;
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-line);
-  font-weight: var(--type-caption-weight);
+  font-size: var(--type-text-2-size);
+  line-height: var(--type-text-2-line);
+  font-weight: var(--type-text-2-weight);
   color: var(--color-gray-text);
 }
 
@@ -366,9 +321,9 @@ body.is-page-crossfading .case-page__fab {
 .case-page__contact-sub {
   margin: 0;
   font-family: Inter, sans-serif;
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-line);
-  font-weight: var(--type-caption-weight);
+  font-size: var(--type-text-2-size);
+  line-height: var(--type-text-2-line);
+  font-weight: var(--type-text-2-weight);
   color: var(--color-gray-text);
 }
 
@@ -577,10 +532,32 @@ body.is-page-crossfading .case-page__fab {
   }
 }
 
-/* —— ≤480 (covers 360): compact hero/contacts —— */
+/* —— ≤480 (covers 360): Toolbar instead of Header · compact hero/contacts —— */
 @media (max-width: 480px) {
+  .case-page__toolbar.ds-toolbar {
+    display: flex;
+  }
+
+  .case-page__main-inner > .ds-header {
+    display: none;
+  }
+
+  .case-page__sidebar {
+    top: 56px;
+  }
+
   .case-page__meta-grid {
     column-gap: 18px;
+  }
+
+  /* 360 keeps Caption; desktop/tablet bodies are Text2 */
+  .case-page__meta-value,
+  .case-page__fill-body,
+  .case-page__text-body,
+  .case-page__contact-sub {
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--type-caption-weight);
   }
 
   .case-page__picture {
@@ -619,12 +596,5 @@ body.is-page-crossfading .case-page__fab {
 
   .case-page__fab.ds-fab {
     display: none !important;
-  }
-}
-
-/* —— 360: hide Header brand title (back + burger remain) —— */
-@media (max-width: 360px) {
-  .case-page__main-inner .ds-header__title {
-    display: none;
   }
 }

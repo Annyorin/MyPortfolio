@@ -49,10 +49,6 @@ function fillContent(content) {
   setText("[data-case='header-brand']", content["case.dragon.header_brand"] || content["header.title"]);
   setText("[data-case='title']", content["card.a.title"]);
   setText("[data-case='title-meta']", content["card.a.meta"]);
-  setText(
-    "[data-case='toolbar-title']",
-    content["case.dragon.toolbar_title"] || content["card.a.title"]
-  );
 
   setText("[data-case='period-label']", content["case.dragon.period_label"]);
   setText("[data-case='period-value']", content["case.dragon.period_value"]);
@@ -73,6 +69,11 @@ function fillContent(content) {
   setText("[data-case='contact-heading']", content["case.dragon.contact_heading"]);
   setText("[data-case='contact-sub']", content["case.dragon.contact_sub"]);
   setText("[data-case='next-label']", content["case.dragon.next_label"]);
+  setText("[data-case='toolbar-back-label']", content["toolbar.back"]);
+  const toolbarBack = document.querySelector(".ds-toolbar__back");
+  if (toolbarBack instanceof HTMLElement) {
+    toolbarBack.setAttribute("aria-label", textOf(content["toolbar.back"]));
+  }
 
   const navMap = [
     ["context", "sidenav.context"],
@@ -317,7 +318,7 @@ function bindDrawer({ burgers, backdrop, nav }) {
  */
 function bindHomeLinks() {
   const links = Array.from(
-    document.querySelectorAll("a.case-page__toolbar-back, .ds-header a[href]")
+    document.querySelectorAll("a.ds-toolbar__back, a.case-page__toolbar-back, .ds-header a[href]")
   ).filter((el) => el instanceof HTMLElement);
 
   /**

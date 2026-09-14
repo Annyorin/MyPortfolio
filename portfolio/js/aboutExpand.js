@@ -1,9 +1,12 @@
 /**
- * Smooth About-me expand: Macbook grows into Figma «Портфолио. О себе» (201:19914).
+ * Smooth About-me expand: Macbook grows to Figma 248:17178 fraction of the viewport.
  * Motion language matches rickyzhang.me / card expand (cubic-bezier 0.32, 0.72, 0, 1).
  */
 
-import { getAboutExpandedLayout } from "../../shared/layout.js";
+import {
+  buildAboutExpandedLayout,
+  getAboutExpandedLayout,
+} from "../../shared/layout.js";
 
 /** Keep in sync with `.scene-about-cluster.is-about-expanding` CSS. */
 export const ABOUT_EXPAND_MS = 720;
@@ -158,6 +161,76 @@ export function createAboutExpand(options) {
   }
 
   /**
+   * Expanded Macbook size: Figma screen fraction (~787/1366) of the live viewport,
+   * converted to world units. Anchor stays the canonical expanded layout center
+   * (same as before the size bump — not the collapsed About position).
+   *
+   * @returns {import("../../shared/layout.js").AboutExpandedLayout}
+   */
+  function resolveExpandedLayout() {
+    const base = getAboutExpandedLayout(layoutId);
+    const cx = base.cluster.x + base.cluster.width / 2;
+    const cy = base.cluster.y + base.cluster.height / 2;
+
+    const vw = Number(
+      /** @type {HTMLElement|null} */ (viewportEl)?.clientWidth
+    );
+    const vh = Number(
+      /** @type {HTMLElement|null} */ (viewportEl)?.clientHeight
+    );
+    const scale =
+      camera && typeof camera.getState === "function"
+        ? Number(camera.getState().scale) || 1
+        : 1;
+
+    if (
+      Number.isFinite(vw) &&
+      Number.isFinite(vh) &&
+      vw > 0 &&
+      vh > 0 &&
+      scale > 0
+    ) {
+      const screenFit = buildAboutExpandedLayout(vw, vh);
+      const worldW = screenFit.cluster.width / scale;
+      const worldH = screenFit.cluster.height / scale;
+      const childScale = worldW / base.cluster.width;
+      return {
+        cluster: {
+          x: cx - worldW / 2,
+          y: cy - worldH / 2,
+          width: worldW,
+          height: worldH,
+        },
+        children: {
+          macbook: {
+            x: 0,
+            y: 0,
+            width: worldW,
+            height: worldH,
+            rotation: 0,
+          },
+          me: {
+            x: base.children.me.x * childScale,
+            y: base.children.me.y * childScale,
+            width: base.children.me.width,
+            height: base.children.me.height,
+            rotation: 0,
+          },
+          stiker: {
+            x: base.children.stiker.x * childScale,
+            y: base.children.stiker.y * childScale,
+            width: base.children.stiker.width,
+            height: base.children.stiker.height,
+            rotation: 0,
+          },
+        },
+      };
+    }
+
+    return base;
+  }
+
+  /**
    * Soft-focus camera on expanded Macbook center (world space).
    * @param {{ x: number, y: number, width: number, height: number }} cluster
    * @returns {void}
@@ -182,7 +255,7 @@ export function createAboutExpand(options) {
     const cx = cluster.x + cluster.width / 2;
     const cy = cluster.y + cluster.height / 2;
     const scale = Number(state.scale) || 1;
-    // Prefer content stage center (right of sidebar chrome ≈ 358px on 1024).
+    // Prefer content stage center (right of sidebar chrome ≈ 58% like Figma).
     const stageCx = vw * 0.58;
     const stageCy = vh * 0.5;
     const screenX = cx * scale + Number(state.translateX);
@@ -200,7 +273,7 @@ export function createAboutExpand(options) {
     if (!collapsed) {
       return;
     }
-    const expandedLayout = getAboutExpandedLayout(layoutId);
+    const expandedLayout = resolveExpandedLayout();
     const cluster = open ? expandedLayout.cluster : collapsed.cluster;
     const kids = open ? expandedLayout.children : collapsed.children;
 
@@ -221,6 +294,28 @@ export function createAboutExpand(options) {
 
     aboutEl.classList.toggle("is-about-open", open);
     aboutEl.setAttribute("aria-expanded", open ? "true" : "false");
+
+    const stickersRoot = /** @type {HTMLElement|null} */ (
+      aboutEl.querySelector(".scene-about__stickers")
+    );
+    if (stickersRoot) {
+      if (open) {
+        stickersRoot.removeAttribute("inert");
+      } else {
+        stickersRoot.setAttribute("inert", "");
+        for (const btn of stickersRoot.querySelectorAll(
+          ".scene-about__sticker.is-hint-open"
+        )) {
+          btn.classList.remove("is-hint-open");
+        }
+        if (typeof document !== "undefined" && document?.querySelector) {
+          document
+            .querySelector(".scene-about__hint-float")
+            ?.classList?.remove?.("is-visible");
+        }
+      }
+    }
+
     setCardsDimmed(open);
     expanded = open;
 

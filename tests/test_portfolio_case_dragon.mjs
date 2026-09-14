@@ -48,11 +48,14 @@ describe("portfolio case-dragon page", () => {
     );
   });
 
-  it("case-dragon.html includes Header burger and drawer backdrop", () => {
+  it("case-dragon.html includes Header, Toolbar, and drawer backdrop", () => {
     const html = read("portfolio/case-dragon.html");
     assert.match(html, /class=["'][^"']*\bds-header\b/);
     assert.match(html, /class=["'][^"']*\bds-header__title\b/);
     assert.match(html, /data-case=["']header-burger["']/);
+    assert.match(html, /class=["'][^"']*\bds-toolbar\b/);
+    assert.match(html, /data-case=["']toolbar-burger["']/);
+    assert.match(html, /data-case=["']toolbar-back-label["']/);
     assert.match(html, /data-case=["']drawer-backdrop["']/);
     assert.match(html, /id=["']case-side-nav["']/);
     assert.match(html, /burger-menu\.svg/);
@@ -75,6 +78,7 @@ describe("portfolio case-dragon page", () => {
     assert.equal(contentMap["case.dragon.context_title"], "Контекст задачи");
     assert.equal(contentMap["case.dragon.intro_title"], "Вводные");
     assert.equal(contentMap["case.dragon.next_label"], "Далее");
+    assert.equal(contentMap["toolbar.back"], "Назад");
     assert.equal(contentMap["case.dragon.toolbar_title"], "InnoDragon");
     assert.match(contentMap["case.dragon.contact_heading"], /Свяжитесь\sсо/);
     assert.equal(
@@ -108,14 +112,20 @@ describe("portfolio case-dragon page", () => {
     assert.match(css, /@media\s*\(max-width:\s*1365px\)/);
     assert.match(css, /@media\s*\(max-width:\s*768px\)/);
     assert.match(css, /@media\s*\(max-width:\s*480px\)/);
-    assert.match(css, /@media\s*\(max-width:\s*360px\)/);
-    assert.match(css, /\.ds-header__title[\s\S]*display:\s*none/);
+    assert.match(css, /\.case-page__toolbar\.ds-toolbar[\s\S]*display:\s*flex/);
+    assert.match(css, /\.case-page__main-inner\s*>\s*\.ds-header[\s\S]*display:\s*none/);
     assert.match(css, /is-drawer-open/);
     assert.match(css, /ds-menu-mobile/);
     assert.match(css, /var\(--shadow-mobile\)/);
     assert.match(css, /max-width:\s*none/);
     assert.match(css, /\.case-page__sidebar[\s\S]*position:\s*sticky/);
     assert.match(css, /\.case-page__main-inner\s+\.ds-header[\s\S]*position:\s*sticky/);
+    assert.match(css, /\.case-page__meta-value[\s\S]*--type-text-2-size/);
+    assert.match(css, /\.case-page__fill-body[\s\S]*--type-text-2-size/);
+    assert.match(
+      css,
+      /@media\s*\(max-width:\s*480px\)[\s\S]*\.case-page__meta-value[\s\S]*--type-caption-size/
+    );
     assert.doesNotMatch(css, /--color-primary\s*:/);
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Media inventory story: IMG_BG, IMG_1, IMG_2, IMG_3, Comp (ds-showcase Media).
+ * Media inventory story: IMG_*, Comp, me, Macbook, covers, stickers (ds-showcase Media).
  */
 import { resolveAsset } from "../portfolio/js/resolveAsset.js";
 
@@ -55,8 +55,71 @@ const MEDIA_SLOTS = [
     key: "macbook",
     dataMedia: "macbook",
     label: "Macbook",
-    width: 389,
+    width: 388,
     height: 283,
+  },
+  {
+    key: "card.image.c",
+    dataMedia: "sitybike",
+    label: "SityBike",
+    width: 308,
+    height: 190,
+  },
+  {
+    key: "dragon",
+    dataMedia: "dragon",
+    label: "Dragon",
+    width: 308,
+    height: 190,
+  },
+  {
+    key: "phish",
+    dataMedia: "phish",
+    label: "Phish",
+    width: 308,
+    height: 190,
+  },
+  {
+    key: "anime",
+    dataMedia: "anime",
+    label: "anime",
+    width: 100,
+    height: 91,
+  },
+  {
+    key: "books",
+    dataMedia: "books",
+    label: "books",
+    width: 84,
+    height: 73,
+  },
+  {
+    key: "create",
+    dataMedia: "create",
+    label: "create",
+    width: 62,
+    height: 62,
+  },
+  {
+    key: "question",
+    dataMedia: "question",
+    label: "question",
+    width: 59,
+    height: 69,
+  },
+  {
+    key: "seal",
+    dataMedia: "seal",
+    label: "seal",
+    width: 144,
+    height: 60,
+  },
+  {
+    key: "sport",
+    dataMedia: "sport",
+    label: "sport",
+    width: 102,
+    height: 87,
   },
 ];
 

@@ -1,7 +1,7 @@
 ---
 type: log
 env: 02-design-system
-updated: 2026-09-13
+updated: 2026-09-14
 ---
 
 # Лог синхронизаций с Figma
@@ -10,7 +10,14 @@ updated: 2026-09-13
 
 | Дата | Направление | node-id | Что затронуто | Результат |
 |------|-------------|---------|---------------|-----------|
-| 2026-09-13 | read+export | `105:11869` | Macbook Ui kit → `macbook.png` @3× | ok · 389×283 (было 389×276 / витрина 451×319) |
+| 2026-09-14 | read design_context+screenshot+metadata | `226:15768` | Header parity | ok · 620×81 · py 16 |
+| 2026-09-14 | write local | `226:15768` | Header py16 / 620×81 / flex title; `.ds-header`; registry; manifest **v0.1.9** | ok |
+| 2026-09-14 | write local | `251:21308` | +Hint; components.css `.ds-hint`; INDEX; registry; manifest **v0.1.8** | ok |
+| 2026-09-14 | read whoami | — | OAuth session | ok · makjsgjyeqei · student Full |
+| 2026-09-14 | read design_context | `232:16826` `232:16829` `247:16308` `244:17347` `244:17349` `244:17346` `244:17348` `244:17350` `245:17642` | Dragon, Phish, Macbook, stickers | ok |
+| 2026-09-14 | export @3×/@1 | см. выше | → `ds-showcase/assets/images/` (dragon/phish/macbook + stickers/*.svg) | ok · без tmp под Vite watch |
+| 2026-09-14 | write local | `41:11520` | +dragon/phish; media stickers+Macbook; INDEX; registry; manifest **v0.1.6** | ok |
+| 2026-09-13 | read+export | `105:11869` | Macbook Ui kit → `macbook.png` @3× | ok · 389×283 (superseded 2026-09-14 → `247:16308` 388×283) |
 | 2026-09-06 | read whoami | — | OAuth session | ok · makjsgjyeqei · student Full |
 | 2026-09-06 | read metadata | `41:11646` | структура Ui kit | ok · icons/atomic/composite/media + swatches/type |
 | 2026-09-06 | read variables | `41:11646` | color + type + effects | ok · 7 colors, 4 type, Shadow + вв |
@@ -27,6 +34,8 @@ updated: 2026-09-13
 | 2026-09-13 | write local | `41:11520` | +header/segments-control/title-sidebar/side-bar; icons/button/card; INDEX; registry; elevation; manifest **v0.1.4** | ok |
 | 2026-09-13 | read design_context | `245:17643` `227:16241` | MenuMobile + Menu (SideBar TOC) | ok |
 | 2026-09-13 | write local | `245:17643` | +menu-mobile; shadow-mobile; case BurgerMenu≤1365; manifest **v0.1.5** | ok |
+| 2026-09-14 | read design_context | `247:16546` | Toolbar mobile | ok |
+| 2026-09-14 | read+export @3× | `248:17115` | Macbook → `macbook.png` 1164×849 | ok · supersedes `247:16308` |
 
 ## Зафиксированный дрейф
 Расхождения между Figma и текстовым описанием. Устраняются до завершения задачи.
@@ -43,3 +52,5 @@ updated: 2026-09-13
 | 2026-09-13 | Segmets_control | Figma-имя с опечаткой; продукт **SegmentsControl** | closed · documented в segments-control.md |
 | 2026-09-13 | SideBar vs Sidebar | `227:16241` TOC ≠ `158:11468` profile | closed · отдельные файлы side-bar.md / sidebar.md |
 | 2026-09-13 | Card Shadow | default тоже имеет Shadow (ранее в тексте только hover) | closed · card.md + elevation |
+| 2026-09-14 | Macbook scene | Ui kit atomic **388×283** (`248:17115`); на Главной About child **140.61×111.01** (aspect ≠ kit); expanded About **570×415.57** ≈ kit ratio — composition не меняли | open · documented |
+| 2026-09-14 | Dragon/Phish vs IMG_* | Cover `232:16826`/`232:16829` (308×190) ≠ атомы IMG_1/IMG_2 (345×230); продукт `img-1`/`img-2` зеркалят covers | closed · documented в media/dragon/phish |

@@ -1,7 +1,7 @@
 ﻿---
 type: notes
 env: 02-design-system
-updated: 2026-09-13
+updated: 2026-09-14
 ---
 
 # Рабочие заметки
@@ -9,10 +9,10 @@ updated: 2026-09-13
 Прогресс длинных задач этой среды. Читается и дополняется только внутри среды.
 
 ## Активная задача
-_нет_ — manifest **v0.1.5** (MenuMobile + shadow-mobile; Menu/SideBar).
+_нет_ — Header `226:15768` refresh → **620×81**, py 16; manifest **v0.1.9**.
 
 ## Открытые вопросы
-_нет_
+- Macbook About на Главной: оставить scene bbox **140.61×111.01** или подогнать aspect к kit **388×283**? Сейчас drift зафиксирован, composition не трогали.
 
 ## Решения
 - 2026-09-06: источник истины при синке — Figma Variables/metadata; дрейф с ТЗ зафиксирован в sync-log.
@@ -28,3 +28,8 @@ _нет_
 - 2026-09-13: Figma **Segmets_control** → продукт **SegmentsControl**.
 - 2026-09-13: Card default тоже имеет Shadow (не только hover).
 - 2026-09-13: Button + variant **Text** (arrow-left + H2, no fill).
+- 2026-09-14: Macbook node **`248:17115`** · **388×283** (был `247:16308`).
+- 2026-09-14: Dragon/Phish = cover 308×190 как SityBike; зеркала card-innodragon/img-1, card-innophish/img-2.
+- 2026-09-14: stickers anime/books/create/question/seal/sport — декоратив About; SVG в `stickers/`.
+- 2026-09-14: **Hint** (`251:21308`) — white tip для Macbook sticker hover; PNG stickers + `macbook-lid.png` на сцене.
+- 2026-09-14: **Header** (`226:15768`) — **620×81**, py **16** (было 24 / 85); title = flex slot space-between, не absolute-center.

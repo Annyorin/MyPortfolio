@@ -66,7 +66,22 @@ export const contentMap = {
 
   "stiker.label": "Обо мне",
 
+  "hint.create": "Всегда пробую что-то новое в\u00A0творчестве))",
+
+  "hint.question": "Мне нравится участвовать в\u00A0различных квизах",
+
+  "hint.sport": "Я люблю танцевать!",
+
+  "hint.anime": "Фанат аниме со\u00A0стажем более 15 лет)",
+
+  "hint.seal": "Обожаю байкальских нерп, они очень милые:)",
+
+  "hint.books": "Люблю читать книги:) От\u00A0психологии до\u00A0фентези с\u00A0комиксами",
+
   "hover.label": "Behance",
+
+  /* CursorHover on case cards (InnoDragon / InnoPhish); Figma 260:24115 */
+  "hover.label.view": "Посмотреть",
 
   "card.title": "CityBike",
 
@@ -109,7 +124,8 @@ export const contentMap = {
     "Буду рада познакомиться и обсудить новые проекты",
   "case.dragon.next_label": "Далее",
   "case.dragon.toolbar_title": "InnoDragon",
-  "case.dragon.header_brand": "Аня Ясинская· Портфолио",
+  "case.dragon.header_brand": "Аня Ясинская · Портфолио",
+  "toolbar.back": "Назад",
 
   "card.b.title": "InnoPhish",
   "card.b.meta": "· 2024-2026",
@@ -125,6 +141,9 @@ export const contentMap = {
   "card.c.chip": "B2C",
   "card.c.url":
     "https://www.behance.net/gallery/211908269/E-bike-Rental-Mobile-App-for-Android",
+  /* CityBike: no CursorHover — label swap Посмотреть → Behance */
+  "card.c.hover.label": "Behance",
+  "card.c.hover.labelIdle": "Посмотреть",
 
   "tapper.zoom_out": "Отдалить",
 
@@ -134,9 +153,9 @@ export const contentMap = {
 
   "tooltip.zoom_in": "Приблизить",
 
-  "button.home": "На главную",
+  "button.home": "На\u00A0главную",
 
-  "header.title": "Аня Ясинская· Портфолио",
+  "header.title": "Аня Ясинская · Портфолио",
 
   "segments.long": "Длинная версия",
 
@@ -199,11 +218,11 @@ export const contentMap = {
       intrinsicHeight: 516,
     },
 
-    "card.image.a": { pathFromDsRoot: "images/img-1.png", intrinsicWidth: 924, intrinsicHeight: 516 },
+    "card.image.a": { pathFromDsRoot: "images/img-1.png", intrinsicWidth: 924, intrinsicHeight: 570 },
 
     "case.dragon.hero": { pathFromDsRoot: "images/case-dragon-hero.png" },
 
-    "card.image.b": { pathFromDsRoot: "images/img-2.png", intrinsicWidth: 924, intrinsicHeight: 516 },
+    "card.image.b": { pathFromDsRoot: "images/img-2.png", intrinsicWidth: 924, intrinsicHeight: 570 },
 
     "card.image.c": {
       pathFromDsRoot: "images/card-citybike.png",
@@ -223,7 +242,37 @@ export const contentMap = {
 
     me: { pathFromDsRoot: "images/me.png" },
 
-    macbook: { pathFromDsRoot: "images/macbook.png" },
+    macbook: { pathFromDsRoot: "images/macbook-248-17115.png" },
+
+    "macbook.lid": { pathFromDsRoot: "images/macbook-lid.png" },
+
+    dragon: { pathFromDsRoot: "images/dragon.png", intrinsicWidth: 924, intrinsicHeight: 570 },
+
+    phish: { pathFromDsRoot: "images/phish.png", intrinsicWidth: 924, intrinsicHeight: 570 },
+
+    anime: { pathFromDsRoot: "images/stickers/anime.svg" },
+
+    books: { pathFromDsRoot: "images/stickers/books.svg" },
+
+    create: { pathFromDsRoot: "images/stickers/create.svg" },
+
+    question: { pathFromDsRoot: "images/stickers/question.svg" },
+
+    seal: { pathFromDsRoot: "images/stickers/seal.svg" },
+
+    sport: { pathFromDsRoot: "images/stickers/sport.svg" },
+
+    "macbook.sticker.anime": { pathFromDsRoot: "images/stickers/anime.png" },
+
+    "macbook.sticker.books": { pathFromDsRoot: "images/stickers/books.png" },
+
+    "macbook.sticker.create": { pathFromDsRoot: "images/stickers/create.png" },
+
+    "macbook.sticker.question": { pathFromDsRoot: "images/stickers/question.png" },
+
+    "macbook.sticker.seal": { pathFromDsRoot: "images/stickers/seal.png" },
+
+    "macbook.sticker.sport": { pathFromDsRoot: "images/stickers/sport.png" },
 
     "icons.close": { pathFromDsRoot: "icons/close.svg" },
 

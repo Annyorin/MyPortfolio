@@ -22,7 +22,7 @@ const SUPPRESSIBLE_SELECTOR = [
 const CARD_SELECTOR =
   ".ds-card, [data-node-kind='card'], .scene-about-cluster, [data-node-kind='about']";
 const CRITICAL_IMG_SELECTOR =
-  "img[data-media-slot], img.scene-comp__img, .scene-about__me img, .scene-about__macbook img";
+  "img[data-media-slot], img.scene-comp__img, .scene-about__me img, .scene-about__macbook-lid";
 
 /** Hold duration before card enters grab/drag mode (stationary press). */
 export const CARD_LONG_PRESS_MS = 150;
@@ -30,6 +30,161 @@ export const CARD_LONG_PRESS_MS = 150;
 export const CARD_DRAG_MOVE_ARM_MS = 10;
 /** Pointer movement (px) that signals drag intent (vs cancel / wait for long-press). */
 export const CARD_PRESS_SLOP_PX = 8;
+/** Hint tip offset from cursor — bottom-right, like Ricky Zhang reference. */
+const STICKER_HINT_OFFSET_PX = 8;
+/** CursorHover tip offset from cursor — bottom-right, same as Macbook Hint. */
+const CARD_HOVER_OFFSET_PX = 8;
+
+/** @type {HTMLElement|null} */
+let floatingStickerHint = null;
+/** @type {HTMLElement|null} */
+let floatingHintSticker = null;
+/** @type {HTMLElement|null} */
+let activeCardHover = null;
+
+/**
+ * @returns {HTMLElement}
+ */
+function ensureFloatingStickerHint() {
+  if (
+    floatingStickerHint &&
+    typeof floatingStickerHint.isConnected === "boolean" &&
+    floatingStickerHint.isConnected
+  ) {
+    return floatingStickerHint;
+  }
+  const el = document.createElement("div");
+  el.className = "ds-hint scene-about__hint-float";
+  el.setAttribute("role", "tooltip");
+  el.setAttribute("aria-hidden", "true");
+  document.body.appendChild(el);
+  floatingStickerHint = el;
+  return el;
+}
+
+/**
+ * Show Hint at bottom-right of the cursor (viewport coords).
+ * Replays enter spring when first shown or when sticker changes (Ricky-style).
+ *
+ * @param {HTMLElement} sticker
+ * @param {number} clientX
+ * @param {number} clientY
+ */
+function showStickerHintAtCursor(sticker, clientX, clientY) {
+  const source = /** @type {HTMLElement|null} */ (
+    sticker.querySelector(".ds-hint")
+  );
+  const text = source?.textContent?.trim() || "";
+  if (!text) {
+    return;
+  }
+  const el = ensureFloatingStickerHint();
+  const stickerChanged = floatingHintSticker !== sticker;
+  const wasVisible = el.classList.contains("is-visible");
+  if (el.textContent !== text) {
+    el.textContent = text;
+  }
+  el.style.left = `${clientX + STICKER_HINT_OFFSET_PX}px`;
+  el.style.top = `${clientY + STICKER_HINT_OFFSET_PX}px`;
+  floatingHintSticker = sticker;
+  if (!wasVisible || stickerChanged) {
+    el.classList.remove("is-visible");
+    // Restart CSS enter transition (scale 0 → 1).
+    void el.offsetWidth;
+    el.classList.add("is-visible");
+  }
+}
+
+/**
+ * @param {HTMLElement} sticker
+ */
+function showStickerHintUnderObject(sticker) {
+  if (typeof sticker.getBoundingClientRect !== "function") {
+    return;
+  }
+  const box = sticker.getBoundingClientRect();
+  showStickerHintAtCursor(
+    sticker,
+    box.left + box.width * 0.55,
+    box.top + box.height * 0.55
+  );
+}
+
+/**
+ * @param {HTMLElement|null} [sticker]
+ */
+function hideFloatingStickerHint(sticker) {
+  if (sticker && floatingHintSticker && sticker !== floatingHintSticker) {
+    return;
+  }
+  const el = floatingStickerHint;
+  if (el) {
+    el.classList.remove("is-visible");
+  }
+  floatingHintSticker = null;
+}
+
+/**
+ * @param {HTMLElement|null} card
+ */
+function hideCardCursorHover(card) {
+  if (card && activeCardHover && card !== activeCardHover) {
+    return;
+  }
+  const target = card || activeCardHover;
+  if (target) {
+    target.classList.remove("is-card-cursor-hover");
+  }
+  if (!card || card === activeCardHover) {
+    activeCardHover = null;
+  }
+}
+
+/**
+ * Position card CursorHover bottom-right of the pointer (Macbook Hint style).
+ * May extend outside the card bounds.
+ *
+ * @param {HTMLElement} card
+ * @param {number} clientX
+ * @param {number} clientY
+ */
+function showCardCursorHoverAt(card, clientX, clientY) {
+  if (
+    !card ||
+    card.classList.contains("is-card-dragging") ||
+    card.classList.contains("is-card-grab")
+  ) {
+    hideCardCursorHover(card);
+    return;
+  }
+  const mode = String(card.dataset?.cardHover || "");
+  if (mode !== "cursor" && mode !== "swap") {
+    return;
+  }
+  const floater = /** @type {HTMLElement|null} */ (
+    typeof card.querySelector === "function"
+      ? card.querySelector(".ds-card__cursor-hover")
+      : null
+  );
+  if (!floater) {
+    return;
+  }
+  if (activeCardHover && activeCardHover !== card) {
+    activeCardHover.classList.remove("is-card-cursor-hover");
+  }
+  activeCardHover = card;
+  card.classList.add("is-card-cursor-hover");
+
+  if (typeof card.getBoundingClientRect !== "function") {
+    return;
+  }
+
+  const rect = card.getBoundingClientRect();
+  const x = clientX - rect.left + CARD_HOVER_OFFSET_PX;
+  const y = clientY - rect.top + CARD_HOVER_OFFSET_PX;
+  floater.style.left = `${x}px`;
+  floater.style.top = `${y}px`;
+}
 
 /**
  * Resolves the media slot wrapper that must keep geometry on broken src.
@@ -292,6 +447,7 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
    * @param {{ clientX: number, clientY: number, pointerId?: number }} e
    */
   function beginCardDrag(card, e) {
+    hideCardCursorHover(card);
     dragCard = card;
     dragLastX = e.clientX;
     dragLastY = e.clientY;
@@ -423,6 +579,58 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     if (!isInsideRoot(target, rootEl)) {
       return;
     }
+    const sticker = /** @type {HTMLElement|null} */ (
+      target.closest(".scene-about__sticker")
+    );
+    if (sticker && isInsideRoot(sticker, rootEl)) {
+      const aboutHost = /** @type {HTMLElement|null} */ (
+        sticker.closest(".scene-about-cluster, [data-node-kind='about']")
+      );
+      if (aboutHost?.classList?.contains?.("is-about-open")) {
+        const wasOpen = sticker.classList.contains("is-hint-open");
+        for (const btn of aboutHost.querySelectorAll(
+          ".scene-about__sticker.is-hint-open"
+        )) {
+          btn.classList.remove("is-hint-open");
+        }
+        if (!wasOpen) {
+          sticker.classList.add("is-hint-open");
+          if (
+            typeof event.clientX === "number" &&
+            Number.isFinite(event.clientX) &&
+            typeof event.clientY === "number" &&
+            Number.isFinite(event.clientY)
+          ) {
+            showStickerHintAtCursor(
+              sticker,
+              /** @type {number} */ (event.clientX),
+              /** @type {number} */ (event.clientY)
+            );
+          } else {
+            showStickerHintUnderObject(sticker);
+          }
+        } else {
+          hideFloatingStickerHint(sticker);
+        }
+        event.preventDefault?.();
+        event.stopPropagation?.();
+      }
+      return;
+    }
+
+    // Click outside Macbook / About cluster → collapse back to home.
+    const aboutCtrl = getAboutExpandController();
+    if (aboutCtrl?.isExpanded?.()) {
+      const insideAbout = /** @type {HTMLElement|null} */ (
+        target.closest(".scene-about-cluster, [data-node-kind='about']")
+      );
+      if (!insideAbout) {
+        aboutCtrl.close();
+        event.preventDefault?.();
+        return;
+      }
+    }
+
     const about = /** @type {HTMLElement|null} */ (
       target.closest(".scene-about-cluster, [data-node-kind='about']")
     );
@@ -498,12 +706,17 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     if (card.closest?.(".scene-chrome")) {
       return;
     }
-    // About me opens via click/keyboard — never enter long-press drag.
+    // Do not start drag while About expand/collapse is morphing.
+    if (card.classList?.contains?.("is-about-expanding")) {
+      return;
+    }
+    // Open About: stickers own the hit — don't steal for cluster drag.
     if (
-      card.classList?.contains?.("scene-about-cluster") ||
-      card.dataset?.nodeKind === "about" ||
-      card.classList?.contains?.("is-about-open") ||
-      card.classList?.contains?.("is-about-expanding")
+      (card.classList?.contains?.("scene-about-cluster") ||
+        card.dataset?.nodeKind === "about") &&
+      card.classList?.contains?.("is-about-open") &&
+      typeof target.closest === "function" &&
+      target.closest(".scene-about__sticker")
     ) {
       return;
     }
@@ -661,6 +874,158 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     }
   }
 
+  /**
+   * Keep CursorHover / CityBike label glued to the pointer inside the card.
+   *
+   * @param {PointerEvent} event
+   */
+  function onCardCursorHoverMove(event) {
+    if (inputMode.cardDragging || dragCard) {
+      hideCardCursorHover();
+      return;
+    }
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    if (!isInsideRoot(target, rootEl)) {
+      return;
+    }
+    const card = /** @type {HTMLElement|null} */ (target.closest(".ds-card"));
+    if (!card || !card.dataset?.cardHover) {
+      if (activeCardHover) {
+        hideCardCursorHover();
+      }
+      return;
+    }
+    showCardCursorHoverAt(card, event.clientX, event.clientY);
+  }
+
+  /**
+   * @param {PointerEvent} event
+   */
+  function onCardCursorHoverOut(event) {
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    const card = /** @type {HTMLElement|null} */ (target.closest(".ds-card"));
+    if (!card || !card.dataset?.cardHover) {
+      return;
+    }
+    const related = /** @type {Node|null} */ (event.relatedTarget);
+    if (
+      related &&
+      typeof related.closest === "function" &&
+      /** @type {HTMLElement} */ (related).closest(".ds-card") === card
+    ) {
+      return;
+    }
+    hideCardCursorHover(card);
+  }
+
+  /**
+   * Keep sticker Hint glued bottom-right of the cursor while hovering the hit area.
+   *
+   * @param {PointerEvent} event
+   */
+  function onStickerHintPointerMove(event) {
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    if (!isInsideRoot(target, rootEl)) {
+      return;
+    }
+    const sticker = /** @type {HTMLElement|null} */ (
+      target.closest(".scene-about__sticker")
+    );
+    if (!sticker) {
+      return;
+    }
+    const aboutHost = /** @type {HTMLElement|null} */ (
+      sticker.closest(".scene-about-cluster, [data-node-kind='about']")
+    );
+    if (!aboutHost?.classList?.contains?.("is-about-open")) {
+      return;
+    }
+    showStickerHintAtCursor(sticker, event.clientX, event.clientY);
+  }
+
+  /**
+   * @param {PointerEvent} event
+   */
+  function onStickerHintPointerOut(event) {
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    const sticker = /** @type {HTMLElement|null} */ (
+      target.closest(".scene-about__sticker")
+    );
+    if (!sticker) {
+      return;
+    }
+    const related = /** @type {Node|null} */ (event.relatedTarget);
+    if (
+      related &&
+      typeof related.closest === "function" &&
+      /** @type {HTMLElement} */ (related).closest(".scene-about__sticker") ===
+        sticker
+    ) {
+      return;
+    }
+    if (sticker.classList.contains("is-hint-open")) {
+      return;
+    }
+    hideFloatingStickerHint(sticker);
+  }
+
+  /**
+   * Keyboard focus: park Hint under the sticker.
+   *
+   * @param {FocusEvent} event
+   */
+  function onStickerHintFocusIn(event) {
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    if (!isInsideRoot(target, rootEl)) {
+      return;
+    }
+    const sticker = /** @type {HTMLElement|null} */ (
+      target.closest(".scene-about__sticker")
+    );
+    if (!sticker) {
+      return;
+    }
+    const aboutHost = /** @type {HTMLElement|null} */ (
+      sticker.closest(".scene-about-cluster, [data-node-kind='about']")
+    );
+    if (!aboutHost?.classList?.contains?.("is-about-open")) {
+      return;
+    }
+    showStickerHintUnderObject(sticker);
+  }
+
+  /**
+   * @param {FocusEvent} event
+   */
+  function onStickerHintFocusOut(event) {
+    const target = /** @type {HTMLElement|null} */ (event.target);
+    if (!target || typeof target.closest !== "function") {
+      return;
+    }
+    const sticker = /** @type {HTMLElement|null} */ (
+      target.closest(".scene-about__sticker")
+    );
+    if (!sticker || sticker.classList.contains("is-hint-open")) {
+      return;
+    }
+    hideFloatingStickerHint(sticker);
+  }
+
   const captureOpts = { capture: true };
 
   rootEl.addEventListener("pointerdown", suppressInteractiveHit, captureOpts);
@@ -673,10 +1038,18 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
   rootEl.addEventListener("error", onCriticalImageError, captureOpts);
   rootEl.addEventListener("pointerdown", onCardPointerDown);
   rootEl.addEventListener("pointermove", onCardPointerMove);
+  rootEl.addEventListener("pointermove", onCardCursorHoverMove);
+  rootEl.addEventListener("pointermove", onStickerHintPointerMove);
+  rootEl.addEventListener("pointerout", onCardCursorHoverOut);
+  rootEl.addEventListener("pointerout", onStickerHintPointerOut);
   rootEl.addEventListener("pointerup", onCardPointerUp);
   rootEl.addEventListener("pointercancel", onCardPointerUp);
   rootEl.addEventListener("pointerover", onCardPrefetch);
+  rootEl.addEventListener("pointerover", onCardCursorHoverMove);
+  rootEl.addEventListener("pointerover", onStickerHintPointerMove);
   rootEl.addEventListener("focusin", onCardPrefetch);
+  rootEl.addEventListener("focusin", onStickerHintFocusIn);
+  rootEl.addEventListener("focusout", onStickerHintFocusOut);
 
   /** @type {HTMLElement[]} */
   const imgs =
@@ -702,13 +1075,27 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     rootEl.removeEventListener("error", onCriticalImageError, captureOpts);
     rootEl.removeEventListener("pointerdown", onCardPointerDown);
     rootEl.removeEventListener("pointermove", onCardPointerMove);
+    rootEl.removeEventListener("pointermove", onCardCursorHoverMove);
+    rootEl.removeEventListener("pointermove", onStickerHintPointerMove);
+    rootEl.removeEventListener("pointerout", onCardCursorHoverOut);
+    rootEl.removeEventListener("pointerout", onStickerHintPointerOut);
     rootEl.removeEventListener("pointerup", onCardPointerUp);
     rootEl.removeEventListener("pointercancel", onCardPointerUp);
     rootEl.removeEventListener("pointerover", onCardPrefetch);
+    rootEl.removeEventListener("pointerover", onCardCursorHoverMove);
+    rootEl.removeEventListener("pointerover", onStickerHintPointerMove);
     rootEl.removeEventListener("focusin", onCardPrefetch);
+    rootEl.removeEventListener("focusin", onStickerHintFocusIn);
+    rootEl.removeEventListener("focusout", onStickerHintFocusOut);
     for (const img of imgs) {
       img.removeEventListener("error", onImageError);
     }
     endCardDrag();
+    hideCardCursorHover();
+    hideFloatingStickerHint();
+    if (floatingStickerHint?.parentNode) {
+      floatingStickerHint.parentNode.removeChild(floatingStickerHint);
+    }
+    floatingStickerHint = null;
   };
 }

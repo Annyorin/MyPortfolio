@@ -5,6 +5,7 @@
  * TC-E2E-02: slot geometry Sidebar stretch, Card 310×310, Tapper 40×104 portrait
  * TC-E2E-03: profile.role and card.a.title match contentMap
  * TC-E2E-04: three Cards — InnoDragon / InnoPhish / CityBike (Behance)
+ * TC-E2E-05: CursorHover on A/B; CityBike label swap without CursorHover
  * TC-UNIT-01: DOM child order follows ascending zIndex
  * TC-UNIT-02: contacts use href="#" or button without http URL
  */
@@ -451,6 +452,17 @@ describe("portfolio scene renderer", () => {
     assert.equal(parsePx(byId.macbook.style.left), 85.23);
     assert.equal(parsePx(byId.macbook.style.top), 5);
     assert.equal(byId.macbook.style.transform, "rotate(10.44deg)");
+    assert.ok(byId.macbook.querySelector(".scene-about__macbook-lid"));
+    const stickers = byId.macbook.querySelectorAll(".scene-about__sticker");
+    assert.equal(stickers.length, 6);
+    for (const btn of stickers) {
+      assert.ok(btn.querySelector(".ds-hint"));
+      assert.ok(btn.querySelector("img"));
+    }
+    assert.ok(
+      byId.macbook.querySelector(".scene-about__stickers")?.getAttribute("inert") !=
+        null
+    );
     assert.equal(parsePx(byId.stiker.style.left), 24);
     assert.equal(parsePx(byId.stiker.style.top), 83.49);
     assert.equal(byId.stiker.style.transform, "rotate(-3.89deg)");
@@ -518,6 +530,45 @@ describe("portfolio scene renderer", () => {
     assert.equal(
       String(phishDesc?.textContent).split("\n").join(" "),
       "Программа для\u00A0повышения осведомлённости сотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления их устойчивости к\u00A0кибератакам, основанным на\u00A0социальной инженерии."
+    );
+  });
+
+  it("TC-E2E-05: CursorHover on A/B; CityBike CursorHover swap Посмотреть→Behance + arrow", () => {
+    const { nodesById } = mountFresh();
+    for (const id of ["cardA", "cardB"]) {
+      const card = nodesById[id];
+      assert.equal(card.dataset.cardHover, "cursor");
+      const hover = card.querySelector(".ds-hover");
+      assert.ok(hover, `${id} CursorHover`);
+      assert.ok(hover.classList.contains("ds-hover--view"));
+      assert.equal(
+        hover.querySelector(".ds-hover__label")?.textContent,
+        contentMod.contentMap["hover.label.view"]
+      );
+      assert.ok(hover.querySelector(".ds-icon"));
+      assert.equal(
+        hover.querySelector(".ds-icon")?.getAttribute?.("data-icon") ||
+          hover.querySelector(".ds-icon")?.dataset?.icon,
+        "vuesax/linear/arrow-right"
+      );
+    }
+    const city = nodesById.cardC;
+    assert.equal(city.dataset.cardHover, "swap");
+    const swap = city.querySelector(".ds-hover.ds-hover--swap");
+    assert.ok(swap);
+    assert.equal(
+      swap.querySelector(".ds-hover__label--idle")?.textContent,
+      contentMod.contentMap["card.c.hover.labelIdle"]
+    );
+    assert.equal(
+      swap.querySelector(".ds-hover__label--active")?.textContent,
+      contentMod.contentMap["card.c.hover.label"]
+    );
+    assert.ok(swap.querySelector(".ds-icon"));
+    assert.equal(
+      swap.querySelector(".ds-icon")?.getAttribute?.("data-icon") ||
+        swap.querySelector(".ds-icon")?.dataset?.icon,
+      "vuesax/linear/arrow-right"
     );
   });
 

@@ -207,6 +207,103 @@ function cardField(content, prefix, field) {
 }
 
 /**
+ * CursorHover CTA (Figma CursorHover / Hover) — label + arrow-right.
+ *
+ * @param {string} label
+ * @param {(key: string) => string} resolveAsset
+ * @returns {HTMLElement}
+ */
+function buildCursorHover(label, resolveAsset) {
+  const hover = document.createElement("div");
+  hover.className = "ds-hover ds-hover--view";
+  hover.setAttribute("aria-hidden", "true");
+
+  const labelEl = document.createElement("span");
+  labelEl.className = "ds-hover__label";
+  labelEl.textContent = textOf(label);
+
+  const icon = document.createElement("span");
+  icon.className = "ds-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.dataset.icon = "vuesax/linear/arrow-right";
+  const img = document.createElement("img");
+  img.src = resolveAsset("icons.arrow-right");
+  img.alt = "";
+  img.width = 24;
+  img.height = 24;
+  icon.appendChild(img);
+
+  hover.append(labelEl, icon);
+  return hover;
+}
+
+/**
+ * CityBike hover: CursorHover with label swap «Посмотреть» → «Behance» (+ arrow).
+ *
+ * @param {object} content
+ * @param {string} prefix
+ * @param {(key: string) => string} resolveAsset
+ * @returns {HTMLElement}
+ */
+function buildCardHoverSwap(content, prefix, resolveAsset) {
+  const idle =
+    cardField(content, prefix, "hover.labelIdle").trim() ||
+    (typeof content?.["hover.label.view"] === "string"
+      ? content["hover.label.view"]
+      : "Посмотреть");
+  const active =
+    cardField(content, prefix, "hover.label").trim() ||
+    (typeof content?.["hover.label"] === "string"
+      ? content["hover.label"]
+      : "Behance");
+
+  const hover = document.createElement("div");
+  hover.className = "ds-hover ds-hover--view ds-hover--swap";
+  hover.setAttribute("aria-hidden", "true");
+
+  const labels = document.createElement("span");
+  labels.className = "ds-hover__labels";
+
+  const idleEl = document.createElement("span");
+  idleEl.className = "ds-hover__label ds-hover__label--idle";
+  idleEl.textContent = textOf(idle);
+
+  const activeEl = document.createElement("span");
+  activeEl.className = "ds-hover__label ds-hover__label--active";
+  activeEl.textContent = textOf(active);
+
+  labels.append(idleEl, activeEl);
+
+  const icon = document.createElement("span");
+  icon.className = "ds-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.dataset.icon = "vuesax/linear/arrow-right";
+  const img = document.createElement("img");
+  img.src = resolveAsset("icons.arrow-right");
+  img.alt = "";
+  img.width = 24;
+  img.height = 24;
+  icon.appendChild(img);
+
+  hover.append(labels, icon);
+  return hover;
+}
+
+/**
+ * @param {string} [nodeId]
+ * @returns {"cursor"|"swap"|""}
+ */
+function cardHoverMode(nodeId) {
+  if (nodeId === "cardA" || nodeId === "cardB") {
+    return "cursor";
+  }
+  if (nodeId === "cardC") {
+    return "swap";
+  }
+  return "";
+}
+
+/**
  * @param {object} content
  * @param {(key: string) => string} resolveAsset
  * @param {string} [imageAssetKey="card.image"]
@@ -226,6 +323,7 @@ export function buildCard(content, resolveAsset, imageAssetKey = "card.image", n
   const description = cardField(content, prefix, "description");
   const cardUrl = cardField(content, prefix, "url").trim();
   const action = cardField(content, prefix, "action").trim() || (cardUrl ? "link" : "");
+  const hoverMode = cardHoverMode(nodeId);
 
   if (cardUrl) {
     article.dataset.cardUrl = cardUrl;
@@ -236,10 +334,15 @@ export function buildCard(content, resolveAsset, imageAssetKey = "card.image", n
     article.tabIndex = 0;
   }
 
+  if (hoverMode) {
+    article.dataset.cardHover = hoverMode;
+  }
+
   const media = document.createElement("div");
   media.className = "ds-card__media ds-placeholder";
   media.setAttribute("data-media-slot-box", "card");
-  // Figma Card Photo 40:1112 — 308×172; assets @3× (924×516) for sharp CSS zoom.
+  // Figma Card Photo media box 308×172; Dragon/Phish covers @3× are 924×570 (Ui kit 308×190).
+
   media.style.width = "100%";
   const img = document.createElement("img");
   img.src = resolveAsset(imageAssetKey);
@@ -282,6 +385,23 @@ export function buildCard(content, resolveAsset, imageAssetKey = "card.image", n
   body.append(header, descriptionEl);
 
   article.append(media, body);
+
+  if (hoverMode === "cursor") {
+    const viewLabel =
+      typeof content?.["hover.label.view"] === "string"
+        ? content["hover.label.view"]
+        : "Посмотреть";
+    const floater = document.createElement("div");
+    floater.className = "ds-card__cursor-hover";
+    floater.appendChild(buildCursorHover(viewLabel, resolveAsset));
+    article.appendChild(floater);
+  } else if (hoverMode === "swap") {
+    const floater = document.createElement("div");
+    floater.className = "ds-card__cursor-hover";
+    floater.appendChild(buildCardHoverSwap(content, prefix, resolveAsset));
+    article.appendChild(floater);
+  }
+
   return article;
 }
 
@@ -304,6 +424,70 @@ function buildMediaCutout(resolveAsset, size, assetKey, className) {
   img.setAttribute("data-media-slot", assetKey);
   img.draggable = false;
   wrap.appendChild(img);
+  return wrap;
+}
+
+/** Macbook lid stickers (hit areas + Hint copy keys). */
+const MACBOOK_STICKERS = [
+  "create",
+  "question",
+  "sport",
+  "anime",
+  "seal",
+  "books",
+];
+
+/**
+ * Layered Macbook: bare lid + absolute sticker hit buttons with `.ds-hint`.
+ *
+ * @param {object} content
+ * @param {(key: string) => string} resolveAsset
+ * @param {{ width: number, height: number }} size
+ * @returns {HTMLElement}
+ */
+function buildMacbook(content, resolveAsset, size) {
+  const wrap = document.createElement("div");
+  wrap.className = "scene-about__macbook";
+  wrap.setAttribute("data-media-slot-box", "macbook.lid");
+
+  const lid = document.createElement("img");
+  lid.className = "scene-about__macbook-lid";
+  lid.src = resolveAsset("macbook.lid");
+  lid.alt = "";
+  lid.width = Math.round(size.width);
+  lid.height = Math.round(size.height);
+  lid.setAttribute("data-media-slot", "macbook.lid");
+  lid.draggable = false;
+
+  const stickers = document.createElement("div");
+  stickers.className = "scene-about__stickers";
+  stickers.setAttribute("inert", "");
+
+  for (const id of MACBOOK_STICKERS) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "scene-about__sticker";
+    btn.dataset.sticker = id;
+    btn.setAttribute("aria-label", id);
+
+    const img = document.createElement("img");
+    img.src = resolveAsset(`macbook.sticker.${id}`);
+    img.alt = "";
+    img.draggable = false;
+
+    const hintId = `macbook-hint-${id}`;
+    const hint = document.createElement("span");
+    hint.className = "ds-hint";
+    hint.id = hintId;
+    hint.setAttribute("role", "tooltip");
+    hint.textContent = textOf(content[`hint.${id}`]);
+    btn.setAttribute("aria-describedby", hintId);
+
+    btn.append(img, hint);
+    stickers.appendChild(btn);
+  }
+
+  wrap.append(lid, stickers);
   return wrap;
 }
 
@@ -341,12 +525,7 @@ function buildAboutCluster(content, resolveAsset, node) {
     if (child.kind === "me") {
       el = buildMediaCutout(resolveAsset, child, "me", "scene-about__me");
     } else if (child.kind === "macbook") {
-      el = buildMediaCutout(
-        resolveAsset,
-        child,
-        "macbook",
-        "scene-about__macbook"
-      );
+      el = buildMacbook(content, resolveAsset, child);
     } else if (child.kind === "stiker") {
       el = buildStiker(content);
     } else {

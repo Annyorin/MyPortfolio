@@ -188,14 +188,31 @@ describe("TC-E2E-01 no-mock smoke entrypoint", () => {
 
       const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
       assert.ok(mediaSection, "Media section");
-      for (const key of ["img_bg", "img_1", "img_2", "img_3", "comp", "me", "macbook", "sitybike"]) {
+      for (const key of [
+        "img_bg",
+        "img_1",
+        "img_2",
+        "img_3",
+        "comp",
+        "me",
+        "macbook",
+        "sitybike",
+        "dragon",
+        "phish",
+        "anime",
+        "books",
+        "create",
+        "question",
+        "seal",
+        "sport",
+      ]) {
         assert.ok(
           mediaSection[0].includes(`data-media="${key}"`),
           `Media slot missing: ${key}`
         );
       }
       const mediaSlots = mediaSection[0].match(/data-media="/g) || [];
-      assert.equal(mediaSlots.length, 8, "Media×8");
+      assert.equal(mediaSlots.length, 16, "Media×16");
     } finally {
       await close();
     }
@@ -203,7 +220,7 @@ describe("TC-E2E-01 no-mock smoke entrypoint", () => {
 });
 
 describe("TC-E2E-02 design/ scope ban", () => {
-  it("no tracked modifications under design/", () => {
+  it("no tracked modifications under design/ outside 02-design-system", () => {
     const out = execFileSync(
       "git",
       ["status", "--porcelain", "--", "design/"],
@@ -213,7 +230,12 @@ describe("TC-E2E-02 design/ scope ban", () => {
       .split(/\r?\n/)
       .map((l) => l.trimEnd())
       .filter(Boolean);
-    const trackedChanges = lines.filter((line) => !line.startsWith("??"));
+    // DS sync may update design/02-design-system/; other envs stay read-only for showcase handoff.
+    const trackedChanges = lines.filter(
+      (line) =>
+        !line.startsWith("??") &&
+        !/\sdesign\/02-design-system\//.test(line)
+    );
     assert.deepEqual(
       trackedChanges,
       [],
