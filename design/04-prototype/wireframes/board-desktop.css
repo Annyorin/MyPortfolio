@@ -1,0 +1,245 @@
+/* ============================================================
+   wireframe-board — desktop frame kit
+   Та же серо-бежевая палитра, что board.css.
+   Frame ~1040×680 (масштаб доски, не 1920 fullscreen).
+   Подключать вместе с board.css.
+   ============================================================ */
+
+:root{
+  --desk-w: 1040px;
+  --desk-h: 680px;
+  --desk-nav: 148px;
+}
+
+.cell.desk{width:var(--desk-w)}
+
+.desk-frame{
+  width:var(--desk-w);
+  height:var(--desk-h);
+  background:var(--frame);
+  border:1.5px solid var(--line);
+  border-radius:14px;
+  display:flex;
+  flex-direction:row;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 2px 10px rgba(31,29,26,.05);
+}
+.desk-frame.topnav{flex-direction:column}
+.desk-frame.nopad{padding:0}
+
+/* ── shell: боковая навигация разделов ── */
+.desk-nav{
+  width:var(--desk-nav);
+  flex:none;
+  border-right:1px solid var(--line);
+  background:var(--block);
+  padding:12px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.desk-nav .brand{
+  font-size:11px;
+  font-weight:700;
+  padding:6px 8px 10px;
+  border-bottom:1px dashed var(--line);
+  margin-bottom:6px;
+  color:var(--ink);
+}
+.desk-nav a,
+.desk-nav span{
+  display:block;
+  font-size:11px;
+  padding:7px 8px;
+  border-radius:8px;
+  color:var(--mut);
+  border:1px solid transparent;
+}
+.desk-nav span.on{
+  background:#fff;
+  color:var(--ink);
+  font-weight:700;
+  border-color:var(--ink);
+}
+
+/* ── shell: верхняя навигация (альтернатива) ── */
+.desk-topnav{
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:10px 14px;
+  border-bottom:1px solid var(--line);
+  background:var(--block);
+  flex-wrap:wrap;
+}
+.desk-topnav .brand{
+  font-size:12px;
+  font-weight:700;
+  margin-right:10px;
+}
+.desk-topnav span{
+  font-size:11px;
+  padding:5px 10px;
+  border-radius:8px;
+  color:var(--mut);
+  border:1px solid transparent;
+  background:transparent;
+}
+.desk-topnav span.on{
+  background:#fff;
+  color:var(--ink);
+  font-weight:700;
+  border-color:var(--ink);
+}
+
+/* ── контентная область ── */
+.desk-main{
+  flex:1;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  padding:14px 16px;
+  overflow:auto;
+  gap:10px;
+  position:relative;
+}
+
+.desk-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.desk-header .h-left{display:flex; flex-direction:column; gap:4px; min-width:0}
+.desk-header .h-title{font-size:15px; font-weight:700}
+.desk-header .h-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.desk-header .btn{padding:7px 14px; min-width:88px}
+
+/* ── многоколоночные ряды ── */
+.desk-row{
+  display:flex;
+  gap:10px;
+  align-items:stretch;
+}
+.desk-row > *{min-width:0}
+
+.col-2{flex:2}
+.col-3{flex:3}
+.col-1{flex:1}
+.col-eq{flex:1}
+
+.metrics-line{
+  display:flex;
+  gap:8px;
+}
+.metrics-line .metric{flex:1; min-width:0}
+.metrics-line .metric .mv{font-size:16px}
+
+.risk-big .mv{font-size:28px; font-weight:800; letter-spacing:-.02em; margin-top:4px}
+.risk-big .ml{font-size:11px}
+
+.desk-panel{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.desk-panel .pt{font-size:11px; font-weight:600; color:var(--mut)}
+
+.train-3{
+  display:flex;
+  gap:8px;
+}
+.train-3 .metric{flex:1}
+
+.dept-table{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+  background:#fff;
+}
+.dept-table .drow{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:8px 10px;
+  border-bottom:1px solid var(--line);
+  font-size:11px;
+}
+.dept-table .drow:last-child{border-bottom:none}
+.dept-table .drow.head{
+  background:var(--block);
+  color:var(--mut);
+  font-weight:600;
+  font-size:10px;
+}
+.dept-table .c1{flex:2}
+.dept-table .c2{flex:2}
+.dept-table .c3{flex:1; text-align:right}
+
+.split-hint{
+  display:flex;
+  flex:1;
+  min-height:0;
+  gap:0;
+}
+.split-hint .pane{
+  flex:1;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.split-hint .pane + .pane{
+  border-left:1px dashed var(--line);
+  background:var(--block);
+}
+.split-hint .hint-label{
+  font-size:10px;
+  font-weight:700;
+  color:var(--mut);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.desk-frame .flows{top:10px; right:10px}
+
+.desk-overlay-bg{
+  opacity:.35;
+  pointer-events:none;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  overflow:hidden;
+}
+
+.modal.desk-modal{
+  width:360px;
+  max-width:90%;
+  text-align:left;
+}
+
+.skel-line{height:10px; border-radius:5px; background:var(--block)}
+.skel-block{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+  background:#fff;
+  flex:1;
+}

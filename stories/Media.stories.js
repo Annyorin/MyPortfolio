@@ -61,7 +61,7 @@ const MEDIA_SLOTS = [
   {
     key: "card.image.c",
     dataMedia: "sitybike",
-    label: "SityBike",
+    label: "CityBike",
     width: 308,
     height: 190,
   },

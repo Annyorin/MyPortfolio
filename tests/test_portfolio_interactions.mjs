@@ -536,19 +536,27 @@ describe("portfolio interactions e2e (UC-05 / UC-02 A1)", () => {
     unbind();
   });
 
-  it("TC-E2E-08: CursorHover follows card A bottom-right of pointer; CityBike keeps arrow", () => {
+  it("TC-E2E-08: CursorHover follows card A bottom-right of pointer; CityBike Behance + arrow", () => {
     const { nodesById, unbind } = mountInteractive();
     const cardA = nodesById.cardA;
     const cardC = nodesById.cardC;
     assert.equal(cardA.dataset.cardHover, "cursor");
     assert.ok(cardA.querySelector(".ds-hover.ds-hover--view"));
-    assert.equal(cardC.dataset.cardHover, "swap");
-    assert.ok(cardC.querySelector(".ds-hover.ds-hover--swap"));
-    assert.ok(cardC.querySelector(".ds-hover--swap .ds-icon"));
+    assert.equal(cardC.dataset.cardHover, "behance");
+    assert.ok(cardC.querySelector(".ds-hover"));
     assert.equal(
-      cardC.querySelector(".ds-hover--swap .ds-icon")?.getAttribute?.(
+      cardC.querySelector(".ds-hover")?.classList?.contains("ds-hover--view"),
+      false
+    );
+    assert.equal(
+      cardC.querySelector(".ds-hover__label")?.textContent,
+      "Behance"
+    );
+    assert.ok(cardC.querySelector(".ds-hover .ds-icon"));
+    assert.equal(
+      cardC.querySelector(".ds-hover .ds-icon")?.getAttribute?.(
         "data-icon"
-      ) || cardC.querySelector(".ds-hover--swap .ds-icon")?.dataset?.icon,
+      ) || cardC.querySelector(".ds-hover .ds-icon")?.dataset?.icon,
       "vuesax/linear/arrow-right"
     );
 
@@ -572,9 +580,9 @@ describe("portfolio interactions e2e (UC-05 / UC-02 A1)", () => {
     });
     shim.world.dispatchEvent(move);
     assert.ok(cardA.classList.contains("is-card-cursor-hover"));
-    // Pointer (100,70) local + 8px offset → bottom-right of cursor.
-    assert.equal(floater.style.left, "108px");
-    assert.equal(floater.style.top, "78px");
+    // Pointer local (100,70) + 20px gap → bottom-right of cursor.
+    assert.equal(floater.style.left, "120px");
+    assert.equal(floater.style.top, "90px");
 
     const leave = makeEvent({
       type: "pointerout",

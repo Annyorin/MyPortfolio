@@ -62,8 +62,8 @@ const SIDEBAR_CONTENT_KEYS = [
   "chip.ai_prototyping",
   "contact.cv",
   "contact.telegram",
-  "contact.linkedin",
   "contact.behance",
+  "contact.mail",
 ];
 
 const CARD_CONTENT_KEYS = [
@@ -85,7 +85,7 @@ const CARD_B_CONTENT_KEYS = [
   "card.b.title",
   "card.b.meta",
   "card.b.description",
-  "card.b.action",
+  "card.b.url",
 ];
 
 const CARD_C_CONTENT_KEYS = [
@@ -393,11 +393,12 @@ export const STAGE_CHROME = Object.freeze({
   tapperWidth: 40,
 });
 
-/** Viewport width below this uses document/mobile portfolio (Figma Портфолио.360). */
-export const MOBILE_BREAKPOINT = 768;
+/** Viewport width below this uses document portfolio (Figma Портфолио.768 until canvas). */
+export const MOBILE_BREAKPOINT = 1024;
 
 /**
- * True when viewport width is below the mobile document breakpoint.
+ * True when viewport uses document-scroll sheet (Figma 768) instead of camera canvas.
+ * Range: width &lt; 1024 (Портфолио.768 sheet; cards lerp &lt;768→360; denser type ≤480).
  *
  * @param {{ width?: number, height?: number, clientWidth?: number, clientHeight?: number }|null|undefined} viewport
  * @returns {boolean}
@@ -434,8 +435,8 @@ export function interactiveStageRect(viewport) {
 
 /**
  * Picks artboard layout by viewport size.
- * &lt;768 → null (document/mobile mode, no camera canvas);
- * ≥1024 wide → 51:4107; 768–1023 → 41:1416 + fit-to-content.
+ * &lt;1024 → null (document sheet, Figma Портфолио.768);
+ * ≥1024 → 51:4107 canvas.
  *
  * @param {{ width?: number, height?: number, clientWidth?: number, clientHeight?: number }|null|undefined} viewport
  * @returns {SceneLayout|null}
@@ -444,13 +445,7 @@ export function selectSceneLayout(viewport) {
   if (isMobileViewport(viewport)) {
     return null;
   }
-  const width = Number(
-    viewport && (viewport.width ?? viewport.clientWidth)
-  );
-  if (Number.isFinite(width) && width >= layout1024.frame.width) {
-    return layout1366;
-  }
-  return layout1024;
+  return layout1366;
 }
 
 /**

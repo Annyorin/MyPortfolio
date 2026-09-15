@@ -1,5 +1,5 @@
 /**
- * Document-scroll mobile portfolio (Figma «Портфолио.360» 169:12080).
+ * Document-scroll mobile/tablet portfolio (Figma «Портфолио.768» 169:13122 / «Портфолио.360»).
  * Compact Sidebar + full-width cards + FloatingAction; no camera canvas.
  */
 
@@ -11,10 +11,12 @@ import { buildCard } from "./scene.js";
 /** Scroll distance (px) before FAB becomes visible. */
 export const FAB_SHOW_SCROLL_Y = 48;
 
-/** Mobile contact row: Telegram + CV only (Behance/Mail/copyright hidden). */
+/** Contact actions — same keys/order as desktop Sidebar (scene.js CONTACT_ACTIONS). */
 const MOBILE_CONTACT_ACTIONS = [
   { key: "contact.telegram", variant: "primary", icon: "icons.telegram" },
   { key: "contact.cv", variant: "secondary", icon: "icons.cv" },
+  { key: "contact.behance", variant: "secondary", icon: "icons.behance" },
+  { key: "contact.mail", variant: "secondary", icon: "icons.mail" },
 ];
 
 const MOBILE_CARDS = [
@@ -32,7 +34,7 @@ function textOf(value) {
 }
 
 /**
- * Compact ProfileMobile sidebar (full content width, 2 contact buttons).
+ * Compact ProfileMobile sidebar (full content width, 4 contact buttons).
  *
  * @param {object} content
  * @param {(key: string) => string} resolveAsset

@@ -534,6 +534,14 @@ describe("portfolio viewport branches + entry smoke", () => {
     assert.equal(wide.world.children.length, 5);
     assert.equal(wideInit.layoutId, "51:4107");
 
+    const afterPan = wideInit.camera.panBy(20, -10);
+    assert.ok(
+      afterPan.translateX !== wideState.translateX ||
+        afterPan.translateY !== wideState.translateY
+    );
+    const afterZoom = wideInit.camera.zoomBy(0.1, "viewportCenter");
+    assert.ok(afterZoom.scale > afterPan.scale);
+
     // 1366 artboard: larger stage → scale ≥ 1024 branch
     const wide1366 = createShell(1366, 768);
     globalThis.document = /** @type {any} */ (wide1366.document);
@@ -558,32 +566,19 @@ describe("portfolio viewport branches + entry smoke", () => {
       24
     );
 
-    // Narrow branch
-    const narrow = createShell(800, 500);
-    globalThis.document = /** @type {any} */ (narrow.document);
-    const mainNarrow = await import(
-      pathToFileURL(abs("portfolio/js/main.js")).href + bust + "&n=1"
+    // Tablet/document branch (<1024): Портфолио.768 sheet, not canvas 41:1416
+    const tablet = createShell(800, 500);
+    globalThis.document = /** @type {any} */ (tablet.document);
+    const mainTablet = await import(
+      pathToFileURL(abs("portfolio/js/main.js")).href + bust + "&t=1"
     );
-    const narrowInit = mainNarrow.initPortfolioStubs();
-    const narrowState = narrowInit.camera.getState();
-    assert.ok(
-      narrowState.scale < 1 ||
-        narrowState.translateX !== 0 ||
-        narrowState.translateY !== 0,
-      "narrow start must reach fit (scale/translate changed)"
-    );
-    assert.ok(narrowState.scale > 0);
-    assert.equal(narrowInit.layoutId, "41:1416");
+    const tabletInit = mainTablet.initPortfolioStubs();
+    assert.equal(tabletInit.mode, "mobile");
+    assert.equal(tabletInit.layoutId, null);
+    assert.equal(tabletInit.scene, null);
+    assert.ok(tablet.viewport.classList.contains("portfolio--mobile"));
 
-    const afterPan = narrowInit.camera.panBy(20, -10);
-    assert.ok(
-      afterPan.translateX !== narrowState.translateX ||
-        afterPan.translateY !== narrowState.translateY
-    );
-    const afterZoom = narrowInit.camera.zoomBy(0.1, "viewportCenter");
-    assert.ok(afterZoom.scale > afterPan.scale);
-
-    // Mobile document branch (<768): no canvas layout; sheet mounted
+    // Document branch (<1024 denser): sheet mounted
     const mobile = createShell(360, 800);
     globalThis.document = /** @type {any} */ (mobile.document);
     const mainMobile = await import(

@@ -32,8 +32,12 @@ describe("Yandex Metrika", () => {
     assert.match(src, /accurateTrackBounce:\s*true/);
   });
 
-  it("main.html and case-dragon.html inline the counter (Vite does not emit js/metrika.js)", () => {
-    for (const file of ["portfolio/main.html", "portfolio/case-dragon.html"]) {
+  it("main.html, case-dragon.html and case-phish.html inline the counter (Vite does not emit js/metrika.js)", () => {
+    for (const file of [
+      "portfolio/main.html",
+      "portfolio/case-dragon.html",
+      "portfolio/case-phish.html",
+    ]) {
       const html = read(file);
       assert.doesNotMatch(html, /src=["']js\/metrika\.js["']/, `${file} no external 404`);
       assert.match(html, /mc\.yandex\.ru\/metrika\/tag\.js/, `${file} tag.js`);

@@ -123,16 +123,51 @@ export const contentMap = {
   "case.dragon.contact_sub":
     "Буду рада познакомиться и обсудить новые проекты",
   "case.dragon.next_label": "Далее",
+  "case.dragon.next_url": "case-phish.html",
   "case.dragon.toolbar_title": "InnoDragon",
   "case.dragon.header_brand": "Аня Ясинская · Портфолио",
   "toolbar.back": "Назад",
 
   "card.b.title": "InnoPhish",
-  "card.b.meta": "· 2024-2026",
+  "card.b.meta": "· 2024–2026",
   "card.b.description":
-    "Программа для\u00A0повышения осведомлённости\nсотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления\nих устойчивости к\u00A0кибератакам, основанным\nна\u00A0социальной инженерии.",
+    "Для\u00A0ИБ — сводка обучения и\u00A0атак в\u00A0одном дашборде вместо Excel-склейки.",
   "card.b.chip": "B2B",
-  "card.b.action": "modal",
+  "card.b.url": "case-phish.html",
+
+  "case.phish.period_label": "Период выполнения",
+  "case.phish.period_value": "2024–2026",
+  "case.phish.platforms_label": "Платформы",
+  "case.phish.platforms_value": "Desktop",
+  "case.phish.role_label": "Моя роль",
+  "case.phish.role_value":
+    "UX/UI дизайнер. Зона: UX-исследование, макеты в\u00A0Figma, согласование с\u00A0руководством, дизайн-ревью, тестирование на\u00A0пользователях.",
+  "case.phish.team_label": "Команда",
+  "case.phish.team_value": "4 фронта, 4 бэка +\u00A0дизайнер",
+  "case.phish.context_title": "Контекст задачи",
+  "case.phish.context_body":
+    "Делали пробные рассылки через EvilGo и\u00A0собирали статистику через него. В\u00A0наблюдаемой кампании ~60% переходов по\u00A0ссылкам — сигнал уязвимости аудитории до\u00A0сводного дашборда, не\u00A0эффект редизайна. Org-сводки «обучение +\u00A0атаки» не\u00A0было.\n\nСпециалист по\u00A0социнженерии и\u00A0руководитель анализа не\u00A0могут за\u00A0один заход собрать актуальную картину обучения и\u00A0атак: метрики разнесены, связки атака↔обучение нет, сигнала риска на\u00A0сводке нет.\n\nВремя до\u00A0сводки уходит в\u00A0Excel-склейку. Исследование и\u00A0продуктовое решение вынесли отдельную страницу сводной аналитики InnoPhish. ФИО топа — на\u00A0сводке с\u00A0PII-ограничением.",
+  "case.phish.intro_title": "Вводные",
+  "case.phish.intro_body":
+    "InnoPhish — awareness и\u00A0устойчивость к\u00A0социнженерии / фишингу. В\u00A0кейсе — сводный дашборд Desktop (2024–2026), не\u00A0весь продукт.\n\nМиссия: получить актуальную картину «обучение +\u00A0атаки» для\u00A0доклада, назначения курсов и\u00A0оценки эффекта — без\u00A0склейки в\u00A0Excel и\u00A0без\u00A0dual-mode.\n\nРезультат: as-is EvilGo → сводный дашборд InnoPhish; вкладки «Атаки» / «Обучение»; сигнал риска и\u00A0PDF по\u00A0кнопке. Макет → прод; повторно не\u00A0замерили.",
+  "case.phish.analysis_title": "Анализ",
+  "case.phish.analysis_body":
+    "Primary: социнженер и\u00A0руководитель анализа. Зрители: CISO, CTO, директор ИБ. JTBD: когда нужна сводка по\u00A0awareness / фишингу, хочу единую актуальную картину «обучение +\u00A0атаки», чтобы сделать доклад, назначить курсы и\u00A0оценить эффект — без\u00A0Excel и\u00A0без\u00A0dual-mode.\n\nМетоды: интервью специалистов ИБ; конкурентный разбор (KnowBe4, Hoxhunt, Proofpoint и\u00A0др.); тест чернового макета. Метрик продукта на\u00A0входе не\u00A0было.\n\nИнсайты: сводку клеят в\u00A0Excel; руководству нужен сигнал риска на\u00A0сводке; без\u00A0связки атака↔обучение нельзя быстро решить, кого учить; топ без\u00A0ФИО тормозит назначение; тест одной страницы с\u00A0атаками и\u00A0обучением дал перегруз.",
+  "case.phish.hypotheses_title": "Гипотезы и\u00A0решения",
+  "case.phish.hypotheses_body":
+    "Взяли: сводка ≠ «Отчёты»; актуальный срез / последняя кампания; вкладки «Атаки» / «Обучение»; сигнал риска на\u00A0сводке (без формулы); ФИО топа; срезы HR/SOC; PDF по\u00A0кнопке.\n\nНе стали: dual-mode ролей; тренд 3–6–12 на\u00A0первом экране; всё без\u00A0табов; traffic-light; schedule PDF; формула Risk Score в\u00A0кейсе.",
+  "case.phish.hypotheses_body_long":
+    "Решение про вкладки: черновой макет с\u00A0атаками и\u00A0обучением на\u00A0одной странице читался как перегруз. Вкладки — тип метрик внутри одной сводки, не\u00A0dual-mode ролей. Отдельная страница сводки закрывает ежедневный доклад; «Отчёты» — регламент и\u00A0файл.",
+  "case.phish.conclusions_title": "Выводы",
+  "case.phish.conclusions_body":
+    "As-is EvilGo без\u00A0org-сводки → сводный дашборд InnoPhish; после теста — вкладки «Атаки» / «Обучение»; на\u00A0сводке — сигнал риска, ФИО, HR/SOC, PDF по\u00A0кнопке. Дальше — в\u00A0прод.\n\nДоказательство: ~60% переходов в\u00A0EvilGo — до\u00A0дашборда. Тест: перегруз первой версии → табы. После макета повторно не\u00A0замерили.\n\nЗабрала: сначала «сводка или отчёт» и\u00A0«срез или тренд»; потом — не\u00A0класть два типа метрик одной простынёй без\u00A0проверки на\u00A0людях.",
+  "case.phish.contact_heading": "Свяжитесь со\u00A0мной",
+  "case.phish.contact_sub":
+    "Буду рада познакомиться и\u00A0обсудить новые проекты",
+  "case.phish.next_label": "Далее",
+  "case.phish.next_url": "case-dragon.html",
+  "case.phish.toolbar_title": "InnoPhish",
+  "case.phish.header_brand": "Аня Ясинская · Портфолио",
 
   "card.c.title": "CityBike",
   "card.c.meta": "· 2024",
@@ -141,9 +176,8 @@ export const contentMap = {
   "card.c.chip": "B2C",
   "card.c.url":
     "https://www.behance.net/gallery/211908269/E-bike-Rental-Mobile-App-for-Android",
-  /* CityBike: no CursorHover — label swap Посмотреть → Behance */
+  /* CityBike: CursorHover Behance (Figma 260:24098) */
   "card.c.hover.label": "Behance",
-  "card.c.hover.labelIdle": "Посмотреть",
 
   "tapper.zoom_out": "Отдалить",
 
@@ -221,6 +255,8 @@ export const contentMap = {
     "card.image.a": { pathFromDsRoot: "images/img-1.png", intrinsicWidth: 924, intrinsicHeight: 570 },
 
     "case.dragon.hero": { pathFromDsRoot: "images/case-dragon-hero.png" },
+
+    "case.phish.hero": { pathFromDsRoot: "images/phish.png" },
 
     "card.image.b": { pathFromDsRoot: "images/img-2.png", intrinsicWidth: 924, intrinsicHeight: 570 },
 

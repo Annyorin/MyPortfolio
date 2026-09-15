@@ -2,7 +2,7 @@
 type: log
 env: 04-prototype
 status: active
-updated: 2026-09-06
+updated: 2026-09-15
 ---
 
 # Build log
@@ -11,6 +11,8 @@ updated: 2026-09-06
 
 | Дата | Экран | node-id | Версия зеркала | Примечание |
 |------|-------|---------|----------------|------------|
+| 2026-09-15 | **Desktop wireframe board** · сводный дашборд «А» | pending | — (до DS/Figma) | `wireframes/dashboard-wireframes-desktop.html` + `board-desktop.css` (поверх `board.css`). Frame ~1040×680, shell слева, многоколоночный layout. Экраны: DB-IB-D, DB-HR-D, DB-SOC-D, DB-EMPTY-D, DB-LOAD-D, DB-ASSIGN-D, DB-ATTACK-D. Mobile board не тронут. Figma не собирался. |
+| 2026-09-15 | **IA + wireframe board** · сводный дашборд «А» | pending | — (до DS/Figma) | `flows/dashboard-ia.md` (ia-first); `wireframes/dashboard-wireframes.html` + `wireframes/board.css`. Экраны: DB-IB, DB-HR, DB-SOC, DB-EMPTY, DB-LOAD, DB-ASSIGN, DB-ATTACK. Вход: `01-research/outputs/prd.md`. Figma не собирался. |
 | 2026-09-06 | Портфолио.Главная | `41:1416` | 0.1.2 | Эталон frame **1024×609**. Layout: Sidebar (24,24) 310×561; Card×3 (358,28)/(690,169)/(358,362) 310×310; Comp ~bbox (830,28); Stiker «Обо мне» bbox сцены; Tapper (896,537) 104×40; BG плитка. Comp/Stiker — по bbox сцены, не atomic витрины. Три Card = один демо InnoDragon. Canvas-спека (zoom/pan/hover/contacts/focus-visible) в `screens/portfolio-home.md`. **`use_figma` не вызывался.** |
 | 2026-09-06 | DS Showcase | `41:11646` | 0.1.2 | Reference витрины Ui kit (reuse). Storybook inventory coverage noted; stories в коде не собирались. |
 | 2026-09-06 | **Review fix** · Главная + Showcase | `41:1416` / `41:11646` | 0.1.2 | Design review Major+Minor: UC-04 A1 Space-pan приоритет над кликами; UC-02 A2 узкий viewport → стартовый **zoom-to-fit**; UC-02 A1 битый image → геометрия слота + warn; полная матрица хоткеев + шаг ~10–25% + preventDefault + grab/grabbing; Tapper keys на витрине; убраны фейковые §2.8.1/§2.8 → Figma `41:11646` + ТЗ §1/§3/§4. Спеки/flow обновлены; Figma не пересобирался. |
@@ -54,6 +56,9 @@ updated: 2026-09-06
 | Screen map | `screens/SCREEN-MAP.md` |
 | Flow Главная | `flows/portfolio-home-flow.md` |
 | Flow Showcase | `flows/ds-showcase-flow.md` |
+| IA дашборд «А» | `flows/dashboard-ia.md` |
+| Wireframe board дашборд (mobile) | `wireframes/dashboard-wireframes.html` (+ `board.css`) |
+| Wireframe board дашборд (desktop) | `wireframes/dashboard-wireframes-desktop.html` (+ `board-desktop.css`) |
 
 ## Заблокировано контрактами
 | Контракт | Чего ждём |

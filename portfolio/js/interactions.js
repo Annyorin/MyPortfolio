@@ -32,8 +32,11 @@ export const CARD_DRAG_MOVE_ARM_MS = 10;
 export const CARD_PRESS_SLOP_PX = 8;
 /** Hint tip offset from cursor — bottom-right, like Ricky Zhang reference. */
 const STICKER_HINT_OFFSET_PX = 8;
-/** CursorHover tip offset from cursor — bottom-right, same as Macbook Hint. */
-const CARD_HOVER_OFFSET_PX = 8;
+/**
+ * CursorHover offset from pointer hotspot — bottom-right gap like the hand→label
+ * reference (clear space between cursor glyph and pill).
+ */
+export const CARD_HOVER_OFFSET_PX = 20;
 
 /** @type {HTMLElement|null} */
 let floatingStickerHint = null;
@@ -158,7 +161,7 @@ function showCardCursorHoverAt(card, clientX, clientY) {
     return;
   }
   const mode = String(card.dataset?.cardHover || "");
-  if (mode !== "cursor" && mode !== "swap") {
+  if (mode !== "cursor" && mode !== "behance") {
     return;
   }
   const floater = /** @type {HTMLElement|null} */ (
@@ -875,7 +878,7 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
   }
 
   /**
-   * Keep CursorHover / CityBike label glued to the pointer inside the card.
+   * Keep CursorHover (Посмотреть / Behance) glued to the pointer on the card.
    *
    * @param {PointerEvent} event
    */

@@ -6,9 +6,10 @@
  * Ensures a thumb exists and wires click → smooth active index.
  *
  * @param {HTMLElement} root `.ds-segments`
+ * @param {(index: number) => void} [onChange] called after active index updates
  * @returns {() => void} teardown
  */
-export function bindSegmentsControl(root) {
+export function bindSegmentsControl(root, onChange) {
   if (!root || !(root instanceof HTMLElement)) {
     return () => {};
   }
@@ -41,6 +42,9 @@ export function bindSegmentsControl(root) {
     const activeLabel = items[next]?.textContent?.trim() || "";
     if (activeLabel) {
       root.setAttribute("aria-label", `${activeLabel} активна`);
+    }
+    if (typeof onChange === "function") {
+      onChange(next);
     }
   }
 

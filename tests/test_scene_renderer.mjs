@@ -5,7 +5,7 @@
  * TC-E2E-02: slot geometry Sidebar stretch, Card 310×310, Tapper 40×104 portrait
  * TC-E2E-03: profile.role and card.a.title match contentMap
  * TC-E2E-04: three Cards — InnoDragon / InnoPhish / CityBike (Behance)
- * TC-E2E-05: CursorHover on A/B; CityBike label swap without CursorHover
+ * TC-E2E-05: CursorHover on A/B; CityBike Behance CursorHover (Figma 260:24098)
  * TC-UNIT-01: DOM child order follows ascending zIndex
  * TC-UNIT-02: contacts use href="#" or button without http URL
  */
@@ -492,8 +492,8 @@ describe("portfolio scene renderer", () => {
         id: "cardB",
         title: "InnoPhish",
         file: "img-2.png",
-        url: "",
-        action: "modal",
+        url: "case-phish.html",
+        action: "",
       },
       {
         id: "cardC",
@@ -526,14 +526,18 @@ describe("portfolio scene renderer", () => {
       );
     }
     const phishDesc = nodesById.cardB.querySelector(".ds-card__description");
-    assert.ok(phishDesc?.classList.contains("ds-card__description--fixed-lines"));
+    assert.ok(phishDesc);
+    assert.equal(
+      phishDesc?.classList.contains("ds-card__description--fixed-lines"),
+      false
+    );
     assert.equal(
       String(phishDesc?.textContent).split("\n").join(" "),
-      "Программа для\u00A0повышения осведомлённости сотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления их устойчивости к\u00A0кибератакам, основанным на\u00A0социальной инженерии."
+      "Для\u00A0ИБ — сводка обучения и\u00A0атак в\u00A0одном дашборде вместо Excel-склейки."
     );
   });
 
-  it("TC-E2E-05: CursorHover on A/B; CityBike CursorHover swap Посмотреть→Behance + arrow", () => {
+  it("TC-E2E-05: CursorHover on A/B (Посмотреть); CityBike Behance 114×40 + arrow", () => {
     const { nodesById } = mountFresh();
     for (const id of ["cardA", "cardB"]) {
       const card = nodesById[id];
@@ -553,21 +557,19 @@ describe("portfolio scene renderer", () => {
       );
     }
     const city = nodesById.cardC;
-    assert.equal(city.dataset.cardHover, "swap");
-    const swap = city.querySelector(".ds-hover.ds-hover--swap");
-    assert.ok(swap);
+    assert.equal(city.dataset.cardHover, "behance");
+    const hover = city.querySelector(".ds-hover");
+    assert.ok(hover);
+    assert.equal(hover.classList.contains("ds-hover--view"), false);
+    assert.equal(hover.classList.contains("ds-hover--swap"), false);
     assert.equal(
-      swap.querySelector(".ds-hover__label--idle")?.textContent,
-      contentMod.contentMap["card.c.hover.labelIdle"]
-    );
-    assert.equal(
-      swap.querySelector(".ds-hover__label--active")?.textContent,
+      hover.querySelector(".ds-hover__label")?.textContent,
       contentMod.contentMap["card.c.hover.label"]
     );
-    assert.ok(swap.querySelector(".ds-icon"));
+    assert.ok(hover.querySelector(".ds-icon"));
     assert.equal(
-      swap.querySelector(".ds-icon")?.getAttribute?.("data-icon") ||
-        swap.querySelector(".ds-icon")?.dataset?.icon,
+      hover.querySelector(".ds-icon")?.getAttribute?.("data-icon") ||
+        hover.querySelector(".ds-icon")?.dataset?.icon,
       "vuesax/linear/arrow-right"
     );
   });

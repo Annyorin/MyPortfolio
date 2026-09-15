@@ -1,8 +1,8 @@
 /**
- * Portfolio mobile document mode (Figma Портфолио.360 / 169:12080).
+ * Portfolio mobile/tablet document mode (Figma Портфолио.768 / .360).
  *
- * At width 360: ProfileMobile sheet, 2 contacts, 3 distinct cards, FAB scroll.
- * At width ≥768: mobile sheet torn down; canvas scene present.
+ * At width <1024: ProfileMobile sheet (Портфолио.768), 4 contacts, 3 cards, FAB.
+ * At width ≥1024: mobile sheet torn down; canvas scene present.
  */
 
 import assert from "node:assert/strict";
@@ -473,7 +473,7 @@ describe("portfolio mobile document mode", () => {
     }
   });
 
-  it("width 360: ProfileMobile, 2 contacts, 3 distinct cards, FAB scroll", async () => {
+  it("width 360: ProfileMobile, 4 contacts, 3 distinct cards, FAB scroll", async () => {
     const bust = `?t=${Date.now()}&mobile=1`;
     const shell = createShell(360, 800);
     globalThis.document = /** @type {any} */ (shell.document);
@@ -502,12 +502,12 @@ describe("portfolio mobile document mode", () => {
     const skills = shell.mobile.querySelector(".ds-sidebar__skills");
     assert.ok(skills);
     const buttons = skills.querySelectorAll(".ds-button");
-    assert.equal(buttons.length, 2);
+    assert.equal(buttons.length, 4);
     assert.ok(buttons[0].classList.contains("ds-button--primary"));
     const labels = buttons.map(
       (b) => b.querySelector(".ds-button__label")?.textContent
     );
-    assert.deepEqual(labels, ["Написать", "Резюме"]);
+    assert.deepEqual(labels, ["Написать", "Резюме", "Behance", "Почта"]);
     assert.equal(shell.mobile.querySelector(".ds-sidebar__copyright"), null);
 
     const cards = shell.mobile.querySelectorAll(".ds-card");
@@ -528,7 +528,8 @@ describe("portfolio mobile document mode", () => {
 
     assert.equal(cards[0].dataset.cardUrl, "case-dragon.html");
     assert.equal(cards[0].dataset.cardAction, undefined);
-    assert.equal(cards[1].dataset.cardAction, "modal");
+    assert.equal(cards[1].dataset.cardUrl, "case-phish.html");
+    assert.equal(cards[1].dataset.cardAction, undefined);
     assert.ok(String(cards[2].dataset.cardUrl || "").includes("behance.net"));
 
     const fab = shell.mobile.querySelector(".ds-fab");
@@ -543,7 +544,29 @@ describe("portfolio mobile document mode", () => {
     assert.equal(shell.viewport.scrollTop, 0);
   });
 
-  it("width ≥768: mobile sheet gone / canvas scene present", async () => {
+  it("width 768–1023: document sheet (Портфолио.768), not canvas", async () => {
+    for (const width of [768, 1023]) {
+      const bust = `?t=${Date.now()}&mobileDoc=${width}`;
+      const shell = createShell(width, 1024);
+      globalThis.document = /** @type {any} */ (shell.document);
+      globalThis.window = /** @type {any} */ (shell.windowObj);
+
+      const main = await import(
+        pathToFileURL(abs("portfolio/js/main.js")).href + bust
+      );
+      const init = main.initPortfolioStubs();
+
+      assert.equal(init.mode, "mobile");
+      assert.equal(init.layoutId, null);
+      assert.equal(init.scene, null);
+      assert.ok(shell.viewport.classList.contains("portfolio--mobile"));
+      assert.equal(shell.mobile.hidden, false);
+      assert.equal(shell.mobile.querySelectorAll(".ds-button").length, 4);
+      assert.equal(shell.mobile.querySelectorAll(".ds-card").length, 3);
+    }
+  });
+
+  it("width ≥1024: mobile sheet gone / canvas scene present", async () => {
     const bust = `?t=${Date.now()}&desktop=1`;
     const shell = createShell(1024, 609);
     globalThis.document = /** @type {any} */ (shell.document);

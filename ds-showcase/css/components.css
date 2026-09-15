@@ -108,16 +108,32 @@
   color: var(--color-gray-l);
 }
 
-/* —— ProfileMobile (Figma Ui kit 169:11933 — 240×48, Avatar@48) —— */
-.ds-profile--mobile {
+/* —— ProfileMobile (Figma Ui kit 169:11933 — Avatar@48 + H1 + Text1 row) —— */
+.ds-profile.ds-profile--mobile {
   flex-direction: row;
   align-items: center;
-  height: 48px;
+  gap: 16px;
+  width: max-content;
+  max-width: 100%;
+  min-height: 48px;
+  height: auto;
 }
 
 .ds-profile--mobile .ds-avatar {
   width: 48px;
   height: 48px;
+  flex-shrink: 0;
+}
+
+.ds-profile--mobile .ds-profile__meta {
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+
+.ds-profile--mobile .ds-profile__name,
+.ds-profile--mobile .ds-profile__role {
+  white-space: nowrap;
+  width: max-content;
 }
 
 /* —— FloatingAction (Figma Ui kit 169:13303 — 50×50, arrow −90°) —— */
@@ -466,7 +482,7 @@
   white-space: nowrap;
 }
 
-/* —— Hover / CursorHover (CTA) —— Figma 41:1548 / 260:24115 —— */
+/* —— Hover / CursorHover (CTA) —— Figma 41:1548 / 260:24098 Behance / 260:24115 Посмотреть —— */
 .ds-hover {
   box-sizing: border-box;
   display: inline-flex;
@@ -486,7 +502,7 @@
   pointer-events: auto;
 }
 
-/* Longer «Посмотреть» label (portfolio card CursorHover). */
+/* Longer «Посмотреть» label (Figma 260:24115). */
 .ds-hover--view {
   width: max-content;
   min-width: 114px;
@@ -528,35 +544,6 @@
   outline-offset: 2px;
 }
 
-/* CityBike: «Посмотреть» → «Behance» on same CursorHover (+ arrow). */
-.ds-hover__labels {
-  position: relative;
-  display: inline-grid;
-  align-items: center;
-  justify-items: start;
-}
-
-.ds-hover__labels > .ds-hover__label {
-  grid-area: 1 / 1;
-}
-
-.ds-hover__label--active {
-  opacity: 0;
-}
-
-.ds-card.is-card-cursor-hover .ds-hover--swap .ds-hover__label--idle {
-  opacity: 0;
-}
-
-.ds-card.is-card-cursor-hover .ds-hover--swap .ds-hover__label--active {
-  opacity: 1;
-}
-
-.ds-hover__label--idle,
-.ds-hover__label--active {
-  transition: opacity 180ms ease;
-}
-
 /* —— Card —— */
 .ds-card {
   box-sizing: border-box;
@@ -575,10 +562,10 @@
   -webkit-user-select: none;
   transform: scale(1);
   transform-origin: center center;
-  /* Bidirectional hover: smooth ease-in-out both ways, slightly slower than 720ms. */
+  /* Bidirectional hover: ease-in-out both ways, 800ms. */
   transition:
-    transform 960ms cubic-bezier(0.33, 0.1, 0.2, 1),
-    box-shadow 960ms cubic-bezier(0.33, 0.1, 0.2, 1);
+    transform 800ms ease-in-out,
+    box-shadow 800ms ease-in-out;
 }
 
 .ds-card *,
@@ -752,9 +739,16 @@
   flex-direction: row;
   align-items: center;
   gap: 16px;
-  height: 48px;
-  width: auto;
+  min-height: 48px;
+  height: auto;
+  width: max-content;
   max-width: 100%;
+}
+
+.ds-sidebar__profile.ds-profile--mobile .ds-profile__meta,
+.ds-sidebar .ds-profile.ds-profile--mobile .ds-profile__meta {
+  flex: 0 0 auto;
+  min-width: max-content;
 }
 
 .ds-sidebar__inform {

@@ -30,6 +30,7 @@ function read(relativePath) {
 describe("portfolio case-dragon page", () => {
   it("case-dragon.html links DS CSS, case.css, and case.js module", () => {
     const html = read("portfolio/case-dragon.html");
+    assert.match(html, /data-case-id=["']dragon["']/);
     assert.match(html, /href=["']\.\.\/ds-showcase\/css\/tokens\.css["']/);
     assert.match(html, /href=["']\.\.\/ds-showcase\/css\/components\.css["']/);
     assert.match(html, /href=["']css\/case\.css["']/);
@@ -78,6 +79,7 @@ describe("portfolio case-dragon page", () => {
     assert.equal(contentMap["case.dragon.context_title"], "Контекст задачи");
     assert.equal(contentMap["case.dragon.intro_title"], "Вводные");
     assert.equal(contentMap["case.dragon.next_label"], "Далее");
+    assert.equal(contentMap["case.dragon.next_url"], "case-phish.html");
     assert.equal(contentMap["toolbar.back"], "Назад");
     assert.equal(contentMap["case.dragon.toolbar_title"], "InnoDragon");
     assert.match(contentMap["case.dragon.contact_heading"], /Свяжитесь\sсо/);
@@ -98,7 +100,10 @@ describe("portfolio case-dragon page", () => {
     assert.match(src, /CASE_FAB_SHOW_SCROLL_Y/);
     assert.match(src, /bindDrawer/);
     assert.match(src, /is-drawer-open/);
-    assert.match(src, /case\.dragon\.next_label/);
+    assert.match(src, /dataset\.caseId|caseKeyPrefix/);
+    assert.match(src, /data-case-long-only|applyCaseLengthMode/);
+    assert.match(src, /bindNextCaseLink|case-page__next/);
+    assert.match(src, /next_url/);
     assert.match(src, /from ["']\.\.\/\.\.\/ds-showcase\/js\/segments\.js["']/);
   });
 

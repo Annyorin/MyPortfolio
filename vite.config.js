@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => {
         input: {
           portfolio: path.resolve(rootDir, "portfolio/main.html"),
           caseDragon: path.resolve(rootDir, "portfolio/case-dragon.html"),
+          casePhish: path.resolve(rootDir, "portfolio/case-phish.html"),
         },
       },
     },

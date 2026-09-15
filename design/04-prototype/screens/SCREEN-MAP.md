@@ -1,7 +1,7 @@
 ---
 type: registry
 env: 04-prototype
-updated: 2026-09-06
+updated: 2026-09-15
 mirrored-version: 0.1.2
 ---
 
@@ -20,8 +20,22 @@ mirrored-version: 0.1.2
 |-------|--------------|---------|---------|---------------------------|--------|--------|
 | Портфолио.Главная | [`portfolio-home.md`](portfolio-home.md) | `41:1416` | `xboMnqU5JURL0xlzxN7edN` | 0.1.2 | built | 2026-09-06 (эталон задокументирован; `use_figma` не вызывался) |
 | DS Showcase | [`ds-showcase.md`](ds-showcase.md) | `41:11646` | `xboMnqU5JURL0xlzxN7edN` | 0.1.2 | built | 2026-09-06 (reference витрины Ui kit; Storybook inventory) |
+| DB-IB · Дашборд ИБ (primary) | wireframe · IA [`../flows/dashboard-ia.md`](../flows/dashboard-ia.md) | pending | — | — | wireframe | 2026-09-15 · mobile [`../wireframes/dashboard-wireframes.html`](../wireframes/dashboard-wireframes.html) |
+| DB-IB-D · Дашборд ИБ (primary) Desktop | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · [`../wireframes/dashboard-wireframes-desktop.html`](../wireframes/dashboard-wireframes-desktop.html) |
+| DB-HR · Срез HR (обучение) | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · mobile |
+| DB-HR-D · Срез HR Desktop | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · desktop board |
+| DB-SOC · Срез SOC | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · mobile |
+| DB-SOC-D · Срез SOC Desktop | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · desktop board |
+| DB-EMPTY · Пусто (нет кампаний) | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · mobile |
+| DB-EMPTY-D · Пусто Desktop | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · desktop board |
+| DB-LOAD · Loading | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · mobile |
+| DB-LOAD-D · Loading Desktop | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · desktop board |
+| DB-ASSIGN · Назначение обучения | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · mobile sheet |
+| DB-ASSIGN-D · Назначение Desktop | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · desktop modal |
+| DB-ATTACK · Drill → Атаки (внешний) | wireframe · stub | pending | — | — | wireframe | 2026-09-15 · mobile · маркер EXT-ATTACKS |
+| DB-ATTACK-D · Drill → Атаки Desktop | wireframe · stub | pending | — | — | wireframe | 2026-09-15 · split-view hint |
 
-Статусы: `spec` (описан, не собран) → `built` (собран в Figma) →
+Статусы: `wireframe` (каркас HTML, Figma node-id нет) → `spec` (описан, не собран) → `built` (собран в Figma) →
 `stale` (зеркало ушло вперёд, требуется пересборка) → `retired`.
 
 ## Storybook coverage (вне design/)

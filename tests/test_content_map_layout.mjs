@@ -64,10 +64,11 @@ describe("content map / scene layout / resolveAsset", () => {
     assert.equal(contentMap["card.b.title"], "InnoPhish");
     assert.equal(contentMap["card.c.title"], "CityBike");
     assert.equal(contentMap["card.a.url"], "case-dragon.html");
-    assert.equal(contentMap["card.b.action"], "modal");
+    assert.equal(contentMap["card.b.url"], "case-phish.html");
+    assert.ok(!Object.prototype.hasOwnProperty.call(contentMap, "card.b.action"));
     assert.equal(
       String(contentMap["card.b.description"]).split("\n").join(" "),
-      "Программа для\u00A0повышения осведомлённости сотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления их устойчивости к\u00A0кибератакам, основанным на\u00A0социальной инженерии."
+      "Для\u00A0ИБ — сводка обучения и\u00A0атак в\u00A0одном дашборде вместо Excel-склейки."
     );
     assert.equal(contentMap["case.dragon.context_title"], "Контекст задачи");
     assert.equal(contentMap["card.meta"], "· 2024");
@@ -77,7 +78,6 @@ describe("content map / scene layout / resolveAsset", () => {
     );
     assert.equal(contentMap["hover.label"], "Behance");
     assert.equal(contentMap["hover.label.view"], "Посмотреть");
-    assert.equal(contentMap["card.c.hover.labelIdle"], "Посмотреть");
     assert.equal(contentMap["card.c.hover.label"], "Behance");
   });
 
@@ -237,17 +237,17 @@ describe("content map / scene layout / resolveAsset", () => {
     assert.ok(!source.includes("ds-showcase/assets/"));
   });
 
-  it("selectSceneLayout: <768 → null; 768–1023 → 41:1416; ≥1024 → 51:4107", async () => {
+  it("selectSceneLayout: <1024 → null (Портфолио.768 sheet); ≥1024 → 51:4107", async () => {
     const { selectSceneLayout, layout1024, layout1366, isMobileViewport } =
       await import(pathToFileURL(abs("shared/layout.js")).href);
 
     assert.equal(isMobileViewport({ width: 360 }), true);
-    assert.equal(isMobileViewport({ width: 767 }), true);
-    assert.equal(isMobileViewport({ width: 768 }), false);
+    assert.equal(isMobileViewport({ width: 768 }), true);
+    assert.equal(isMobileViewport({ width: 1023 }), true);
+    assert.equal(isMobileViewport({ width: 1024 }), false);
     assert.equal(selectSceneLayout({ width: 360, height: 800 }), null);
-    assert.equal(selectSceneLayout({ width: 767, height: 800 }), null);
-    assert.equal(selectSceneLayout({ width: 768, height: 609 }).id, "41:1416");
-    assert.equal(selectSceneLayout({ width: 1023, height: 609 }).id, "41:1416");
+    assert.equal(selectSceneLayout({ width: 768, height: 609 }), null);
+    assert.equal(selectSceneLayout({ width: 1023, height: 609 }), null);
     assert.equal(selectSceneLayout({ width: 1024, height: 609 }).id, "51:4107");
     assert.equal(selectSceneLayout({ width: 1365, height: 768 }).id, "51:4107");
     assert.equal(selectSceneLayout({ width: 1366, height: 768 }).id, "51:4107");

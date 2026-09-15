@@ -2,6 +2,10 @@
   "mcpServers": {
     "figma": {
       "url": "https://mcp.figma.com/mcp"
+    },
+    "scrn": {
+      "type": "http",
+      "url": "https://scrn.gallery/mcp"
     }
   }
 }

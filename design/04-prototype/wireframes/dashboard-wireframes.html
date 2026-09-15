@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Программа А — сводный дашборд — вайрфреймы</title>
+<link rel="stylesheet" href="board.css">
+</head>
+<body>
+
+<h1>Программа А — сводный дашборд — вайрфреймы</h1>
+<p class="sub">Структура страницы сводной аналитики (обучение + атаки): primary ИБ, срезы HR/SOC, empty/loading, назначение обучения и выход в существующие разделы. Паттерны: Risk Score + attack/training блоки (KnowBe4/Proofpoint), топ уязвимых с ФИО на сводке, экспорт вместо dual-mode, сравнение подразделений без traffic-light. Это структура, не визуальный стиль.</p>
+
+<div class="princ">
+  <span>Первый экран = последняя кампания / актуальный срез</span>
+  <span>Нет dual-mode ИБ/руководство</span>
+  <span>Дашборд ≠ Отчёты</span>
+  <span>HR = обучение · SOC = уязвимые + инциденты</span>
+  <span>ФИО топа на сводке · без порога «плохо»</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Сводка ИБ → доклад / экспорт</div>
+  <div><span class="dot" style="background:var(--f2)">2</span> Назначить обучение с топа</div>
+  <div><span class="dot" style="background:var(--f3)">3</span> Срезы HR / SOC</div>
+  <div><span class="dot" style="background:var(--f4)">4</span> Drill во внешние разделы</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>Вход</b>: shell «А»</span>
+  <span class="arr">→</span>
+  <span class="node"><b>Сводная аналитика</b></span>
+  <span class="tabs">
+    <span class="tab">ИБ</span><span class="tab">HR</span><span class="tab">SOC</span>
+  </span>
+  <span class="arr">→</span>
+  <span class="node"><b>Выход</b>: экспорт · Обучение · Атаки · Пользователи · Отчёты</span>
+</div>
+
+<!-- ── ПОТОК 1: PRIMARY СВОДКА ───────────────────────────────── -->
+<section>
+  <h2>1. Дашборд ИБ (primary) и состояния</h2>
+  <p>Один экран актуальной картины. Нет переключателя 3–6–12. Empty и loading — отдельные ячейки.</p>
+
+  <div class="row">
+
+    <!-- DB-IB -->
+    <div class="cell">
+      <div class="phone">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f2)">2</span>
+        </div>
+        <div class="scroll stack">
+          <div class="shell">
+            <span>Польз.</span><span>Атаки</span><span>Шабл.</span><span>Обуч.</span>
+            <span class="on">Сводка</span><span>Отчёты</span>
+          </div>
+          <div style="font-weight:700; font-size:13px">Сводная аналитика</div>
+          <div class="note">Последняя кампания · 12 сен 2026 · кампаний: 8</div>
+          <div class="stack" style="flex-direction:row; gap:6px; flex-wrap:wrap">
+            <span class="chip on">ИБ</span>
+            <span class="chip">HR</span>
+            <span class="chip">SOC</span>
+          </div>
+          <div class="metric">
+            <div class="ml">Risk Score</div>
+            <div class="mv">72 · распределение риска</div>
+            <div class="txt" style="margin-top:6px; width:90%"></div>
+            <div class="txt" style="width:70%"></div>
+          </div>
+          <div class="note">Атаки (последняя кампания)</div>
+          <div class="grid">
+            <div class="metric"><div class="ml">Open</div><div class="mv">42%</div></div>
+            <div class="metric"><div class="ml">Click</div><div class="mv">18%</div></div>
+            <div class="metric"><div class="ml">Submit</div><div class="mv">7%</div></div>
+            <div class="metric"><div class="ml">Report</div><div class="mv">11%</div></div>
+          </div>
+          <div class="note">→ тап по блоку атак = детали атаки (внешний)</div>
+          <div class="note">Обучение</div>
+          <div class="conn">
+            <div style="flex:1">
+              <div style="font-size:11px; font-weight:600">Проходит · не закончили · завершили</div>
+              <div class="txt" style="margin-top:4px; width:85%"></div>
+            </div>
+          </div>
+          <div class="note">Топ уязвимых (ФИО)</div>
+          <div class="conn">
+            <div class="avatar" style="width:28px;height:28px"></div>
+            <div style="flex:1; font-size:11px"><b>Иванов И.И.</b><br><span class="note">click+submit</span></div>
+            <span class="tgbtn">Обучить</span>
+          </div>
+          <div class="conn">
+            <div class="avatar" style="width:28px;height:28px"></div>
+            <div style="flex:1; font-size:11px"><b>Петрова А.С.</b><br><span class="note">attachment</span></div>
+            <span class="tgbtn">Обучить</span>
+          </div>
+          <div class="note">Подразделения — болевые точки / типы (без «плохо»)</div>
+          <div class="conn">
+            <div style="flex:1; font-size:11px">Отдел продаж · тип: credential</div>
+          </div>
+          <div class="conn">
+            <div style="flex:1; font-size:11px">Бухгалтерия · тип: attachment</div>
+          </div>
+          <div class="btn pr">Экспорт среза</div>
+          <div class="btn ghost">Отчёты (внешний)</div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-IB. Дашборд ИБ (primary)</div><div class="d">Risk Score, атаки последней кампании, обучение, топ ФИО + CTA, подразделения без порога, экспорт. Чипы HR/SOC — срезы, не dual-mode.</div></div>
+    </div>
+
+    <!-- DB-EMPTY -->
+    <div class="cell">
+      <div class="phone">
+        <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
+        <div class="stack" style="flex:1">
+          <div class="shell">
+            <span>Польз.</span><span>Атаки</span><span>Шабл.</span><span>Обуч.</span>
+            <span class="on">Сводка</span><span>Отчёты</span>
+          </div>
+          <div style="font-weight:700; font-size:13px">Сводная аналитика</div>
+          <div class="center">
+            <div class="bar" style="width:48px; height:48px; border-radius:12px"></div>
+            <div style="font-weight:700; font-size:13px">Пока нет кампаний</div>
+            <div class="note" style="max-width:90%">Запустите учебную атаку — здесь появится актуальный срез</div>
+            <div class="btn pr" style="width:100%">К атакам</div>
+            <div class="btn ghost" style="width:100%">К шаблонам</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-EMPTY. Пусто (нет кампаний)</div><div class="d">Нет Risk/ФИО/экспорта. CTA только во внешние Атаки и Шаблоны.</div></div>
+    </div>
+
+    <!-- DB-LOAD -->
+    <div class="cell">
+      <div class="phone">
+        <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
+        <div class="scroll stack">
+          <div class="shell">
+            <span>Польз.</span><span>Атаки</span><span>Шабл.</span><span>Обуч.</span>
+            <span class="on">Сводка</span><span>Отчёты</span>
+          </div>
+          <div class="bar" style="width:55%"></div>
+          <div class="txt" style="width:70%"></div>
+          <div class="metric">
+            <div class="bar" style="width:40%"></div>
+            <div class="txt" style="margin-top:8px"></div>
+            <div class="txt" style="width:80%"></div>
+          </div>
+          <div class="grid">
+            <div class="metric"><div class="txt"></div><div class="bar" style="margin-top:8px; width:50%"></div></div>
+            <div class="metric"><div class="txt"></div><div class="bar" style="margin-top:8px; width:50%"></div></div>
+            <div class="metric"><div class="txt"></div><div class="bar" style="margin-top:8px; width:50%"></div></div>
+            <div class="metric"><div class="txt"></div><div class="bar" style="margin-top:8px; width:50%"></div></div>
+          </div>
+          <div class="conn"><div class="avatar" style="width:28px;height:28px"></div><div style="flex:1"><div class="txt"></div><div class="txt" style="margin-top:6px; width:60%"></div></div></div>
+          <div class="conn"><div class="avatar" style="width:28px;height:28px"></div><div style="flex:1"><div class="txt"></div><div class="txt" style="margin-top:6px; width:60%"></div></div></div>
+          <div class="btn ghost">Загрузка…</div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-LOAD. Loading</div><div class="d">Скелетон тех же блоков. Интерактивов на контенте нет; shell доступен.</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ПОТОК 3: СРЕЗЫ ───────────────────────────────────────── -->
+<section>
+  <h2>2. Срезы HR и SOC</h2>
+  <p>Отдельные представления потребностей, не переключатель «ИБ / руководство».</p>
+
+  <div class="row">
+
+    <!-- DB-HR -->
+    <div class="cell">
+      <div class="phone">
+        <div class="flows"><span class="dot" style="background:var(--f3)">3</span></div>
+        <div class="scroll stack">
+          <div class="shell">
+            <span>Польз.</span><span>Атаки</span><span>Шабл.</span><span>Обуч.</span>
+            <span class="on">Сводка</span><span>Отчёты</span>
+          </div>
+          <div style="font-weight:700; font-size:13px">Срез: обучение</div>
+          <div class="stack" style="flex-direction:row; gap:6px; flex-wrap:wrap">
+            <span class="chip">ИБ</span>
+            <span class="chip on">HR</span>
+            <span class="chip">SOC</span>
+          </div>
+          <div class="note">Только образование / статусы курсов</div>
+          <div class="metric">
+            <div class="ml">Проходят сейчас</div>
+            <div class="mv">126</div>
+          </div>
+          <div class="metric">
+            <div class="ml">Не закончили</div>
+            <div class="mv">38</div>
+          </div>
+          <div class="metric">
+            <div class="ml">Завершили</div>
+            <div class="mv">210</div>
+          </div>
+          <div class="hr"></div>
+          <div class="conn">
+            <div style="flex:1; font-size:11px"><b>Курс: фишинг базовый</b><br><span class="note">завершение 64%</span></div>
+          </div>
+          <div class="conn">
+            <div style="flex:1; font-size:11px"><b>Курс: вложения</b><br><span class="note">завершение 41%</span></div>
+          </div>
+          <div class="btn pr">Открыть Обучение</div>
+          <div class="btn ghost">К сводке ИБ</div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-HR. Срез HR (обучение)</div><div class="d">Без полного ИБ-стека и без топа атак. Выход в EXT-TRAINING или назад на DB-IB.</div></div>
+    </div>
+
+    <!-- DB-SOC -->
+    <div class="cell">
+      <div class="phone">
+        <div class="flows">
+          <span class="dot" style="background:var(--f3)">3</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <div class="scroll stack">
+          <div class="shell">
+            <span>Польз.</span><span>Атаки</span><span>Шабл.</span><span>Обуч.</span>
+            <span class="on">Сводка</span><span>Отчёты</span>
+          </div>
+          <div style="font-weight:700; font-size:13px">Срез: SOC</div>
+          <div class="stack" style="flex-direction:row; gap:6px; flex-wrap:wrap">
+            <span class="chip">ИБ</span>
+            <span class="chip">HR</span>
+            <span class="chip on">SOC</span>
+          </div>
+          <div class="note">Уязвимые сотрудники</div>
+          <div class="conn">
+            <div class="avatar" style="width:28px;height:28px"></div>
+            <div style="flex:1; font-size:11px"><b>Сидоров П.К.</b><br><span class="note">3 инцидента</span></div>
+            <span class="tgbtn">Обучить</span>
+          </div>
+          <div class="conn">
+            <div class="avatar" style="width:28px;height:28px"></div>
+            <div style="flex:1; font-size:11px"><b>Козлова М.В.</b><br><span class="note">2 инцидента</span></div>
+            <span class="tgbtn">Обучить</span>
+          </div>
+          <div class="hr"></div>
+          <div class="note">Частые инциденты</div>
+          <div class="conn">
+            <div style="flex:1; font-size:11px"><b>Credential harvest</b><br><span class="note">12 за срез → Атаки</span></div>
+          </div>
+          <div class="conn">
+            <div style="flex:1; font-size:11px"><b>Attachment / macro</b><br><span class="note">9 за срез → Атаки</span></div>
+          </div>
+          <div class="btn ghost">К сводке ИБ</div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-SOC. Срез SOC</div><div class="d">Уязвимые + частые инциденты. ФИО/тип → Пользователи / Атаки. CTA → назначение.</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ПОТОК 2 + 4: DRILL ────────────────────────────────────── -->
+<section>
+  <h2>3. Drill: назначение обучения и детали атаки</h2>
+  <p>Sheet поверх сводки; атака уходит во внешний узел (заглушка перехода).</p>
+
+  <div class="row">
+
+    <!-- DB-ASSIGN -->
+    <div class="cell">
+      <div class="phone nopad">
+        <div class="flows"><span class="dot" style="background:var(--f2)">2</span></div>
+        <div style="position:relative; flex:1; overflow:hidden; padding:14px; display:flex; flex-direction:column">
+          <div class="stack" style="opacity:.35; pointer-events:none">
+            <div style="font-weight:700; font-size:12px">Сводная аналитика</div>
+            <div class="metric"><div class="ml">Risk Score</div><div class="mv">72</div></div>
+            <div class="conn">
+              <div class="avatar" style="width:24px;height:24px"></div>
+              <div style="flex:1; font-size:10px">Иванов И.И.</div>
+            </div>
+          </div>
+          <div class="overlay" style="align-items:flex-end; padding:12px">
+            <div class="modal" style="text-align:left">
+              <div class="note">Назначить обучение</div>
+              <div style="font-weight:700; font-size:14px; margin:4px 0 8px">Иванов И.И.</div>
+              <div class="note" style="margin-bottom:8px">Контекст: click + submit · последняя кампания</div>
+              <div class="field">Курс: фишинг базовый ▾</div>
+              <div class="field" style="margin-top:6px">Срок: 14 дней</div>
+              <div class="btn pr" style="margin-top:10px">Назначить</div>
+              <div class="btn ghost" style="margin-top:6px">Открыть в Обучении</div>
+              <div class="btn ghost" style="margin-top:6px">Отмена</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-ASSIGN. Панель назначения обучения</div><div class="d">С топа ФИО. Подтверждение → закрытие на сводку. «В Обучении» → EXT-TRAINING.</div></div>
+    </div>
+
+    <!-- DB-ATTACK -->
+    <div class="cell">
+      <div class="phone">
+        <div class="flows"><span class="dot" style="background:var(--f4)">4</span></div>
+        <div class="stack" style="flex:1">
+          <div class="shell">
+            <span>Польз.</span><span class="on">Атаки</span><span>Шабл.</span><span>Обуч.</span>
+            <span>Сводка</span><span>Отчёты</span>
+          </div>
+          <div class="intent">Внешний узел</div>
+          <div style="font-weight:700; font-size:13px">Детали атаки / кампании</div>
+          <div class="note">Заглушка: экран раздела «Атаки» не проектируем</div>
+          <div class="hr"></div>
+          <div class="metric">
+            <div class="ml">Кампания</div>
+            <div class="mv">Последняя · 12 сен</div>
+          </div>
+          <div class="txt"></div>
+          <div class="txt" style="width:75%"></div>
+          <div class="txt" style="width:55%"></div>
+          <div class="center" style="flex:0; margin-top:12px">
+            <div class="note">Вход с DB-IB / DB-SOC</div>
+            <div class="btn ghost" style="width:100%">← Назад к сводке</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-ATTACK. Переход к деталям атаки</div><div class="d">Маркер DRILL-ATTACK → EXT-ATTACKS. Каркас только чтобы зафиксировать выход из дашборда.</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ЛОГИКА ─────────────────────────────────────────────────── -->
+<section>
+  <h2>Логика, которую не видно на каркасах</h2>
+  <p>
+    <b>Данные первого экрана:</b> последняя кампания и/или org-актуальный срез — без UI тренда 3–6–12.
+    <b>Подразделения:</b> сортировка/подпись по болевым точкам и типам атак; запрещены traffic-light и единый порог «плохо».
+    <b>PII:</b> ФИО топа только ролям с доступом; иначе маскирование / агрегат (A2).
+    <b>Экспорт:</b> one-shot актуального среза; schedule/архив — через Отчёты, не подмена дашборда.
+    <b>Срезы:</b> HR не тащит Risk/атаки как primary; SOC не заменяет SIEM.
+    <b>Пустые вложенные блоки:</b> нет уязвимых → текст в топе без CTA; нет обучения → нули + ссылка в Обучение.
+    <b>Кабинет учащегося:</b> в навигации shell дашборда не показываем как цель.
+  </p>
+</section>
+
+</body>
+</html>

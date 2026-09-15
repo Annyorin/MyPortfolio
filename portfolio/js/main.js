@@ -2,7 +2,7 @@
  * Portfolio entry: Scene Renderer + camera start (architecture §3.2 Portfolio App).
  * Init order: mountScene → createCamera → stage-fit (≥1024) or fitToContent → apply → bindInput → bindInteractions.
  * ≥1024 wide: Figma 51:4107 card arrangement, scaled/centered in the interactive right stage.
- * &lt;768: document/mobile mode (Figma Портфолио.360) — no camera canvas.
+ * &lt;1024: document/mobile mode (Figma Портфолио.768) — no camera canvas.
  */
 import { contentMap } from "../../shared/content.js";
 import { isMobileViewport, selectSceneLayout } from "../../shared/layout.js";
@@ -59,7 +59,7 @@ function readViewportSize(viewportEl) {
 
 /**
  * Initializes scene mount, camera start branch, and input on the portfolio shell.
- * Switches to document/mobile mode when viewport width &lt; 768.
+ * Switches to document/mobile mode when viewport width &lt; 1024.
  *
  * @returns {{
  *   camera: ReturnType<typeof createCameraController>|null,
