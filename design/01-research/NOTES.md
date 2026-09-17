@@ -1,7 +1,7 @@
 ﻿---
 type: notes
 env: 01-research
-updated: 2026-09-15
+updated: 2026-09-16
 ---
 
 # Рабочие заметки
@@ -9,6 +9,19 @@ updated: 2026-09-15
 Прогресс длинных задач этой среды. Читается и дополняется только внутри среды.
 
 ## Активная задача
+1. Сводный дашборд программы «А» (InnoPhish) — исследование 0–5 **done**. Дайджест `outputs/research-digest.md` не перезаписывать.
+2. InnoDragon, кусок уведомлений — desk + competitive **done** (2026-09-16). Публичный сжатый выход: `outputs/research-digest-innodragon.md`. Интервью и замер — нет.
+
+## InnoDragon (2026-09-16)
+| Фаза | Статус | Артефакт |
+|------|--------|----------|
+| 0 scope | done | `briefs/innodragon-00-scope.md` |
+| 1 brief + ЦА | done | `briefs/innodragon-01-brief.md` |
+| 2 competitors | done | `competitors/innodragon/*` + `_matrix.md` |
+| digest | ready | `outputs/research-digest-innodragon.md` |
+| 3–5 | skip | не подменять PRD программы «А» |
+
+## Активная задача (программа «А»)
 Сводный дашборд программы «А» — исследование 0–5 **done**. Следующее вне среды: IA / prototype (другие среды).
 
 ## Прогресс фаз

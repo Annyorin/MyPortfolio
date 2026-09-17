@@ -344,6 +344,91 @@ describe("card long-press drag", () => {
     unbind();
   });
 
+  it("long-press without move suppresses trailing click→navigate", async () => {
+    const shim = createShell();
+    globalThis.document = /** @type {any} */ (shim.document);
+
+    const mounted = sceneMod.mountScene(
+      shim.world,
+      layoutMod.sceneGraph,
+      contentMod.contentMap,
+      (key) => resolveMod.resolveAsset(key, { mode: "repo" }),
+      { chromeEl: shim.viewport }
+    );
+    assert.ok(mounted);
+
+    const camera = cameraMod.createCameraController(shim.world, {
+      getViewportSize: () => ({ width: 1024, height: 609 }),
+      getContentAABB: () => mounted.contentAABB,
+    });
+    const inputMode = {
+      spaceDown: false,
+      isPanning: false,
+      suppressClicks: false,
+      cardDragging: false,
+    };
+    const unbind = interactionsMod.bindInteractions(
+      shim.viewport,
+      camera,
+      inputMode
+    );
+
+    const card = mounted.nodesById.cardA;
+    card.dataset.cardUrl = "https://example.com/case";
+    card.dataset.cardAction = "link";
+
+    let opened = false;
+    const previousWindow = globalThis.window;
+    globalThis.window = /** @type {any} */ ({
+      open() {
+        opened = true;
+        return null;
+      },
+      location: { href: "http://localhost/", assign() { opened = true; } },
+    });
+
+    shim.viewport.dispatchEvent({
+      type: "pointerdown",
+      button: 0,
+      pointerId: 3,
+      clientX: 100,
+      clientY: 100,
+      target: card,
+      preventDefault() {},
+      stopPropagation() {},
+    });
+    await delay(CARD_LONG_PRESS_MS + 80);
+    assert.equal(inputMode.cardDragging, true);
+
+    shim.viewport.dispatchEvent({
+      type: "pointerup",
+      pointerId: 3,
+      clientX: 100,
+      clientY: 100,
+      target: card,
+      preventDefault() {},
+    });
+    assert.equal(inputMode.cardDragging, false);
+
+    shim.viewport.dispatchEvent({
+      type: "click",
+      button: 0,
+      clientX: 100,
+      clientY: 100,
+      target: card,
+      preventDefault() {},
+    });
+    assert.equal(opened, false, "long-press without move must not open case");
+
+    if (previousWindow === undefined) {
+      // @ts-ignore
+      delete globalThis.window;
+    } else {
+      globalThis.window = previousWindow;
+    }
+    unbind();
+  });
+
   it("move past slop after 10ms arms drag without waiting full long-press", async () => {
     const shim = createShell();
     globalThis.document = /** @type {any} */ (shim.document);

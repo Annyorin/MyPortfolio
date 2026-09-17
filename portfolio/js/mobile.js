@@ -1,15 +1,12 @@
 /**
  * Document-scroll mobile/tablet portfolio (Figma «Портфолио.768» 169:13122 / «Портфолио.360»).
- * Compact Sidebar + full-width cards + FloatingAction; no camera canvas.
+ * Compact Sidebar + full-width cards; no camera canvas.
  */
 
 import { fixHangingPrepositions } from "../../shared/typography.js";
 import { activateCardHit } from "./interactions.js";
 import { prefetchCardIfInternal } from "./pageTransition.js";
 import { buildCard } from "./scene.js";
-
-/** Scroll distance (px) before FAB becomes visible. */
-export const FAB_SHOW_SCROLL_Y = 48;
 
 /** Contact actions — same keys/order as desktop Sidebar (scene.js CONTACT_ACTIONS). */
 const MOBILE_CONTACT_ACTIONS = [
@@ -124,30 +121,6 @@ function buildMobileSidebar(content, resolveAsset) {
 }
 
 /**
- * @param {(key: string) => string} resolveAsset
- * @returns {HTMLButtonElement}
- */
-function buildFab(resolveAsset) {
-  const fab = document.createElement("button");
-  fab.type = "button";
-  fab.className = "ds-fab";
-  fab.setAttribute("aria-label", "Наверх");
-  fab.setAttribute("data-mobile-fab", "true");
-  const icon = document.createElement("span");
-  icon.className = "ds-icon";
-  icon.setAttribute("aria-hidden", "true");
-  icon.dataset.icon = "vuesax/linear/arrow-right";
-  const iconImg = document.createElement("img");
-  iconImg.src = resolveAsset("icons.arrow-right");
-  iconImg.alt = "";
-  iconImg.width = 24;
-  iconImg.height = 24;
-  icon.appendChild(iconImg);
-  fab.appendChild(icon);
-  return fab;
-}
-
-/**
  * Mounts document-scroll mobile portfolio into host.
  *
  * @param {HTMLElement} rootEl
@@ -156,17 +129,10 @@ function buildFab(resolveAsset) {
  * @param {{ scrollEl?: HTMLElement|null }} [options]
  * @returns {() => void} teardown
  */
-export function mountMobilePortfolio(rootEl, content, resolveAsset, options = {}) {
+export function mountMobilePortfolio(rootEl, content, resolveAsset, _options = {}) {
   if (!rootEl || typeof document === "undefined") {
     return () => {};
   }
-
-  const scrollEl =
-    options.scrollEl ||
-    (typeof rootEl.closest === "function"
-      ? rootEl.closest(".viewport")
-      : null) ||
-    rootEl;
 
   rootEl.replaceChildren();
   if ("hidden" in rootEl) {
@@ -195,52 +161,6 @@ export function mountMobilePortfolio(rootEl, content, resolveAsset, options = {}
   }
   scrin.appendChild(projects);
   rootEl.appendChild(scrin);
-
-  const fab = buildFab(resolveAsset);
-  rootEl.appendChild(fab);
-
-  /**
-   * @returns {number}
-   */
-  function readScrollY() {
-    if (scrollEl && Number.isFinite(scrollEl.scrollTop)) {
-      return Number(scrollEl.scrollTop);
-    }
-    if (typeof window !== "undefined" && Number.isFinite(window.scrollY)) {
-      return Number(window.scrollY);
-    }
-    return 0;
-  }
-
-  function syncFabVisibility() {
-    const show = readScrollY() > FAB_SHOW_SCROLL_Y;
-    fab.classList.toggle("is-visible", show);
-    if (show) {
-      fab.removeAttribute("hidden");
-    } else {
-      fab.setAttribute("hidden", "");
-    }
-  }
-
-  /**
-   * @param {Event} event
-   */
-  function onScroll() {
-    syncFabVisibility();
-  }
-
-  /**
-   * @param {MouseEvent|Event} event
-   */
-  function onFabClick(event) {
-    event.preventDefault?.();
-    if (typeof scrollEl.scrollTo === "function") {
-      scrollEl.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      scrollEl.scrollTop = 0;
-    }
-    syncFabVisibility();
-  }
 
   /**
    * @param {MouseEvent|KeyboardEvent|Event} event
@@ -282,17 +202,12 @@ export function mountMobilePortfolio(rootEl, content, resolveAsset, options = {}
     prefetchCardIfInternal(card);
   }
 
-  syncFabVisibility();
-  scrollEl.addEventListener?.("scroll", onScroll, { passive: true });
-  fab.addEventListener("click", onFabClick);
   rootEl.addEventListener("click", onCardActivate);
   rootEl.addEventListener("keydown", onCardActivate);
   rootEl.addEventListener("pointerdown", onCardPrefetch);
   rootEl.addEventListener("pointerover", onCardPrefetch);
 
   return function teardown() {
-    scrollEl.removeEventListener?.("scroll", onScroll);
-    fab.removeEventListener("click", onFabClick);
     rootEl.removeEventListener("click", onCardActivate);
     rootEl.removeEventListener("keydown", onCardActivate);
     rootEl.removeEventListener("pointerdown", onCardPrefetch);

@@ -17,6 +17,101 @@ let transitionBusy = false;
 /** @type {Set<string>} */
 const prefetchedHrefs = new Set();
 
+/** @type {boolean} */
+let lifecycleBound = false;
+
+/** @type {ReturnType<typeof setTimeout>|null} */
+let enterCrossfadeClearTimer = null;
+
+/**
+ * Drop enter crossfade class after the animation.
+ * Leaving `filter: blur(0)` on body (fill-mode both) traps `position:fixed`
+ * descendants so the mobile drawer/toolbar scroll away and the menu never appears.
+ *
+ * @returns {void}
+ */
+function scheduleClearEnterCrossfade() {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return;
+  }
+  const clear = () => {
+    enterCrossfadeClearTimer = null;
+    document.documentElement?.classList?.remove?.("is-page-enter-crossfade");
+  };
+  if (enterCrossfadeClearTimer != null) {
+    window.clearTimeout(enterCrossfadeClearTimer);
+  }
+  enterCrossfadeClearTimer = window.setTimeout(clear, PAGE_CROSSFADE_MS + 64);
+  const body = document.body;
+  if (body && typeof body.addEventListener === "function") {
+    body.addEventListener(
+      "animationend",
+      (event) => {
+        const name = String(event?.animationName || "");
+        if (
+          event.target === body &&
+          (name.includes("crossfade") || name.includes("page-crossfade"))
+        ) {
+          clear();
+        }
+      },
+      { once: true }
+    );
+  }
+}
+
+/**
+ * Clear leave/enter transition DOM + flags.
+ * Required so browser Back (bfcache restore) does not revive a stuck veil.
+ *
+ * @param {{ clearEnter?: boolean }} [options]
+ * @returns {void}
+ */
+export function resetPageTransitionUi(options = {}) {
+  const clearEnter = options.clearEnter !== false;
+  transitionBusy = false;
+  if (typeof document === "undefined") {
+    return;
+  }
+  try {
+    document.body?.classList?.remove?.("is-page-crossfading");
+    if (clearEnter) {
+      document.documentElement?.classList?.remove?.("is-page-enter-crossfade");
+    }
+    const nodes =
+      typeof document.querySelectorAll === "function"
+        ? document.querySelectorAll(".portfolio-page-transition")
+        : [];
+    for (const node of nodes) {
+      node.remove?.();
+    }
+  } catch {
+    /* harness */
+  }
+}
+
+/**
+ * Bind pageshow/pagehide once so Back/Forward and bfcache stay usable.
+ *
+ * @returns {void}
+ */
+export function bindPageTransitionLifecycle() {
+  if (lifecycleBound || typeof window === "undefined") {
+    return;
+  }
+  if (typeof window.addEventListener !== "function") {
+    return;
+  }
+  lifecycleBound = true;
+  window.addEventListener("pageshow", (event) => {
+    // Fresh load: keep enter crossfade class set by consumeEnterCrossfade.
+    // bfcache restore: clear everything including a frozen leave veil.
+    resetPageTransitionUi({ clearEnter: Boolean(event?.persisted) });
+  });
+  window.addEventListener("pagehide", () => {
+    resetPageTransitionUi({ clearEnter: true });
+  });
+}
 /**
  * Relative portfolio URLs (e.g. case-dragon.html) stay in-app; http(s)/mailto open externally.
  *
@@ -125,17 +220,24 @@ function rememberNavigation() {
  * @returns {boolean}
  */
 export function consumeEnterCrossfade() {
+  bindPageTransitionLifecycle();
+  let active =
+    typeof document !== "undefined" &&
+    document.documentElement?.classList?.contains?.("is-page-enter-crossfade");
   try {
     const enter = sessionStorage.getItem(ENTER_MOTION_KEY);
     sessionStorage.removeItem(ENTER_MOTION_KEY);
     if (enter === "crossfade") {
       document.documentElement.classList.add("is-page-enter-crossfade");
-      return true;
+      active = true;
     }
   } catch {
     /* private mode */
   }
-  return false;
+  if (active) {
+    scheduleClearEnterCrossfade();
+  }
+  return Boolean(active);
 }
 
 /**
@@ -150,6 +252,8 @@ export function navigateWithExpand(url, _fromEl) {
   if (!target || typeof window === "undefined") {
     return;
   }
+
+  bindPageTransitionLifecycle();
 
   if (transitionBusy) {
     return;
@@ -180,4 +284,8 @@ export function navigateWithExpand(url, _fromEl) {
   window.setTimeout(() => {
     window.location.assign(target);
   }, PAGE_CROSSFADE_NAVIGATE_AFTER_MS);
+}
+
+if (typeof window !== "undefined") {
+  bindPageTransitionLifecycle();
 }

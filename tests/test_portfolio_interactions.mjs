@@ -238,6 +238,42 @@ function createDomHarness() {
         children.push(child);
         return child;
       },
+      removeChild(child) {
+        const idx = children.indexOf(child);
+        if (idx < 0) {
+          throw new Error("NotFoundError");
+        }
+        children.splice(idx, 1);
+        child.parentNode = null;
+        return child;
+      },
+      cloneNode(deep) {
+        const copy = createElement(tagName);
+        copy.className = classNameValue;
+        copy.textContent = el.textContent;
+        for (const [k, v] of Object.entries(dataset)) {
+          copy.dataset[k] = v;
+        }
+        for (const [k, v] of attrMap(el).entries()) {
+          copy.setAttribute(k, v);
+        }
+        if (deep) {
+          for (const child of children) {
+            copy.appendChild(
+              typeof child.cloneNode === "function"
+                ? child.cloneNode(true)
+                : child
+            );
+          }
+        }
+        return copy;
+      },
+      get firstChild() {
+        return children[0] || null;
+      },
+      get firstElementChild() {
+        return children[0] || null;
+      },
       append(...nodes) {
         for (const n of nodes) {
           el.appendChild(n);
@@ -324,11 +360,12 @@ function createDomHarness() {
     return el;
   }
 
-  const document = { createElement };
+  const body = createElement("body");
+  const document = { createElement, body };
   const world = createElement("div");
   world.className = "world";
   world.id = "world";
-  return { document, world, createElement };
+  return { document, world, body, createElement };
 }
 
 /**
@@ -560,17 +597,16 @@ describe("portfolio interactions e2e (UC-05 / UC-02 A1)", () => {
       "vuesax/linear/arrow-right"
     );
 
+    const offset = interactionsMod.CARD_HOVER_OFFSET_PX;
+    // Fake zoomed card rect — must NOT affect viewport gap.
     cardA.getBoundingClientRect = () => ({
-      left: 100,
-      top: 50,
-      width: 310,
-      height: 310,
-      right: 410,
-      bottom: 360,
+      left: 40,
+      top: 10,
+      width: 620,
+      height: 620,
+      right: 660,
+      bottom: 630,
     });
-    const floater = cardA.querySelector(".ds-card__cursor-hover");
-    floater.offsetWidth = 130;
-    floater.offsetHeight = 40;
 
     const move = makeEvent({
       type: "pointermove",
@@ -580,9 +616,19 @@ describe("portfolio interactions e2e (UC-05 / UC-02 A1)", () => {
     });
     shim.world.dispatchEvent(move);
     assert.ok(cardA.classList.contains("is-card-cursor-hover"));
-    // Pointer local (100,70) + 20px gap → bottom-right of cursor.
-    assert.equal(floater.style.left, "120px");
-    assert.equal(floater.style.top, "90px");
+
+    const floater = shim.document.body.querySelector(
+      ".ds-card__cursor-hover--float"
+    );
+    assert.ok(floater);
+    assert.ok(floater.classList.contains("is-visible"));
+    assert.equal(floater.parentNode, shim.document.body);
+    assert.equal(
+      floater.style.transform,
+      `translate3d(${200 + offset}px, ${120 + offset}px, 0)`
+    );
+    // In-card template stays put (not moved into zoomed paint path).
+    assert.ok(cardA.querySelector(".ds-card__cursor-hover"));
 
     const leave = makeEvent({
       type: "pointerout",
@@ -591,6 +637,7 @@ describe("portfolio interactions e2e (UC-05 / UC-02 A1)", () => {
     });
     shim.world.dispatchEvent(leave);
     assert.equal(cardA.classList.contains("is-card-cursor-hover"), false);
+    assert.equal(floater.classList.contains("is-visible"), false);
     unbind();
   });
 });

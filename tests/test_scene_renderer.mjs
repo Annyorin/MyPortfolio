@@ -527,13 +527,10 @@ describe("portfolio scene renderer", () => {
     }
     const phishDesc = nodesById.cardB.querySelector(".ds-card__description");
     assert.ok(phishDesc);
-    assert.equal(
-      phishDesc?.classList.contains("ds-card__description--fixed-lines"),
-      false
-    );
+    assert.ok(phishDesc?.classList.contains("ds-card__description--fixed-lines"));
     assert.equal(
       String(phishDesc?.textContent).split("\n").join(" "),
-      "Для\u00A0ИБ — сводка обучения и\u00A0атак в\u00A0одном дашборде вместо Excel-склейки."
+      "Программа для\u00A0повышения осведомлённости сотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления их устойчивости к\u00A0кибератакам, основанным на\u00A0социальной инженерии."
     );
   });
 

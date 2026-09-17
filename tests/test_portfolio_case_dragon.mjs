@@ -76,6 +76,18 @@ describe("portfolio case-dragon page", () => {
     assert.ok(!Object.prototype.hasOwnProperty.call(contentMap, "card.a.action"));
     assert.equal(contentMap["case.dragon.period_label"], "Период выполнения");
     assert.equal(contentMap["case.dragon.platforms_value"], "Desktop");
+    assert.equal(contentMap["case.dragon.role_value"]?.includes("UX/UI"), true);
+    assert.equal(contentMap["case.dragon.team_value"]?.includes("4 фронта"), true);
+    assert.match(contentMap["case.dragon.intro_body"], /## Цель/);
+    assert.match(contentMap["case.dragon.intro_body"], /## Критерии успеха/);
+    assert.match(contentMap["case.dragon.intro_body"], /ушёл в/);
+    assert.match(contentMap["case.dragon.analysis_body"], /## Бенчмарки/);
+    assert.match(contentMap["case.dragon.analysis_body"], /первый клик/);
+    assert.match(contentMap["case.dragon.analysis_body"], /среднее время/);
+    assert.match(contentMap["case.dragon.intro_body"], /записи прогона/);
+    assert.match(contentMap["case.dragon.analysis_body"], /Weeek/);
+    assert.doesNotMatch(contentMap["case.dragon.analysis_body"], /A\/B/);
+    assert.doesNotMatch(contentMap["case.dragon.intro_body"], /чистые интерфейсы/);
     assert.equal(contentMap["case.dragon.context_title"], "Контекст задачи");
     assert.equal(contentMap["case.dragon.intro_title"], "Вводные");
     assert.equal(contentMap["case.dragon.next_label"], "Далее");
@@ -98,6 +110,8 @@ describe("portfolio case-dragon page", () => {
     assert.match(src, /export function initCasePage/);
     assert.match(src, /bindSegmentsControl/);
     assert.match(src, /CASE_FAB_SHOW_SCROLL_Y/);
+    assert.match(src, /CASE_FAB_DIR_SLOP_PX/);
+    assert.match(src, /delta\s*<\s*-CASE_FAB_DIR_SLOP_PX/);
     assert.match(src, /bindDrawer/);
     assert.match(src, /is-drawer-open/);
     assert.match(src, /dataset\.caseId|caseKeyPrefix/);
@@ -118,6 +132,19 @@ describe("portfolio case-dragon page", () => {
     assert.match(css, /@media\s*\(max-width:\s*768px\)/);
     assert.match(css, /@media\s*\(max-width:\s*480px\)/);
     assert.match(css, /\.case-page__toolbar\.ds-toolbar[\s\S]*display:\s*flex/);
+    assert.match(css, /\.case-page__toolbar\.ds-toolbar[\s\S]*z-index:\s*120/);
+    assert.match(
+      css,
+      /@media\s*\(max-width:\s*480px\)[\s\S]*body\.is-drawer-open\s+\.case-page__sidebar[\s\S]*z-index:\s*130/
+    );
+    assert.match(
+      css,
+      /@media\s*\(max-width:\s*480px\)[\s\S]*\.case-page__toolbar\.ds-toolbar[\s\S]*position:\s*fixed/
+    );
+    assert.match(
+      css,
+      /body\.is-drawer-open\s+\.case-page__sidebar[\s\S]*z-index:\s*115/
+    );
     assert.match(css, /\.case-page__main-inner\s*>\s*\.ds-header[\s\S]*display:\s*none/);
     assert.match(css, /is-drawer-open/);
     assert.match(css, /ds-menu-mobile/);
@@ -125,6 +152,7 @@ describe("portfolio case-dragon page", () => {
     assert.match(css, /max-width:\s*none/);
     assert.match(css, /\.case-page__sidebar[\s\S]*position:\s*sticky/);
     assert.match(css, /\.case-page__main-inner\s+\.ds-header[\s\S]*position:\s*sticky/);
+    assert.match(css, /\.case-page__main-inner\s+\.ds-header[\s\S]*z-index:\s*120/);
     assert.match(css, /\.case-page__meta-value[\s\S]*--type-text-2-size/);
     assert.match(css, /\.case-page__fill-body[\s\S]*--type-text-2-size/);
     assert.match(

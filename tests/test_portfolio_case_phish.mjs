@@ -43,6 +43,7 @@ describe("portfolio case-phish page", () => {
     assert.match(html, /href=["']main\.html["']/);
     assert.match(html, /id=["']context["']/);
     assert.match(html, /id=["']analysis["']/);
+    assert.match(html, /aria-label=["']Исследование["']/);
     assert.match(html, /id=["']hypotheses["']/);
     assert.match(html, /id=["']conclusions["']/);
     assert.match(html, /id=["']contacts["']/);
@@ -74,7 +75,7 @@ describe("portfolio case-phish page", () => {
     assert.ok(!Object.prototype.hasOwnProperty.call(contentMap, "card.b.action"));
     assert.equal(
       contentMap["card.b.description"],
-      "Для\u00A0ИБ — сводка обучения и\u00A0атак в\u00A0одном дашборде вместо Excel-склейки."
+      "Программа для\u00A0повышения осведомлённости\nсотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления\nих устойчивости к\u00A0кибератакам, основанным\nна\u00A0социальной инженерии."
     );
     assert.equal(contentMap["case.phish.period_label"], "Период выполнения");
     assert.equal(contentMap["case.phish.platforms_value"], "Desktop");
@@ -82,7 +83,15 @@ describe("portfolio case-phish page", () => {
     assert.equal(contentMap["case.phish.team_value"]?.includes("4 фронта"), true);
     assert.equal(contentMap["case.phish.context_title"], "Контекст задачи");
     assert.equal(contentMap["case.phish.intro_title"], "Вводные");
-    assert.ok(contentMap["case.phish.analysis_body"]);
+    assert.equal(contentMap["case.phish.analysis_title"], "Исследование");
+    assert.match(contentMap["case.phish.intro_body"], /## Цель/);
+    assert.match(contentMap["case.phish.intro_body"], /## Критерии успеха/);
+    assert.match(contentMap["case.phish.analysis_body"], /## Бенчмарки/);
+    assert.match(contentMap["case.phish.analysis_body"], /двумя специалистами ИБ/);
+    assert.doesNotMatch(contentMap["case.phish.analysis_body"], /Пять чисел/);
+    const innophish = read("design/03-content/copy/innophish.md");
+    assert.match(innophish, /## Вопрос/);
+    assert.match(innophish, /EvilGo Phish/);
     assert.ok(contentMap["case.phish.hypotheses_body"]);
     assert.ok(contentMap["case.phish.conclusions_body"]);
     assert.equal(contentMap["case.phish.next_label"], "Далее");
@@ -105,7 +114,9 @@ describe("portfolio case-phish page", () => {
     assert.match(src, /card\.b|CASE_CARD_PREFIX/);
     assert.match(src, /fillStubSection/);
     assert.match(src, /analysis_title|hypotheses_title|conclusions_title/);
+    assert.match(src, /case-page__text-sub/);
     assert.match(src, /data-case-long-only|applyCaseLengthMode/);
     assert.match(src, /role_value|team_value/);
+    assert.match(src, /hasHeadings/);
   });
 });

@@ -8,8 +8,10 @@ import { bindSegmentsControl } from "../../ds-showcase/js/segments.js";
 import { consumeEnterCrossfade, navigateWithExpand, isInternalPortfolioUrl } from "./pageTransition.js";
 import { resolveAsset } from "./resolveAsset.js";
 
-/** Scroll distance (px) before FAB becomes visible. */
+/** Min scroll Y (px) before FAB may appear; always hidden near top. */
 export const CASE_FAB_SHOW_SCROLL_Y = 48;
+/** Ignore scroll deltas smaller than this (px) to avoid flicker. */
+export const CASE_FAB_DIR_SLOP_PX = 4;
 
 /** @type {Record<string, string>} */
 const CASE_CARD_PREFIX = {
@@ -71,10 +73,36 @@ function setBodyText(selector, text) {
     return;
   }
   const fixed = textOf(text);
-  el.textContent = fixed;
-  if (fixed.includes("\n")) {
-    el.style.whiteSpace = "pre-line";
+  const parts = fixed
+    .split(/\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const hasHeadings = parts.some((part) => /^##\s+/.test(part));
+  if (!hasHeadings && parts.length <= 1) {
+    el.textContent = fixed;
+    return;
   }
+  if (!hasHeadings) {
+    el.textContent = fixed;
+    el.style.whiteSpace = "pre-line";
+    return;
+  }
+  const parent = el.parentElement;
+  if (!(parent instanceof HTMLElement)) {
+    el.textContent = fixed;
+    return;
+  }
+  const className = el.className;
+  const frag = document.createDocumentFragment();
+  for (const part of parts) {
+    const heading = part.match(/^##\s+(.+)$/);
+    const node = document.createElement(heading ? "h3" : "p");
+    node.className = heading ? "case-page__text-sub" : className;
+    node.textContent = heading ? heading[1] : part;
+    frag.appendChild(node);
+  }
+  parent.insertBefore(frag, el);
+  el.remove();
 }
 
 /**
@@ -91,13 +119,14 @@ function appendBodyParagraphs(container, body, className = "case-page__text-body
     .filter(Boolean);
   const chunks = parts.length > 0 ? parts : [""];
   for (const part of chunks) {
-    const p = document.createElement("p");
-    p.className = className;
+    const heading = part.match(/^##\s+(.+)$/);
+    const el = document.createElement(heading ? "h3" : "p");
+    el.className = heading ? "case-page__text-sub" : className;
     if (longOnly) {
-      p.setAttribute("data-case-long-only", "");
+      el.setAttribute("data-case-long-only", "");
     }
-    p.textContent = part;
-    container.appendChild(p);
+    el.textContent = heading ? heading[1] : part;
+    container.appendChild(el);
   }
 }
 
@@ -245,7 +274,9 @@ function fillContent(content, caseId) {
     ["contacts", "sidenav.contacts"],
   ];
   for (const [id, key] of navMap) {
-    setText(`[data-case-nav='${id}']`, content[key]);
+    const override =
+      id === "analysis" ? caseVal("analysis_title") : undefined;
+    setText(`[data-case-nav='${id}']`, override || content[key]);
   }
 
   fillStubSection("analysis", caseVal("analysis_title"), caseVal("analysis_body"), {
@@ -343,6 +374,8 @@ function fillContent(content, caseId) {
 }
 
 /**
+ * FAB → top: visible only while the user scrolls up (hidden on scroll down / near top).
+ *
  * @param {HTMLElement} fab
  * @returns {() => void}
  */
@@ -357,15 +390,29 @@ function bindFab(fab) {
     return 0;
   }
 
+  let lastY = readScrollY();
+
   function syncVisibility() {
-    const show = readScrollY() > CASE_FAB_SHOW_SCROLL_Y;
-    fab.classList.toggle("is-visible", show);
+    const y = readScrollY();
+    const delta = y - lastY;
+    lastY = y;
+
+    if (y <= CASE_FAB_SHOW_SCROLL_Y) {
+      fab.classList.remove("is-visible");
+      return;
+    }
+    if (delta < -CASE_FAB_DIR_SLOP_PX) {
+      fab.classList.add("is-visible");
+    } else if (delta > CASE_FAB_DIR_SLOP_PX) {
+      fab.classList.remove("is-visible");
+    }
   }
 
   const onClick = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  fab.classList.remove("is-visible");
   fab.addEventListener("click", onClick);
   window.addEventListener("scroll", syncVisibility, { passive: true });
   syncVisibility();
@@ -433,6 +480,9 @@ function bindSideNavActive(nav) {
  * @returns {() => void}
  */
 function bindDrawer({ burgers, backdrop, nav }) {
+  /** Ignore backdrop clicks from the same gesture that opened the drawer. */
+  let backdropCloseArmed = true;
+
   /**
    * @param {boolean} open
    */
@@ -442,9 +492,20 @@ function bindDrawer({ burgers, backdrop, nav }) {
       burger.setAttribute("aria-expanded", open ? "true" : "false");
     }
     if (open) {
+      backdropCloseArmed = false;
       backdrop.removeAttribute("hidden");
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            backdropCloseArmed = true;
+          });
+        });
+      } else {
+        backdropCloseArmed = true;
+      }
     } else {
       backdrop.setAttribute("hidden", "");
+      backdropCloseArmed = true;
     }
   }
 
@@ -456,8 +517,20 @@ function bindDrawer({ burgers, backdrop, nav }) {
     setOpen(!document.body.classList.contains("is-drawer-open"));
   }
 
-  const onBurger = () => toggle();
-  const onBackdrop = () => close();
+  /**
+   * @param {MouseEvent} event
+   */
+  const onBurger = (event) => {
+    event.preventDefault?.();
+    event.stopPropagation?.();
+    toggle();
+  };
+  const onBackdrop = () => {
+    if (!backdropCloseArmed) {
+      return;
+    }
+    close();
+  };
   const onNavClick = (event) => {
     const target = event.target;
     if (target instanceof Element && target.closest("a[href^='#']")) {

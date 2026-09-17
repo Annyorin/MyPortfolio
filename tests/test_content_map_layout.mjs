@@ -68,7 +68,7 @@ describe("content map / scene layout / resolveAsset", () => {
     assert.ok(!Object.prototype.hasOwnProperty.call(contentMap, "card.b.action"));
     assert.equal(
       String(contentMap["card.b.description"]).split("\n").join(" "),
-      "Для\u00A0ИБ — сводка обучения и\u00A0атак в\u00A0одном дашборде вместо Excel-склейки."
+      "Программа для\u00A0повышения осведомлённости сотрудников в\u00A0области ИБ\u00A0и\u00A0укрепления их устойчивости к\u00A0кибератакам, основанным на\u00A0социальной инженерии."
     );
     assert.equal(contentMap["case.dragon.context_title"], "Контекст задачи");
     assert.equal(contentMap["card.meta"], "· 2024");

@@ -33,27 +33,56 @@ export const CARD_PRESS_SLOP_PX = 8;
 /** Hint tip offset from cursor — bottom-right, like Ricky Zhang reference. */
 const STICKER_HINT_OFFSET_PX = 8;
 /**
- * CursorHover offset from pointer hotspot — bottom-right gap like the hand→label
- * reference (clear space between cursor glyph and pill).
+ * CursorHover tip offset from cursor in viewport CSS px.
+ * Must stay constant under camera CSS zoom / transform scale — floater lives on body.
  */
-export const CARD_HOVER_OFFSET_PX = 20;
+export const CARD_HOVER_OFFSET_PX = 12;
 
 /** @type {HTMLElement|null} */
 let floatingStickerHint = null;
 /** @type {HTMLElement|null} */
 let floatingHintSticker = null;
 /** @type {HTMLElement|null} */
+let floatingCardHover = null;
+/** @type {HTMLElement|null} */
 let activeCardHover = null;
+
+/**
+ * Dedicated body-level CursorHover (never under `.world` zoom/transform).
+ *
+ * @returns {HTMLElement}
+ */
+function ensureFloatingCardHover() {
+  if (floatingCardHover && floatingCardHover.parentNode) {
+    return floatingCardHover;
+  }
+  const el = document.createElement("div");
+  el.className = "ds-card__cursor-hover ds-card__cursor-hover--float";
+  el.setAttribute("aria-hidden", "true");
+  document.body.appendChild(el);
+  floatingCardHover = el;
+  return el;
+}
+
+/**
+ * Place floater at viewport coords with a constant screen-space gap.
+ *
+ * @param {HTMLElement} el
+ * @param {number} clientX
+ * @param {number} clientY
+ */
+function positionFloatingCardHover(el, clientX, clientY) {
+  const x = clientX + CARD_HOVER_OFFSET_PX;
+  const y = clientY + CARD_HOVER_OFFSET_PX;
+  // translate3d — viewport px, immune to ancestor zoom on `.world`.
+  el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+}
 
 /**
  * @returns {HTMLElement}
  */
 function ensureFloatingStickerHint() {
-  if (
-    floatingStickerHint &&
-    typeof floatingStickerHint.isConnected === "boolean" &&
-    floatingStickerHint.isConnected
-  ) {
+  if (floatingStickerHint && floatingStickerHint.parentNode) {
     return floatingStickerHint;
   }
   const el = document.createElement("div");
@@ -128,7 +157,9 @@ function hideFloatingStickerHint(sticker) {
 }
 
 /**
- * @param {HTMLElement|null} card
+ * Hide body-level CursorHover and clear card state.
+ *
+ * @param {HTMLElement|null} [card]
  */
 function hideCardCursorHover(card) {
   if (card && activeCardHover && card !== activeCardHover) {
@@ -138,14 +169,17 @@ function hideCardCursorHover(card) {
   if (target) {
     target.classList.remove("is-card-cursor-hover");
   }
+  if (floatingCardHover) {
+    floatingCardHover.classList.remove("is-visible");
+  }
   if (!card || card === activeCardHover) {
     activeCardHover = null;
   }
 }
 
 /**
- * Position card CursorHover bottom-right of the pointer (Macbook Hint style).
- * May extend outside the card bounds.
+ * Show CursorHover bottom-right of the pointer in viewport coords.
+ * Clones the in-card template into a body floater so camera zoom cannot stretch the gap.
  *
  * @param {HTMLElement} card
  * @param {number} clientX
@@ -164,29 +198,46 @@ function showCardCursorHoverAt(card, clientX, clientY) {
   if (mode !== "cursor" && mode !== "behance") {
     return;
   }
-  const floater = /** @type {HTMLElement|null} */ (
+  const source = /** @type {HTMLElement|null} */ (
     typeof card.querySelector === "function"
       ? card.querySelector(".ds-card__cursor-hover")
       : null
   );
-  if (!floater) {
+  const sourceInner =
+    source && typeof source.firstElementChild !== "undefined"
+      ? source.firstElementChild
+      : null;
+  if (!sourceInner || typeof sourceInner.cloneNode !== "function") {
     return;
   }
+  if (!document.body || typeof document.body.appendChild !== "function") {
+    return;
+  }
+
   if (activeCardHover && activeCardHover !== card) {
     activeCardHover.classList.remove("is-card-cursor-hover");
   }
-  activeCardHover = card;
-  card.classList.add("is-card-cursor-hover");
 
-  if (typeof card.getBoundingClientRect !== "function") {
-    return;
+  const el = ensureFloatingCardHover();
+  const cardChanged = activeCardHover !== card;
+  if (cardChanged || el.childNodes.length === 0) {
+    const clone = /** @type {HTMLElement} */ (sourceInner.cloneNode(true));
+    if (typeof el.replaceChildren === "function") {
+      el.replaceChildren(clone);
+    } else {
+      while (el.firstChild) {
+        el.removeChild(el.firstChild);
+      }
+      el.appendChild(clone);
+    }
   }
 
-  const rect = card.getBoundingClientRect();
-  const x = clientX - rect.left + CARD_HOVER_OFFSET_PX;
-  const y = clientY - rect.top + CARD_HOVER_OFFSET_PX;
-  floater.style.left = `${x}px`;
-  floater.style.top = `${y}px`;
+  activeCardHover = card;
+  card.classList.add("is-card-cursor-hover");
+  positionFloatingCardHover(el, clientX, clientY);
+  if (!el.classList.contains("is-visible")) {
+    el.classList.add("is-visible");
+  }
 }
 
 /**
@@ -397,7 +448,7 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
   let dragLastY = 0;
   /** @type {string|null} */
   let dragBaseZ = null;
-  /** True if the current card press produced a drag move (skip click→URL). */
+  /** True after grab armed or drag moved — skip the trailing click→URL. */
   let cardDragMoved = false;
 
   function clearPressTimer() {
@@ -455,7 +506,8 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
     dragLastX = e.clientX;
     dragLastY = e.clientY;
     dragBaseZ = card.style.zIndex || String(card.dataset?.nodeKind ? "2" : "");
-    cardDragMoved = false;
+    // Arming grab (even without move) must suppress the trailing click→navigate.
+    cardDragMoved = true;
     inputMode.cardDragging = true;
     syncSuppress(inputMode);
     card.classList.add("is-card-grab", "is-card-dragging");
@@ -563,7 +615,7 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
   /**
    * Click / keyboard activate on Card with card.url opens the project in a new tab.
    * Cards with data-card-action="modal" are reserved for a future modal (no-op for now).
-   * Skipped after a drag move so long-press pan does not navigate.
+   * Skipped after grab armed or drag move so long-press / pan does not navigate.
    *
    * @param {MouseEvent|KeyboardEvent|Event} event
    */
@@ -1100,5 +1152,9 @@ export function bindInteractions(rootEl, camera, inputMode = {}) {
       floatingStickerHint.parentNode.removeChild(floatingStickerHint);
     }
     floatingStickerHint = null;
+    if (floatingCardHover?.parentNode) {
+      floatingCardHover.parentNode.removeChild(floatingCardHover);
+    }
+    floatingCardHover = null;
   };
 }

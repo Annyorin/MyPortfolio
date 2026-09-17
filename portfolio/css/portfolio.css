@@ -148,22 +148,39 @@ body {
   border-radius: 23px 23px 0 0;
 }
 
-.ds-card__cursor-hover {
+/* In-card CursorHover template — source for body clone; keep out of zoomed paint. */
+.ds-card > .ds-card__cursor-hover {
   position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Body floater — viewport CSS px via translate3d; gap immune to camera zoom. */
+.ds-card__cursor-hover--float {
+  position: fixed;
   left: 0;
   top: 0;
-  z-index: 6;
+  z-index: 10000;
   margin: 0;
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  transform: none;
+  transform: translate3d(-9999px, -9999px, 0);
   transition:
     opacity 120ms ease,
     visibility 0s linear 120ms;
 }
 
-.ds-card.is-card-cursor-hover:not(.is-card-dragging) > .ds-card__cursor-hover {
+.ds-card__cursor-hover--float.is-visible {
   opacity: 1;
   visibility: visible;
   transition:
@@ -171,12 +188,12 @@ body {
     visibility 0s linear 0s;
 }
 
-.ds-card__cursor-hover .ds-hover {
+.ds-card__cursor-hover--float .ds-hover {
   pointer-events: none;
 }
 
 @media (hover: none) {
-  .ds-card__cursor-hover {
+  .ds-card__cursor-hover--float {
     display: none;
   }
 }
@@ -567,9 +584,9 @@ body {
 }
 
 /*
- * Cards: full width.
- * ≥768 (document sheet): Figma Портфолио.768 — 500 / media ~394 / body 104.
- * <768 → 360: height and media lerp to Портфолио.360 (322 / 172).
+ * Cards: full width (Figma Портфолио.768 169:13125 — 736×500, Photo 394, Info 104).
+ * Body stays 104px; media fills the rest. Description 32px (not desktop 64).
+ * <768 → card height lerps to Портфолио.360 (322); media still flex-fills.
  */
 .portfolio-mobile__card.ds-card {
   position: relative;
@@ -578,9 +595,18 @@ body {
   max-width: none;
   border-radius: 24px;
   box-shadow: var(--shadow);
+  /* Avoid 1.03 hover scale shifting a full-bleed sheet card. */
+  transform: none;
 }
 
-.portfolio-mobile__card .ds-card__media {
+.portfolio-mobile__card.ds-card:hover,
+.portfolio-mobile__card.ds-card.ds-card--hover {
+  transform: none;
+  box-shadow: var(--shadow);
+}
+
+.portfolio-mobile__card .ds-card__media,
+.portfolio-mobile__card .ds-card__media.ds-placeholder {
   flex: 1 1 auto;
   width: 100%;
   height: auto;
@@ -592,9 +618,22 @@ body {
   height: 104px;
   flex: 0 0 104px;
   padding: 16px;
+  overflow: hidden;
 }
 
-/* 768 → 360: proportional card + media (next breakpoint Портфолио.360) */
+.portfolio-mobile__card .ds-card__description {
+  height: 32px;
+  flex: 0 0 32px;
+  max-height: 32px;
+}
+
+/* Desktop forced \\n wraps are for 310px; on full-width mobile collapse to fill. */
+.portfolio-mobile__card .ds-card__description--fixed-lines {
+  white-space: normal;
+  width: 100%;
+}
+
+/* 768 → 360: card height only; media keeps flex-fill above fixed 104 body */
 @media (max-width: 767.98px) {
   .portfolio-mobile__card.ds-card {
     height: clamp(
@@ -603,44 +642,6 @@ body {
       500px
     );
   }
-
-  .portfolio-mobile__card .ds-card__media {
-    flex: 0 0 auto;
-    height: clamp(
-      172px,
-      calc(172px + 222px * (100vw - 360px) / 408px),
-      394px
-    );
-    min-height: 0;
-    max-height: none;
-  }
-
-  .portfolio-mobile__card .ds-card__body {
-    height: auto;
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-}
-
-.portfolio-mobile .ds-fab,
-.portfolio-mobile-host .ds-fab {
-  position: fixed;
-  right: 14px;
-  bottom: 24px;
-  z-index: 50;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition:
-    opacity 180ms ease,
-    visibility 180ms ease;
-}
-
-.portfolio-mobile .ds-fab.is-visible,
-.portfolio-mobile-host .ds-fab.is-visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
 }
 
 /* Narrow phone (≈360): denser sidebar gaps/type; card size already lerps above */
@@ -689,6 +690,7 @@ body.is-page-crossfading {
 
 .portfolio-page-transition.is-active {
   opacity: 1;
+  pointer-events: auto;
 }
 
 body.is-page-crossfading .viewport,

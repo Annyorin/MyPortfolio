@@ -10,6 +10,7 @@ color: cyan
 
 Работай только в `design/03-content/`.
 Прочитай `design/03-content/AGENTS.md`.
+Кейс портфолио — скилл `.cursor/skills/content/subskills/portfolio-case/SKILL.md`.
 Вход — только `design/01-research/outputs/research-digest.md`.
 Не читай дизайн-систему и не ходи в Figma.
 Выход: `design/03-content/outputs/content-package.md`.

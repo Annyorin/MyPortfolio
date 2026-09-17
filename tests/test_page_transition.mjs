@@ -84,7 +84,13 @@ describe("portfolio pageTransition", () => {
     const config = read("vite.config.js");
 
     assert.match(js, /PAGE_CROSSFADE_NAVIGATE_AFTER_MS/);
+    assert.match(js, /scheduleClearEnterCrossfade/);
+    assert.match(js, /is-page-enter-crossfade/);
+    assert.match(js, /remove\?\.\(["']is-page-enter-crossfade["']\)/);
     assert.match(js, /prefetchInternalPage/);
+    assert.match(js, /resetPageTransitionUi/);
+    assert.match(js, /pageshow/);
+    assert.match(js, /pagehide/);
     assert.doesNotMatch(js, /cloneNode/);
     assert.doesNotMatch(js, /scale\(/);
     assert.doesNotMatch(js, /navigateWithSheet/);

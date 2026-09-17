@@ -1,11 +1,12 @@
 /**
  * Portfolio mobile/tablet document mode (Figma Портфолио.768 / .360).
  *
- * At width <1024: ProfileMobile sheet (Портфолио.768), 4 contacts, 3 cards, FAB.
+ * At width <1024: ProfileMobile sheet (Портфолио.768), 4 contacts, 3 cards (no FAB).
  * At width ≥1024: mobile sheet torn down; canvas scene present.
  */
 
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, it, before, after } from "node:test";
@@ -473,7 +474,7 @@ describe("portfolio mobile document mode", () => {
     }
   });
 
-  it("width 360: ProfileMobile, 4 contacts, 3 distinct cards, FAB scroll", async () => {
+  it("width 360: ProfileMobile, 4 contacts, 3 distinct cards, no FAB", async () => {
     const bust = `?t=${Date.now()}&mobile=1`;
     const shell = createShell(360, 800);
     globalThis.document = /** @type {any} */ (shell.document);
@@ -532,16 +533,11 @@ describe("portfolio mobile document mode", () => {
     assert.equal(cards[1].dataset.cardAction, undefined);
     assert.ok(String(cards[2].dataset.cardUrl || "").includes("behance.net"));
 
-    const fab = shell.mobile.querySelector(".ds-fab");
-    assert.ok(fab);
-    assert.equal(fab.classList.contains("is-visible"), false);
-
-    shell.viewport.scrollTop = 80;
-    shell.viewport.dispatchEvent({ type: "scroll", target: shell.viewport });
-    assert.equal(fab.classList.contains("is-visible"), true);
-
-    fab.dispatchEvent({ type: "click", preventDefault() {} });
-    assert.equal(shell.viewport.scrollTop, 0);
+    assert.equal(
+      shell.mobile.querySelector(".ds-fab"),
+      null,
+      "home mobile has no FloatingAction"
+    );
   });
 
   it("width 768–1023: document sheet (Портфолио.768), not canvas", async () => {
@@ -609,5 +605,31 @@ describe("portfolio mobile document mode", () => {
     assert.equal(shell.mobile.hidden, true);
     assert.equal(shell.mobile.querySelector(".ds-card"), null);
     assert.ok(shell.world.children.length >= 4);
+  });
+
+  it("portfolio.css mobile cards: full width, body 104, desc 32, media flex-fill", () => {
+    const css = fs.readFileSync(abs("portfolio/css/portfolio.css"), "utf8");
+    assert.match(css, /\.portfolio-mobile__card\.ds-card[\s\S]*?width:\s*100%/);
+    assert.match(css, /\.portfolio-mobile__card\.ds-card[\s\S]*?height:\s*500px/);
+    assert.match(
+      css,
+      /\.portfolio-mobile__card\s+\.ds-card__body[\s\S]*?height:\s*104px/
+    );
+    assert.match(
+      css,
+      /\.portfolio-mobile__card\s+\.ds-card__description[\s\S]*?height:\s*32px/
+    );
+    assert.match(
+      css,
+      /\.portfolio-mobile__card\s+\.ds-card__description--fixed-lines[\s\S]*?white-space:\s*normal/
+    );
+    assert.match(
+      css,
+      /\.portfolio-mobile__card\s+\.ds-card__media[\s\S]*?flex:\s*1\s+1\s+auto/
+    );
+    assert.doesNotMatch(
+      css,
+      /@media\s*\(max-width:\s*767\.98px\)[\s\S]*?\.portfolio-mobile__card\s+\.ds-card__media[\s\S]*?height:\s*clamp\(\s*172px/
+    );
   });
 });

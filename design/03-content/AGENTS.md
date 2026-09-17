@@ -19,6 +19,8 @@
 | `visual/` | брифы на изображения и сгенерированные ассеты |
 | `outputs/` | публичный пакет контента для среды 4 |
 
+Кейс портфолио: скилл `.cursor/skills/content/subskills/portfolio-case/SKILL.md`. Канон полей — `strategy/case-writing-template.md`.
+
 ## Рабочий цикл
 
 1. Прочитай `research-digest.md` и вытащи оттуда сегменты, боли и язык аудитории.

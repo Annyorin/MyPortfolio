@@ -64,6 +64,7 @@ body.case-page.is-page-crossfading {
 
 .portfolio-page-transition.is-active {
   opacity: 1;
+  pointer-events: auto;
 }
 
 body.is-page-crossfading .case-page__toolbar,
@@ -81,7 +82,7 @@ body.is-page-crossfading .case-page__fab {
   display: none;
   position: sticky;
   top: 0;
-  z-index: 80;
+  z-index: 120;
   width: 100%;
   max-width: none;
 }
@@ -175,7 +176,7 @@ body.is-page-crossfading .case-page__fab {
 .case-page__main-inner .ds-header {
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 120;
   background-color: var(--color-white);
 }
 
@@ -335,6 +336,19 @@ body.is-page-crossfading .case-page__fab {
   width: 100%;
 }
 
+.case-page__text-sub {
+  margin: 16px 0 0;
+  font-family: Inter, sans-serif;
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-line);
+  font-weight: var(--type-h2-weight);
+  color: var(--color-black);
+}
+
+.case-page__text-title + .case-page__text-sub {
+  margin-top: 8px;
+}
+
 .case-page__text-title,
 .case-page__contact-heading {
   margin: 0;
@@ -441,7 +455,7 @@ body.is-page-crossfading .case-page__fab {
     display: none;
     position: fixed;
     inset: 0;
-    z-index: 90;
+    z-index: 110;
     background-color: transparent;
   }
 
@@ -456,7 +470,8 @@ body.is-page-crossfading .case-page__fab {
     right: 16px;
     left: auto;
     bottom: auto;
-    z-index: 100;
+    /* Stay under sticky header/toolbar while closed so burger stays clickable. */
+    z-index: 1;
     flex: none;
     width: auto;
     min-width: 0;
@@ -477,10 +492,15 @@ body.is-page-crossfading .case-page__fab {
   }
 
   body.is-drawer-open .case-page__sidebar {
+    z-index: 115;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
     transform: none;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease,
+      visibility 0s linear 0s;
   }
 
   .case-page__sidebar .ds-side-nav.ds-menu-mobile {
@@ -536,14 +556,46 @@ body.is-page-crossfading .case-page__fab {
 @media (max-width: 480px) {
   .case-page__toolbar.ds-toolbar {
     display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 120;
+  }
+
+  /* Offset content so fixed toolbar does not cover the first screen. */
+  body.case-page {
+    padding-top: 48px;
   }
 
   .case-page__main-inner > .ds-header {
     display: none;
   }
 
+  /* Pin MenuMobile under the toolbar; keep above page content while open. */
   .case-page__sidebar {
+    position: fixed;
     top: 56px;
+    right: 8px;
+    left: auto;
+    bottom: auto;
+  }
+
+  body.is-drawer-open .case-page__backdrop {
+    z-index: 125;
+  }
+
+  body.is-drawer-open .case-page__sidebar {
+    z-index: 130;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  body.is-drawer-open {
+    overflow: hidden;
   }
 
   .case-page__meta-grid {
