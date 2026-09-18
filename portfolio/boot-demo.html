@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Boot particle demo</title>
+    <link rel="stylesheet" href="css/portfolio.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #f6f5f8;
+        font-family: Inter, system-ui, sans-serif;
+        color: #232323;
+      }
+
+      .boot-demo {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: #f6f5f8;
+      }
+
+      .boot-demo__hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 20;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+        pointer-events: auto;
+      }
+
+      .boot-demo__hud button {
+        appearance: none;
+        border: 1px solid #d8d8d8;
+        background: #fff;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      .boot-demo__hud button:hover {
+        border-color: #bdbdbd;
+      }
+
+      .boot-demo__meta {
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      .boot-demo__meta strong {
+        font-weight: 600;
+      }
+
+      /* Keep loader visible for replay (demo must not hide after done). */
+      .boot-demo .boot-loader,
+      .boot-demo .boot-loader.is-visible,
+      .boot-demo .boot-loader.is-done {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .boot-demo .boot-loader[hidden] {
+        display: grid !important;
+      }
+
+      .boot-demo__cards {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+      }
+
+      .boot-demo__cards-inner {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(140px, 220px));
+        gap: 18px;
+        width: min(480px, 86vw);
+      }
+
+      .boot-demo__card {
+        height: 140px;
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 8px 24px rgba(35, 35, 35, 0.06);
+        opacity: 0;
+        transform: translateY(6px) scale(0.9);
+        transition:
+          opacity 900ms cubic-bezier(0.22, 0.82, 0.18, 1),
+          transform 900ms cubic-bezier(0.22, 0.82, 0.18, 1);
+      }
+
+      .boot-demo__card:nth-child(1) {
+        transition-delay: 0ms;
+      }
+      .boot-demo__card:nth-child(2) {
+        transition-delay: 110ms;
+      }
+      .boot-demo__card:nth-child(3) {
+        transition-delay: 220ms;
+      }
+      .boot-demo__card:nth-child(4) {
+        transition-delay: 330ms;
+      }
+
+      .boot-demo.is-cards-in .boot-demo__card {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      @media (max-width: 560px) {
+        .boot-demo__cards-inner {
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .boot-demo__card {
+          height: 110px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="boot-demo" id="boot-demo">
+      <div class="boot-demo__hud" aria-label="Demo controls">
+        <button type="button" id="boot-demo-restart">Restart</button>
+        <span class="boot-demo__meta"
+          >Stage: <strong id="boot-demo-stage">loading</strong></span
+        >
+        <span class="boot-demo__meta"
+          >Progress: <strong id="boot-demo-progress">0%</strong></span
+        >
+        <span class="boot-demo__meta"
+          >Status: <strong id="boot-demo-status">running</strong></span
+        >
+      </div>
+
+      <div
+        id="boot-loader"
+        class="boot-loader is-visible"
+        aria-busy="true"
+        aria-live="polite"
+        aria-label="Boot particle demo"
+      >
+        <canvas class="boot-loader__canvas" aria-hidden="true"></canvas>
+        <div class="boot-loader__badge">
+          <span class="boot-loader__pct">0%</span>
+        </div>
+      </div>
+
+      <div class="boot-demo__cards" id="boot-demo-cards" aria-hidden="true">
+        <div class="boot-demo__cards-inner">
+          <div class="boot-demo__card" data-mock-card></div>
+          <div class="boot-demo__card" data-mock-card></div>
+          <div class="boot-demo__card" data-mock-card></div>
+          <div class="boot-demo__card" data-mock-card></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="js/bootDemo.js"></script>
+  </body>
+</html>

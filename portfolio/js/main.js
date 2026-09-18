@@ -8,6 +8,7 @@ import { contentMap } from "../../shared/content.js";
 import { isMobileViewport, selectSceneLayout } from "../../shared/layout.js";
 import { bindAboutExpand } from "./aboutExpand.js";
 import { createCameraController } from "./camera.js";
+import { runPortfolioBoot } from "./bootLoader.js";
 import { createInfiniteBg } from "./infiniteBg.js";
 import { bindInput } from "./input.js";
 import { bindInteractions } from "./interactions.js";
@@ -15,6 +16,7 @@ import { mountMobilePortfolio } from "./mobile.js";
 import { consumeEnterCrossfade } from "./pageTransition.js";
 import { resolveAsset } from "./resolveAsset.js";
 import { mountScene } from "./scene.js";
+import { bindCanvasScrollbars } from "./scrollbars.js";
 
 /** Reference frame size from architecture §4.1 / Figma 41:1416. */
 const REF_VIEWPORT_WIDTH = 1024;
@@ -122,6 +124,8 @@ export function initPortfolioStubs() {
   let unbindInteractions = null;
   /** @type {(() => void)|null} */
   let unbindMobile = null;
+  /** @type {{ sync: () => void, teardown: () => void }|null} */
+  let canvasScrollbars = null;
   /** @type {ReturnType<typeof bindAboutExpand>|null} */
   let aboutExpand = null;
 
@@ -197,6 +201,10 @@ export function initPortfolioStubs() {
   function teardownCanvas() {
     aboutExpand?.destroy?.();
     aboutExpand = null;
+    if (canvasScrollbars) {
+      canvasScrollbars.teardown();
+      canvasScrollbars = null;
+    }
     if (unbindInput) {
       unbindInput();
       unbindInput = null;
@@ -238,6 +246,7 @@ export function initPortfolioStubs() {
           if (infiniteBg) {
             infiniteBg.sync(state);
           }
+          canvasScrollbars?.sync?.();
         },
       });
     }
@@ -257,6 +266,9 @@ export function initPortfolioStubs() {
         camera,
         inputMode
       );
+    }
+    if (!canvasScrollbars && viewportEl && camera) {
+      canvasScrollbars = bindCanvasScrollbars(viewportEl, camera);
     }
   }
 
@@ -344,5 +356,20 @@ export function initPortfolioStubs() {
 }
 
 if (typeof document !== "undefined") {
-  initPortfolioStubs();
+  const boot = initPortfolioStubs();
+  runPortfolioBoot(
+    boot?.viewportEl || document.querySelector(".viewport"),
+    null
+  ).catch(() => {
+    document.documentElement?.classList?.remove?.(
+      "is-booting",
+      "is-boot-slow",
+      "is-boot-scene-in"
+    );
+    const el = document.getElementById("boot-loader");
+    if (el) {
+      el.hidden = true;
+      el.setAttribute("hidden", "");
+    }
+  });
 }

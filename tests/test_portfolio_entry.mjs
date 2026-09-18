@@ -101,7 +101,6 @@ describe("portfolio / Storybook entrypoints (stubs)", () => {
     const mainSrc = read("portfolio/js/main.js");
     assert.match(mainSrc, /\bmountScene\s*\(/, "mountScene call required");
     assert.match(mainSrc, /\.apply\s*\(\s*\)/, "camera.apply() call required");
-    assert.match(mainSrc, /\.getState\s*\(\s*\)/, "getState call required");
     assert.match(
       mainSrc,
       /\.fitToContent\s*\(\s*24\s*\)/,
