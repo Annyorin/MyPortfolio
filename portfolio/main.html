@@ -7,6 +7,10 @@
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../ds-showcase/assets/images/avatar.png" type="image/png" sizes="90x90">
   <link rel="apple-touch-icon" href="../ds-showcase/assets/images/avatar.png">
+  <link rel="preload" as="image" href="../ds-showcase/assets/images/avatar.png">
+  <link rel="preload" as="image" href="../ds-showcase/assets/images/img-1.png">
+  <link rel="preload" as="image" href="../ds-showcase/assets/images/img-2.png">
+  <link rel="preload" as="image" href="../ds-showcase/assets/images/card-citybike.png">
   <link rel="stylesheet" href="../ds-showcase/css/tokens.css">
   <link rel="stylesheet" href="../ds-showcase/css/components.css">
   <link rel="stylesheet" href="css/portfolio.css">
@@ -14,6 +18,13 @@
     try {
       if (sessionStorage.getItem("portfolio-page-enter") === "crossfade") {
         document.documentElement.classList.add("is-page-enter-crossfade");
+      } else if (
+        !(
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+      ) {
+        document.documentElement.classList.add("is-booting");
       }
     } catch (e) {}
   </script>
@@ -46,6 +57,18 @@
 </head>
 <body>
   <noscript><div><img src="https://mc.yandex.ru/watch/98871536" style="position:absolute;left:-9999px" alt=""></div></noscript>
+  <div
+    id="boot-loader"
+    class="boot-loader"
+    aria-busy="true"
+    aria-live="polite"
+    aria-label="Загрузка портфолио"
+  >
+    <canvas class="boot-loader__canvas" aria-hidden="true"></canvas>
+    <div class="boot-loader__badge">
+      <span class="boot-loader__pct">0%</span>
+    </div>
+  </div>
   <div class="viewport" tabindex="0">
     <div id="camera-pan" class="camera-pan">
       <div id="world" class="world"></div>

@@ -101,10 +101,16 @@ function buildSidebar(content, resolveAsset) {
   avatar.style.minHeight = "90px";
   avatar.style.aspectRatio = "1 / 1";
   const avatarImg = document.createElement("img");
-  avatarImg.src = resolveAsset("avatar");
   avatarImg.alt = "";
   avatarImg.width = 90;
   avatarImg.height = 90;
+  avatarImg.decoding = "async";
+  try {
+    avatarImg.fetchPriority = "high";
+  } catch {
+    /* ignore */
+  }
+  avatarImg.src = resolveAsset("avatar");
   avatarImg.setAttribute("data-media-slot", "avatar");
   avatar.appendChild(avatarImg);
 
@@ -295,11 +301,16 @@ export function buildCard(content, resolveAsset, imageAssetKey = "card.image", n
 
   media.style.width = "100%";
   const img = document.createElement("img");
-  img.src = resolveAsset(imageAssetKey);
   img.alt = `${textOf(title)} project cover`;
   img.width = 308;
   img.height = 172;
   img.decoding = "async";
+  try {
+    img.fetchPriority = "high";
+  } catch {
+    /* ignore */
+  }
+  img.src = resolveAsset(imageAssetKey);
   img.setAttribute("data-media-slot", "card");
   media.appendChild(img);
 

@@ -383,6 +383,37 @@ export function createCameraController(worldEl, options = {}) {
   }
 
   /**
+   * Pan translation limits from soft-clamp extents (screen px).
+   * Used by canvas scrollbars to size/position thumbs.
+   *
+   * @returns {{
+   *   vw: number,
+   *   vh: number,
+   *   txMin: number,
+   *   txMax: number,
+   *   tyMin: number,
+   *   tyMax: number,
+   * }|null}
+   */
+  function getPanExtents() {
+    const aabb = readContentAABB();
+    if (!aabb) {
+      return null;
+    }
+    const { width: vw, height: vh } = readViewportSize();
+    const expanded = expandContentAABB(aabb, vw, vh);
+    const s = state.scale;
+    return {
+      vw,
+      vh,
+      txMin: vw / 2 - expanded.maxX * s,
+      txMax: vw / 2 - expanded.minX * s,
+      tyMin: vh / 2 - expanded.maxY * s,
+      tyMax: vh / 2 - expanded.minY * s,
+    };
+  }
+
+  /**
    * Idle camera for artboard-sized viewports: scale 1, origin top-left.
    */
   function resetIdle() {
@@ -401,6 +432,7 @@ export function createCameraController(worldEl, options = {}) {
     fitToContent,
     fitInteractiveStage,
     panBy,
+    getPanExtents,
     resetIdle,
     getState,
     apply,
