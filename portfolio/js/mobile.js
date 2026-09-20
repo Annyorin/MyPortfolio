@@ -92,11 +92,10 @@ function buildMobileSidebar(content, resolveAsset) {
     btn.href = href;
     btn.tabIndex = 0;
     if (href !== "#" && !href.startsWith("mailto:")) {
+      // The CV opens in a tab rather than downloading: a `download` attribute
+      // would override target="_blank" and drop the file straight to disk.
       btn.setAttribute("target", "_blank");
       btn.setAttribute("rel", "noopener noreferrer");
-      if (action.key === "contact.cv") {
-        btn.setAttribute("download", "CV-Yasinskaya.pdf");
-      }
     }
     const icon = document.createElement("span");
     icon.className = "ds-icon";

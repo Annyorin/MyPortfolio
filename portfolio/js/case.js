@@ -348,11 +348,10 @@ function fillContent(content, caseId) {
           : "#";
       btn.href = href;
       if (href !== "#" && !href.startsWith("mailto:")) {
+        // Резюме открываем во вкладке, а не скачиваем: атрибут download отменял бы
+        // target="_blank" и файл падал бы в загрузки мимо просмотрщика.
         btn.setAttribute("target", "_blank");
         btn.setAttribute("rel", "noopener noreferrer");
-        if (action.key === "contact.cv") {
-          btn.setAttribute("download", "CV-Yasinskaya.pdf");
-        }
       }
       const icon = document.createElement("span");
       icon.className = "ds-icon";
