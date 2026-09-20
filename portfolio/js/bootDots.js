@@ -20,7 +20,17 @@
  */
 import { createDotsScene } from "./boot/dots/scene.js";
 import { readSiteGrid } from "./boot/dots/siteGrid.js";
-import { trackAssets, isCachedVisit, PRELOAD_PATHS, assetBase } from "./boot/dots/assets.js";
+import {
+  trackAssets,
+  isCachedVisit,
+  readCacheHint,
+  writeCacheHint,
+  measuredCacheRatio,
+  PRELOAD_PATHS,
+  assetBase,
+  lightestPath,
+} from "./boot/dots/assets.js";
+import { upgradeImages } from "./progressiveImages.js";
 import { INFINITE_BG } from "./infiniteBg.js";
 
 const BADGE_SIZE = 100;
@@ -377,7 +387,9 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
 
   const root = loaderEl || document.getElementById("boot-loader");
 
-  const cached = isCachedVisit();
+  // The hint from the previous visit is known immediately, before anything can
+  // be measured; this visit's own measurement then confirms or denies it.
+  const cached = readCacheHint() || isCachedVisit();
 
   const loader = mountDotsBootLoader({
     root,
@@ -391,12 +403,17 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
     // load turns out slow anyway, the rings still appear instead of a blank
     // page.
     slowAfter: cached ? 2600 : 600,
+    onDone: () => {
+      writeCacheHint(measuredCacheRatio() > 0.9);
+      // The page is on screen: pull in the full-size images behind it.
+      upgradeImages();
+    },
   });
   if (!loader) return;
 
   const base = assetBase();
   const stop = trackAssets((p) => loader.setProgress(p), {
-    preload: PRELOAD_PATHS.map((path) => base + path),
+    preload: PRELOAD_PATHS.map((path) => base + lightestPath(path)),
     // Nothing is being fetched on a cached visit, so readiness should not wait
     // out the silence window — the fast path may fire as soon as warm-up ends.
     fastPathMs: cached ? 2500 : 600,

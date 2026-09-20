@@ -1,3 +1,5 @@
+import { LOW_RES_IMAGES } from "../../../../shared/lowResImages.js";
+
 /**
  * Real page-loading progress: images, fonts and network activity.
  *
@@ -11,6 +13,50 @@
  * `fastPathMs`, readiness is reported at once instead of waiting out the silence
  * window — that is what lets a repeat visit skip the animation entirely.
  */
+
+const CACHE_HINT_KEY = "portfolio-boot-cached";
+
+/**
+ * What the previous visit showed: whether everything came from cache.
+ *
+ * The answer is needed before the first frame — earlier than anything can be
+ * measured — so the outcome of one load is remembered for the next.
+ *
+ * @returns {boolean}
+ */
+export function readCacheHint() {
+  try {
+    return localStorage.getItem(CACHE_HINT_KEY) === "1";
+  } catch {
+    return false; // private mode — simply no hint
+  }
+}
+
+/**
+ * @param {boolean} cached
+ */
+export function writeCacheHint(cached) {
+  try {
+    localStorage.setItem(CACHE_HINT_KEY, cached ? "1" : "0");
+  } catch {
+    /* fine: next time the call is made on the spot */
+  }
+}
+
+/**
+ * Share of this visit's assets that came from cache — measured after the fact,
+ * suitable for recording a hint for next time.
+ *
+ * @returns {number} 0..1
+ */
+export function measuredCacheRatio() {
+  if (typeof performance?.getEntriesByType !== "function") return 0;
+  const assets = performance
+    .getEntriesByType("resource")
+    .filter((e) => /\.(js|css|png|svg|jpg|webp|woff2?)(\?|$)/.test(e.name));
+  if (!assets.length) return 0;
+  return assets.filter((e) => e.transferSize === 0).length / assets.length;
+}
 
 /**
  * Whether this visit is served from cache.
@@ -34,7 +80,13 @@ export function isCachedVisit() {
   return assets.length >= 2 && assets.every((e) => e.transferSize === 0);
 }
 
-/** Assets the page requests only once it creates the matching elements. */
+/**
+ * Assets the page requests only once it creates the matching elements.
+ *
+ * Paths that have a low-resolution twin are warmed through the twin: it is what
+ * the page shows first, and waiting for the originals here would hold the loader
+ * for no visible gain.
+ */
 export const PRELOAD_PATHS = Object.freeze([
   "icons/arrow-left.svg",
   "icons/arrow-right.svg",
@@ -79,8 +131,16 @@ export const PRELOAD_PATHS = Object.freeze([
 ]);
 
 /**
- * Base these paths resolve against: .../ds-showcase/assets/
+ * The light twin of a path, when there is one.
  *
+ * @param {string} path
+ * @returns {string}
+ */
+export function lightestPath(path) {
+  return LOW_RES_IMAGES[path] ?? path;
+}
+
+/**
  * @param {string} [pathname]
  * @returns {string}
  */
