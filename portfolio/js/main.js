@@ -15,9 +15,14 @@ import { bindInput } from "./input.js";
 import { bindInteractions } from "./interactions.js";
 import { mountMobilePortfolio } from "./mobile.js";
 import { consumeEnterCrossfade } from "./pageTransition.js";
-import { resolveAsset } from "./resolveAsset.js";
+import { resolveAsset as resolveAssetFull } from "./resolveAsset.js";
+import { withProgressiveAssets } from "./progressiveImages.js";
 import { mountScene } from "./scene.js";
 import { bindCanvasScrollbars } from "./scrollbars.js";
+
+// The scene is handed light twins of the images; the originals are swapped in
+// once the loader is done (see bootDots.js).
+const resolveAsset = withProgressiveAssets(resolveAssetFull);
 
 /** Reference frame size from architecture §4.1 / Figma 41:1416. */
 const REF_VIEWPORT_WIDTH = 1024;

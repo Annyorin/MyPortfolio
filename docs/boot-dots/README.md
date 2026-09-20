@@ -19,6 +19,24 @@ hands over to the site's own background.
 | ![Mobile rings](mobile-rings.png) | ![Mobile page](mobile-content.png) |
 | Mobile layout | Grid stays as the backdrop |
 
+## Progressive images
+
+The loader waits for light twins of the showcase images, not the originals:
+`scripts/build-image-variants.mjs` builds them (`npm run build:images`) and
+writes `shared/lowResImages.js`. Opaque images become JPEG, where the saving
+actually is; images with transparency stay PNG and are only scaled. A twin is
+kept only when it is at least 25% lighter — re-encoding an already small PNG can
+produce a *bigger* file, and warming that would cost more than it saves.
+
+Rendering code knows nothing about this. The scene builders take `resolveAsset`
+as a parameter, so the wrapper in `progressiveImages.js` is injected in its
+place: it hands out twin URLs and remembers the original behind each one. Once
+the page is on screen `upgradeImages()` loads the originals and swaps them in
+after decoding, so the change does not land as a flicker.
+
+Measured on the dev server, cold cache: the loader hands the page over in
+~0.7s instead of ~4.2s, and the first paint costs 1.7MB instead of 2.4MB.
+
 ## Modules
 
 ```
@@ -30,6 +48,8 @@ portfolio/js/boot/dots/scene.js     canvas, DPR, resize, phases
 portfolio/js/boot/dots/siteGrid.js  reads the live scene grid off the DOM
 portfolio/js/boot/dots/assets.js    real load progress + cache warm-up
 portfolio/js/boot/dots/theme.js     dark theme and its toggle
+portfolio/js/progressiveImages.js   light twins first, originals after
+scripts/build-image-variants.mjs    builds the twins and their manifest
 ```
 
 `layout.js`, `particles.js`, `siteGrid.js` and the asset tracker never touch the
