@@ -30,7 +30,7 @@ import {
   assetBase,
   lightestPath,
 } from "./boot/dots/assets.js";
-import { upgradeImages } from "./progressiveImages.js";
+import { upgradeImages, watchZoom } from "./progressiveImages.js";
 import { INFINITE_BG } from "./infiniteBg.js";
 
 const BADGE_SIZE = 100;
@@ -430,21 +430,25 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
     canShow: () => !cachedNow(),
     onDone: () => {
       writeCacheHint(measuredCacheRatio() > 0.9);
-      // The page is on screen: pull in the full-size images behind it.
+      // The page is on screen: pull in the full-size images behind it, and keep
+      // watching — zooming in past what a preview can carry fetches that original
+      // ahead of the queue.
       upgradeImages();
+      watchZoom();
     },
   });
   if (!loader) return;
 
   const base = assetBase();
-  // Only the heavy scene images are waited for — they are what shows first.
-  // Icons and stickers are warmed alongside but never hold the loader back.
-  const heavy = PRELOAD_PATHS.filter((path) => lightestPath(path) !== path);
-  const light = PRELOAD_PATHS.filter((path) => lightestPath(path) === path);
+  // Only images that actually have a preview are waited for — together they weigh a
+  // fraction of the originals. Everything else (icons, the few images already smaller
+  // than any preview) is warmed alongside instead of holding the page back.
+  const quick = PRELOAD_PATHS.filter((path) => lightestPath(path) !== path);
+  const rest = PRELOAD_PATHS.filter((path) => lightestPath(path) === path);
 
   const stop = trackAssets((p) => loader.setProgress(p), {
-    preload: heavy.map((path) => base + lightestPath(path)),
-    warmOnly: light.map((path) => base + path),
+    preload: quick.map((path) => base + lightestPath(path)),
+    warmOnly: rest.map((path) => base + lightestPath(path)),
     // Nothing is being fetched on a cached visit, so readiness should not wait
     // out the silence window — the fast path may fire as soon as warm-up ends.
     fastPathMs: cached ? 2500 : 600,
