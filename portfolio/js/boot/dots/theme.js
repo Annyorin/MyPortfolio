@@ -9,6 +9,8 @@
 import { INFINITE_BG } from "../../infiniteBg.js";
 
 const STORAGE_KEY = "portfolio-theme";
+const INLINE_CLASS = "dots-theme-toggle--inline";
+const SLOT_CLASS = "dots-theme-slot";
 
 /** Dark palette. Light is simply the absence of the attribute. */
 export const DARK = Object.freeze({
@@ -80,7 +82,7 @@ const CSS = `
   .dots-theme-toggle {
     position: fixed;
     right: 20px;
-    bottom: 20px;
+    top: 20px;
     z-index: 99999;
     width: 44px;
     height: 44px;
@@ -98,6 +100,24 @@ const CSS = `
     transition-timing-function: cubic-bezier(.22,.82,.18,1);
   }
   .dots-theme-toggle:hover { transform: translateY(-2px); }
+
+  /* Inside the menu the button is just another icon: no fill, no border, no fixing.
+     It sits out of flow — otherwise its width shifts the header layout and the title
+     stops being centred. */
+  .dots-theme-toggle--inline {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 4px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .dots-theme-toggle--inline:hover { transform: translateY(-50%); opacity: .7; }
+  .dots-theme-slot { position: relative; display: inline-flex; align-items: center; }
   .dots-theme-toggle:focus-visible { outline: 2px solid var(--color-primary, #64b3f9); outline-offset: 2px; }
   .dots-theme-toggle svg { width: 20px; height: 20px; display: block; }
   /* While booting the toggle must not hover over the loader. */
@@ -120,6 +140,95 @@ function noopTheme() {
     set() {},
     toggle() { return "light"; },
   };
+}
+
+/** Things the button must not sit on top of when it floats on its own. */
+const CHROME = '.ds-header__burger, .ds-toolbar__burger, .ds-toolbar, .ds-header, .case-page__toolbar';
+/** The menu toggle: the theme button belongs right next to it. */
+const BURGER = '.ds-header__burger, .ds-toolbar__burger';
+
+const visible = (el) => {
+  const box = el.getBoundingClientRect();
+  return box.width > 0 && box.height > 0;
+};
+
+/**
+ * Docks the button right beside the menu toggle, to its left.
+ *
+ * Inserting it as a sibling is not enough: the header spreads its children to the
+ * edges, leaving a hundred-pixel gap between the two. So both move into a shared
+ * wrapper — to the header that is a single child, and they stay together.
+ *
+ * @param {HTMLElement} burger
+ * @param {HTMLElement} button
+ */
+function dockNextTo(burger, button) {
+  let slot = burger.parentElement;
+  if (!slot?.classList.contains(SLOT_CLASS)) {
+    slot = document.createElement('div');
+    slot.className = SLOT_CLASS;
+    burger.replaceWith(slot);
+    slot.append(burger);
+  }
+  // Theme button first, menu toggle stays rightmost.
+  if (button.parentElement !== slot || button.nextElementSibling !== burger) {
+    slot.insertBefore(button, burger);
+  }
+}
+
+/**
+ * Places the button wherever there is room.
+ *
+ * Where a page has a menu, the button belongs in it — next to the toggle, living in
+ * the header flow rather than floating over the page. Without a menu it falls back to
+ * the top-right corner, measured rather than hardcoded: step aside if something is
+ * next to it, drop below if something spans the width.
+ *
+ * @param {HTMLElement} button
+ */
+function place(button) {
+  if (typeof document.querySelectorAll !== 'function') return;
+
+  // A page with a menu gets the button inside it, beside the toggle.
+  // Of the two headers (regular and mobile toolbar) take the one on screen.
+  const burger = Array.from(document.querySelectorAll(BURGER)).find(visible);
+  if (burger) {
+    button.classList.add(INLINE_CLASS);
+    button.style.right = '';
+    button.style.top = '';
+    dockNextTo(burger, button);
+    return;
+  }
+
+  // No menu — the button floats, so look for a free corner.
+  button.classList.remove(INLINE_CLASS);
+  if (button.parentNode !== document.body) document.body.append(button);
+
+  const GAP = 12;
+  const EDGE = 20;
+  button.style.right = `${EDGE}px`;
+  button.style.top = `${EDGE}px`;
+
+  const self = button.getBoundingClientRect();
+  let right = EDGE;
+  let top = EDGE;
+
+  for (const el of document.querySelectorAll(CHROME)) {
+    const box = el.getBoundingClientRect();
+    if (!box.width || !box.height) continue;
+    // Only actual overlaps matter.
+    const overlaps = !(box.right < self.left || box.left > self.right
+      || box.bottom < self.top || box.top > self.bottom);
+    if (!overlaps) continue;
+
+    const wide = box.width > innerWidth * 0.6;
+    if (wide) top = Math.max(top, box.bottom + GAP);
+    else right = Math.max(right, innerWidth - box.left + GAP);
+  }
+
+  // Having dropped below a full-width header there is no reason to move left too.
+  button.style.right = `${top > EDGE ? EDGE : right}px`;
+  button.style.top = `${top}px`;
 }
 
 /**
@@ -201,6 +310,18 @@ export function setupTheme({ mount = true } = {}) {
     });
     document.body.append(button);
     apply(theme);
+
+    // Measure after paint: before it the neighbours may not be on screen yet. In
+    // environments without a layout (tests, SSR) placement is simply skipped.
+    if (typeof requestAnimationFrame === "function" && button.getBoundingClientRect) {
+      const reposition = () => place(button);
+      requestAnimationFrame(reposition);
+      window.addEventListener?.("resize", reposition);
+      // The scene is built after startup — re-measure when it changes.
+      if (typeof MutationObserver === "function") {
+        new MutationObserver(reposition).observe(document.body, { childList: true, subtree: true });
+      }
+    }
   }
 
   return {

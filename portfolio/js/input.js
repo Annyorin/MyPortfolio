@@ -140,6 +140,37 @@ export function bindInput(viewportEl, camera, inputMode = {}) {
     return Number.isFinite(step) && step > 0 ? step : 0.1;
   }
 
+  /** Пиксели в одной строке и в одной странице прокрутки — для deltaMode. */
+  const LINE_HEIGHT = 16;
+  const PAGE_HEIGHT = 400;
+  /**
+   * Дельта, которую считаем «полным» шагом зума. Щелчок мыши даёт около 100px и
+   * проходит целым шагом; щипок на тачпаде шлёт по несколько пикселей за событие, и
+   * при такой планке несколько десятков событий складываются в спокойное движение,
+   * а не в скачок через весь диапазон.
+   */
+  const MOUSE_TICK = 40;
+
+  /**
+   * Во сколько раз применить шаг зума для этого события колеса.
+   *
+   * Щелчок мыши приходит редко и сразу с большой дельтой, а щипок на тачпаде — это
+   * десятки мелких событий подряд. Фиксированный шаг на каждое событие делает тачпад
+   * неуправляемым, поэтому сила жеста считается от величины дельты.
+   *
+   * @param {WheelEvent} e
+   * @returns {number}
+   */
+  function wheelZoomScale(e) {
+    const raw = Number(e.deltaY) || 0;
+    const mode = Number(e.deltaMode) || 0;
+    const pixels = mode === 1 ? raw * LINE_HEIGHT : mode === 2 ? raw * PAGE_HEIGHT : raw;
+    const magnitude = Math.abs(pixels) / MOUSE_TICK;
+    // Снизу — чтобы совсем слабый щипок всё же двигал масштаб, сверху — чтобы резкий
+    // рывок не перебрасывал сцену через весь диапазон.
+    return Math.min(Math.max(magnitude, 0.08), 1);
+  }
+
   /**
    * @param {string} value
    */
@@ -283,7 +314,7 @@ export function bindInput(viewportEl, camera, inputMode = {}) {
       };
       const direction = e.deltaY < 0 ? 1 : e.deltaY > 0 ? -1 : 0;
       if (direction !== 0) {
-        camera.zoomBy?.(direction * zoomStep(), pivot);
+        camera.zoomBy?.(direction * zoomStep() * wheelZoomScale(e), pivot);
       }
       return;
     }

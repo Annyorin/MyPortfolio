@@ -650,3 +650,15 @@ body.is-page-crossfading .case-page__fab {
     display: none !important;
   }
 }
+
+/* Подпись «Назад» кликается наравне со стрелкой. Ссылкой сделан именно текст: сама
+   подпись занимает всю свободную ширину тулбара, и растянутая ссылка накрыла бы
+   соседние кнопки своей областью клика. */
+.ds-toolbar__label {
+  justify-content: flex-start;
+}
+
+.case-page__back-text {
+  color: inherit;
+  text-decoration: none;
+}

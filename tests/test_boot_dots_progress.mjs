@@ -278,3 +278,77 @@ describe("dots boot: repeat visits", () => {
     }
   });
 });
+
+describe("theme toggle placement", () => {
+  it("docks next to the menu toggle and stays out of the flow", async () => {
+    const { setupTheme } = await load("portfolio/js/boot/dots/theme.js");
+
+    const made = [];
+    const el = (tag) => {
+      const node = {
+        tagName: tag,
+        children: [],
+        style: {},
+        attrs: {},
+        classes: new Set(),
+        classList: {
+          add: (...n) => n.forEach((x) => node.classes.add(x)),
+          remove: (...n) => n.forEach((x) => node.classes.delete(x)),
+          contains: (x) => node.classes.has(x),
+        },
+        get className() { return [...node.classes].join(" "); },
+        set className(v) { node.classes = new Set(v.split(" ").filter(Boolean)); },
+        parentElement: null,
+        append(child) { node.children.push(child); child.parentElement = node; },
+        insertBefore(child, before) {
+          node.children.splice(node.children.indexOf(before), 0, child);
+          child.parentElement = node;
+        },
+        replaceWith(other) {
+          const parent = node.parentElement;
+          parent.children[parent.children.indexOf(node)] = other;
+          other.parentElement = parent;
+        },
+        querySelector: () => null,
+        setAttribute(k, v) { node.attrs[k] = v; },
+        addEventListener() {},
+        getBoundingClientRect: () => ({ left: 0, top: 0, right: 40, bottom: 40, width: 40, height: 40 }),
+      };
+      made.push(node);
+      return node;
+    };
+
+    const header = el("header");
+    const burger = el("button");
+    burger.className = "ds-header__burger";
+    header.append(burger);
+
+    const saved = { document: globalThis.document, window: globalThis.window, raf: globalThis.requestAnimationFrame };
+    globalThis.document = {
+      documentElement: { setAttribute() {}, removeAttribute() {} },
+      head: el("head"),
+      body: el("body"),
+      createElement: el,
+      querySelectorAll: (sel) => (sel.includes("burger") ? [burger] : []),
+      querySelector: () => null,
+    };
+    globalThis.window = { matchMedia: () => ({ matches: false }), addEventListener() {} };
+    globalThis.requestAnimationFrame = (fn) => { fn(); return 1; };
+
+    try {
+      setupTheme();
+      const button = made.find((n) => n.classes.has("dots-theme-toggle"));
+      const slot = button.parentElement;
+
+      assert.ok(slot.classes.has("dots-theme-slot"), "кнопка и бургер лежат в общей обёртке");
+      assert.deepEqual(
+        slot.children.map((c) => c.className.split(" ")[0]),
+        ["dots-theme-toggle", "ds-header__burger"],
+        "тема стоит перед разворотом меню"
+      );
+      assert.ok(button.classes.has("dots-theme-toggle--inline"), "в меню кнопка идёт вне потока");
+    } finally {
+      Object.assign(globalThis, { document: saved.document, window: saved.window, requestAnimationFrame: saved.raf });
+    }
+  });
+});
