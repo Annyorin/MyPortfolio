@@ -9,6 +9,7 @@ import { isMobileViewport, selectSceneLayout } from "../../shared/layout.js";
 import { bindAboutExpand } from "./aboutExpand.js";
 import { createCameraController } from "./camera.js";
 import { runDotsBoot } from "./bootDots.js";
+import { setupTheme } from "./boot/dots/theme.js";
 import { createInfiniteBg } from "./infiniteBg.js";
 import { bindInput } from "./input.js";
 import { bindInteractions } from "./interactions.js";
@@ -356,10 +357,13 @@ export function initPortfolioStubs() {
 }
 
 if (typeof document !== "undefined") {
+  // Theme first: the loader has to be drawn in the right colors from frame one.
+  const theme = setupTheme();
   const boot = initPortfolioStubs();
   runDotsBoot(
     boot?.viewportEl || document.querySelector(".viewport"),
-    null
+    null,
+    { dark: theme.isDark }
   ).catch(() => {
     document.documentElement?.classList?.remove?.(
       "is-booting",
