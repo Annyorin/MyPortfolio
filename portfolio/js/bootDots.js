@@ -131,6 +131,12 @@ export function mountDotsBootLoader({
   let fadeTimer = 0;
   let ticker = 0;
 
+  /** Speeds up the badge fade-in: otherwise the start of the count is never seen. */
+  function badgeSpeedUp() {
+    const badge = root.querySelector(".boot-loader__badge");
+    if (badge) badge.style.transition = "opacity 120ms ease, transform 120ms ease";
+  }
+
   const REVEAL_CLASS = "dots-loader-reveal";
   const nativeSelector = typeof handOffTo === "string" ? handOffTo : null;
 
@@ -316,8 +322,11 @@ export function mountDotsBootLoader({
   function tick() {
     syncToSiteGrid();
     const elapsed = performance.now() - shownAt;
-    // Progress never outruns minShow, or the animation flashes past unread.
-    scene.setProgress(Math.min(raw, elapsed / minShow));
+    // Progress never outruns minShow, or the animation flashes past unread. The
+    // opening is held back as well: the badge is still fading in, and without this
+    // the counter gets away — it reads as if the count did not start at zero.
+    const t = Math.min(1, elapsed / minShow);
+    scene.setProgress(Math.min(raw, t * t * (3 - 2 * t)));
     if (scene.phase === "loading") ticker = requestAnimationFrame(tick);
   }
 
@@ -334,6 +343,9 @@ export function mountDotsBootLoader({
     shownAt = performance.now();
     html.classList.add("is-boot-slow");
     root.classList.add("is-visible");
+    // The site fades the badge in over 0.42s, and by the time it is readable the
+    // counter has run far ahead. Show it faster so the count is seen from zero.
+    badgeSpeedUp();
     hideContent();
     scene.start();
     ticker = requestAnimationFrame(tick);
