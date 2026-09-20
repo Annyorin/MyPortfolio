@@ -1,3 +1,5 @@
+import { LOW_RES_IMAGES } from "../../../../shared/lowResImages.js";
+
 /**
  * Real page-loading progress: images, fonts and network activity.
  *
@@ -6,9 +8,91 @@
  * the preload links. So the watched set is rebuilt every frame, and readiness is
  * judged mainly by network silence: `load` can be held back indefinitely by the
  * analytics beacon, so it counts as a hint, never as a requirement.
+ *
+ * A warm cache takes a shortcut: if everything is already in place within
+ * `fastPathMs`, readiness is reported at once instead of waiting out the silence
+ * window — that is what lets a repeat visit skip the animation entirely.
  */
 
-/** Assets the page requests only once it creates the matching elements. */
+const CACHE_HINT_KEY = "portfolio-boot-cached";
+
+/**
+ * What the previous visit showed: whether everything came from cache.
+ *
+ * The answer is needed before the first frame — earlier than anything can be
+ * measured — so the outcome of one load is remembered for the next.
+ *
+ * @returns {boolean}
+ */
+export function readCacheHint() {
+  try {
+    return localStorage.getItem(CACHE_HINT_KEY) === "1";
+  } catch {
+    return false; // private mode — simply no hint
+  }
+}
+
+/**
+ * @param {boolean} cached
+ */
+export function writeCacheHint(cached) {
+  try {
+    localStorage.setItem(CACHE_HINT_KEY, cached ? "1" : "0");
+  } catch {
+    /* fine: next time the call is made on the spot */
+  }
+}
+
+/**
+ * Share of this visit's assets that came from cache — measured after the fact,
+ * suitable for recording a hint for next time.
+ *
+ * @returns {number} 0..1
+ */
+export function measuredCacheRatio() {
+  if (typeof performance?.getEntriesByType !== "function") return 0;
+  const assets = performance
+    .getEntriesByType("resource")
+    .filter((e) => /\.(js|css|png|svg|jpg|webp|woff2?)(\?|$)/.test(e.name));
+  if (!assets.length) return 0;
+  return assets.filter((e) => e.transferSize === 0).length / assets.length;
+}
+
+/**
+ * Whether this visit is served from cache.
+ *
+ * A cached navigation and cached sub-resources both report `transferSize: 0`,
+ * and that is known before a single frame is drawn — early enough to decide
+ * against showing the animation at all.
+ *
+ * @returns {boolean}
+ */
+export function isCachedVisit() {
+  if (typeof performance?.getEntriesByType !== "function") return null;
+
+  const nav = performance.getEntriesByType("navigation")[0];
+  if (nav && nav.transferSize === 0) return true;
+
+  // The document itself may be uncacheable while everything around it is not.
+  // Requiring a zero transferSize across the board is too strict: one file served
+  // without cache headers would mark a fully warm visit as cold. And with no
+  // entries yet there is nothing to judge — let the stored hint answer instead.
+  const assets = performance
+    .getEntriesByType("resource")
+    .filter((e) => /\.(js|css)(\?|$)/.test(e.name));
+  if (assets.length < 2) return null;
+
+  const fromCache = assets.filter((e) => e.transferSize === 0).length;
+  return fromCache / assets.length >= 0.8;
+}
+
+/**
+ * Assets the page requests only once it creates the matching elements.
+ *
+ * Paths that have a low-resolution twin are warmed through the twin: it is what
+ * the page shows first, and waiting for the originals here would hold the loader
+ * for no visible gain.
+ */
 export const PRELOAD_PATHS = Object.freeze([
   "icons/arrow-left.svg",
   "icons/arrow-right.svg",
@@ -53,8 +137,16 @@ export const PRELOAD_PATHS = Object.freeze([
 ]);
 
 /**
- * Base these paths resolve against: .../ds-showcase/assets/
+ * The light twin of a path, when there is one.
  *
+ * @param {string} path
+ * @returns {string}
+ */
+export function lightestPath(path) {
+  return LOW_RES_IMAGES[path] ?? path;
+}
+
+/**
  * @param {string} [pathname]
  * @returns {string}
  */
@@ -73,11 +165,15 @@ export function assetBase(pathname = location.pathname) {
  */
 export function trackAssets(onProgress, {
   preload = [],
+  warmOnly = [],
   timeout = 15000,
-  idleAfter = 1200,
-  minWait = 600,
+  idleAfter = 700,
+  minWait = 300,
   minTotal = 8,
   imageGrace = 2500,
+  fastPathMs = 600,
+  fastIdleAfter = 180,
+  requireSilence = true,
 } = {}) {
   const startedAt = performance.now();
   let progress = 0;
@@ -89,17 +185,40 @@ export function trackAssets(onProgress, {
   let settledAt = 0;
 
   // Warm the cache up front: some images are only requested once the loader is
-  // gone, so they cannot be awaited — but they can be ready by then.
+  // gone, so they cannot be awaited — but they can be ready by then. The page's
+  // own preload links join the list: on a repeat visit they settle instantly and
+  // let the fast path fire.
+  const warmUrls = new Set(preload);
+  for (const link of document.querySelectorAll?.('link[rel="preload"][as="image"]') ?? []) {
+    if (link.href) warmUrls.add(link.href);
+  }
+  preload = Array.from(warmUrls);
+
+  // Everything is warmed, but only `preload` is waited for: icons and stickers are
+  // small, and holding the loader for them buys nothing — by the time the site asks
+  // for them they are in cache anyway.
+  for (const url of warmOnly) {
+    const probe = new Image();
+    probe.src = url;
+  }
+
   for (const url of preload) {
     const probe = new Image();
     const tick = () => {
       warmed++;
       lastActivity = performance.now();
     };
-    probe.onload = tick;
+    // `complete` only means the bytes arrived; decoding still happens on first
+    // paint, which is exactly the flicker this warm-up is meant to avoid.
+    const settle = () => {
+      const decoded = typeof probe.decode === "function" ? probe.decode() : null;
+      if (decoded) decoded.then(tick, tick);
+      else tick();
+    };
+    probe.onload = settle;
     probe.onerror = tick;
     probe.src = url;
-    if (probe.complete) tick();
+    if (probe.complete) settle();
   }
 
   const onLoad = () => { loaded = true; };
@@ -126,14 +245,34 @@ export function trackAssets(onProgress, {
     // Lazy images may never be fetched at all; waiting on them is pointless.
     const images = Array.from(document.images ?? []).filter((img) => img.loading !== "lazy");
     const ready = images.filter((img) => img.complete).length;
+    const elapsed = now - startedAt;
+
+    // Everything already in place this early means a warm cache: report ready
+    // right away so the loader can skip the animation instead of holding the
+    // page back for the silence window.
+    // Only meaningful when there is a warm-up list to judge by: without it an
+    // early quiet moment says nothing about what the page will request next.
+    if (
+      preload.length > 0 &&
+      elapsed < fastPathMs &&
+      fontsReady &&
+      warmed >= preload.length &&
+      ready === images.length &&
+      (!requireSilence || now - lastActivity >= fastIdleAfter)
+    ) {
+      return 1;
+    }
 
     // While the page is still empty the denominator is padded, otherwise the
     // counter would hit 100% before the site orders its first image.
     const total = Math.max(minTotal, images.length + 2) + preload.length;
     const done = ready + (fontsReady ? 1 : 0) + (loaded ? 1 : 0) + warmed;
 
-    const quiet = !observer || now - lastActivity >= idleAfter;
-    const settled = fontsReady && quiet && now - startedAt >= minWait && warmed >= preload.length;
+    // When everything came from cache there is no point waiting for silence: the
+    // network is already quiet, and the activity that remains is the site building
+    // its scene underneath an already finished screen.
+    const quiet = !requireSilence || !observer || now - lastActivity >= idleAfter;
+    const settled = fontsReady && quiet && elapsed >= minWait && warmed >= preload.length;
     if (settled && !settledAt) settledAt = now;
 
     // Images added by script after `load` are awaited, but not forever: some may

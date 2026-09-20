@@ -98,3 +98,4 @@ export function resolveAsset(key, options = {}) {
   const mode = options.mode ?? detectResolveMode();
   return buildUrl(pathFromDsRoot, mode);
 }
+

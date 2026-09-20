@@ -20,7 +20,17 @@
  */
 import { createDotsScene } from "./boot/dots/scene.js";
 import { readSiteGrid } from "./boot/dots/siteGrid.js";
-import { trackAssets, PRELOAD_PATHS, assetBase } from "./boot/dots/assets.js";
+import {
+  trackAssets,
+  isCachedVisit,
+  readCacheHint,
+  writeCacheHint,
+  measuredCacheRatio,
+  PRELOAD_PATHS,
+  assetBase,
+  lightestPath,
+} from "./boot/dots/assets.js";
+import { upgradeImages } from "./progressiveImages.js";
 import { INFINITE_BG } from "./infiniteBg.js";
 
 const BADGE_SIZE = 100;
@@ -58,8 +68,8 @@ export const DOTS_BOOT_CONFIG = Object.freeze({
   explodeFlare: 0,
   sizeSnap: 0.15,
   explodeFlash: 60,
-  morphDuration: 900,
-  morphStagger: 200,
+  morphDuration: 700,
+  morphStagger: 150,
 });
 
 /** Overrides for the dark theme: light dots on a dark backdrop. */
@@ -93,12 +103,13 @@ export function mountDotsBootLoader({
   fallbackGridTo = null,
   fallbackClearBg = null,
   alwaysShow = false,
+  canShow = null,
   slowAfter = 600,
-  minShow = 1300,
-  reveal = 480,
-  gridFade = 520,
-  gridHold = 260,
-  fadeOut = 260,
+  minShow = 850,
+  reveal = 380,
+  gridFade = 420,
+  gridHold = 140,
+  fadeOut = 200,
   onDone,
 } = {}) {
   if (!root) return null;
@@ -119,6 +130,12 @@ export function mountDotsBootLoader({
   let holdTimer = 0;
   let fadeTimer = 0;
   let ticker = 0;
+
+  /** Speeds up the badge fade-in: otherwise the start of the count is never seen. */
+  function badgeSpeedUp() {
+    const badge = root.querySelector(".boot-loader__badge");
+    if (badge) badge.style.transition = "opacity 120ms ease, transform 120ms ease";
+  }
 
   const REVEAL_CLASS = "dots-loader-reveal";
   const nativeSelector = typeof handOffTo === "string" ? handOffTo : null;
@@ -305,17 +322,30 @@ export function mountDotsBootLoader({
   function tick() {
     syncToSiteGrid();
     const elapsed = performance.now() - shownAt;
-    // Progress never outruns minShow, or the animation flashes past unread.
-    scene.setProgress(Math.min(raw, elapsed / minShow));
+    // Progress never outruns minShow, or the animation flashes past unread. The
+    // opening is held back as well: the badge is still fading in, and without this
+    // the counter gets away — it reads as if the count did not start at zero.
+    const t = Math.min(1, elapsed / minShow);
+    scene.setProgress(Math.min(raw, t * t * (3 - 2 * t)));
     if (scene.phase === "loading") ticker = requestAnimationFrame(tick);
   }
 
   function show() {
     if (finished || shown) return;
+    // Whether to show at all is decided here, not at mount time: by now it is
+    // visible whether the assets came from cache or over the wire. At startup
+    // there is no such data yet — resource entries appear only once a file lands.
+    if (canShow && !canShow()) {
+      skip();
+      return;
+    }
     shown = true;
     shownAt = performance.now();
     html.classList.add("is-boot-slow");
     root.classList.add("is-visible");
+    // The site fades the badge in over 0.42s, and by the time it is readable the
+    // counter has run far ahead. Show it faster so the count is seen from zero.
+    badgeSpeedUp();
     hideContent();
     scene.start();
     ticker = requestAnimationFrame(tick);
@@ -377,6 +407,14 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
 
   const root = loaderEl || document.getElementById("boot-loader");
 
+  // The hint from the previous visit is known immediately, before anything can
+  // be measured; this visit's own measurement then confirms or denies it.
+  // Measurement beats memory: the stored hint outlives a cache purge, and trusting
+  // it alone would hide the loader even while the page is honestly downloading.
+  // The hint therefore only covers the window where there is nothing to measure.
+  const cachedNow = () => isCachedVisit() ?? readCacheHint();
+  const cached = cachedNow();
+
   const loader = mountDotsBootLoader({
     root,
     dark,
@@ -384,13 +422,42 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
     handOffTo: ".scene-infinite-bg",
     fallbackGridTo: ".viewport",
     fallbackClearBg: "#mobile-sheet",
+    // A repeat visit has nothing to wait for, so the animation should not show
+    // at all. The threshold is raised rather than disabled: if this particular
+    // load turns out slow anyway, the rings still appear instead of a blank
+    // page.
+    slowAfter: cached ? 2600 : 600,
+    canShow: () => !cachedNow(),
+    onDone: () => {
+      writeCacheHint(measuredCacheRatio() > 0.9);
+      // The page is on screen: pull in the full-size images behind it.
+      upgradeImages();
+    },
   });
   if (!loader) return;
 
   const base = assetBase();
+  // Only the heavy scene images are waited for — they are what shows first.
+  // Icons and stickers are warmed alongside but never hold the loader back.
+  const heavy = PRELOAD_PATHS.filter((path) => lightestPath(path) !== path);
+  const light = PRELOAD_PATHS.filter((path) => lightestPath(path) === path);
+
   const stop = trackAssets((p) => loader.setProgress(p), {
-    preload: PRELOAD_PATHS.map((path) => base + path),
+    preload: heavy.map((path) => base + lightestPath(path)),
+    warmOnly: light.map((path) => base + path),
+    // Nothing is being fetched on a cached visit, so readiness should not wait
+    // out the silence window — the fast path may fire as soon as warm-up ends.
+    fastPathMs: cached ? 2500 : 600,
+    minWait: cached ? 120 : 300,
+    requireSilence: !cached,
+    // The grace period exists to let images added after `load` arrive. Out of
+    // cache they are instant, so there is nothing to wait for.
+    imageGrace: cached ? 250 : 2500,
   });
+
+  // Everything is cached — release the page at once instead of holding a blank
+  // screen. Progress is still tracked so the hint gets written for next time.
+  if (cached) loader.finish();
 
   await new Promise((resolve) => {
     const done = () => {

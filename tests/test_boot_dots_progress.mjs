@@ -144,6 +144,32 @@ describe("dots boot: asset readiness", () => {
     }
   });
 
+  it("reports ready at once when everything came from cache", async () => {
+    const page = setupPage();
+    try {
+      const { trackAssets } = await load("portfolio/js/boot/dots/assets.js");
+      // Warm-up probes settle immediately, as they do on a repeat visit.
+      globalThis.Image = class {
+        constructor() {
+          this.complete = true;
+          queueMicrotask(() => this.onload?.());
+        }
+        set src(_url) {}
+      };
+
+      let value = 0;
+      trackAssets((p) => { value = p; }, { preload: ["/a.png", "/b.png"] });
+
+      await page.fontsDone();
+      page.addImage(true);
+      page.advance(400);
+
+      assert.equal(value, 1, "ready well before the silence window — no animation needed");
+    } finally {
+      page.restore();
+    }
+  });
+
   it("keeps progress monotonic and honours the hard timeout", async () => {
     const page = setupPage();
     try {
@@ -185,6 +211,70 @@ describe("dots boot: theme", () => {
       theme.toggle();
     } finally {
       globalThis.document = saved;
+    }
+  });
+});
+
+describe("dots boot: repeat visits", () => {
+  it("recognises a cached visit from resource timing", async () => {
+    const saved = globalThis.performance;
+    try {
+      const { isCachedVisit } = await load("portfolio/js/boot/dots/assets.js");
+
+      globalThis.performance = {
+        getEntriesByType: (type) =>
+          type === "navigation" ? [{ transferSize: 0 }] : [],
+      };
+      assert.equal(isCachedVisit(), true, "cached navigation is enough");
+
+      globalThis.performance = {
+        getEntriesByType: (type) =>
+          type === "navigation"
+            ? [{ transferSize: 3623 }]
+            : [
+              { name: "/a/app.js", transferSize: 0 },
+              { name: "/a/app.css", transferSize: 0 },
+            ],
+      };
+      assert.equal(isCachedVisit(), true, "an uncacheable document but cached assets");
+
+      globalThis.performance = {
+        getEntriesByType: (type) =>
+          type === "navigation"
+            ? [{ transferSize: 3623 }]
+            : [
+              { name: "/a/app.js", transferSize: 4096 },
+              { name: "/a/app.css", transferSize: 4096 },
+            ],
+      };
+      assert.equal(isCachedVisit(), false, "everything came over the wire");
+
+      // One uncached file out of many is not a cold visit: a single asset served
+      // without cache headers would otherwise mark the whole visit as fresh.
+      globalThis.performance = {
+        getEntriesByType: (type) =>
+          type === "navigation"
+            ? [{ transferSize: 3623 }]
+            : [
+              { name: "/a/app.js", transferSize: 0 },
+              { name: "/a/app.css", transferSize: 0 },
+              { name: "/a/vendor.js", transferSize: 0 },
+              { name: "/a/ui.js", transferSize: 0 },
+              { name: "/a/theme.css", transferSize: 300 },
+            ],
+      };
+      assert.equal(isCachedVisit(), true, "four out of five from cache is a warm visit");
+
+      // Nothing measured yet — the caller should fall back to the stored hint.
+      globalThis.performance = {
+        getEntriesByType: (type) => (type === "navigation" ? [{ transferSize: 3623 }] : []),
+      };
+      assert.equal(isCachedVisit(), null, "no data, no verdict");
+
+      globalThis.performance = {};
+      assert.equal(isCachedVisit(), null, "no timing API, no guessing");
+    } finally {
+      globalThis.performance = saved;
     }
   });
 });

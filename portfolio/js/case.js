@@ -7,6 +7,7 @@ import { fixHangingPrepositions } from "../../shared/typography.js";
 import { bindSegmentsControl } from "../../ds-showcase/js/segments.js";
 import { consumeEnterCrossfade, navigateWithExpand, isInternalPortfolioUrl } from "./pageTransition.js";
 import { resolveAsset } from "./resolveAsset.js";
+import { setupTheme } from "./boot/dots/theme.js";
 
 /** Min scroll Y (px) before FAB may appear; always hidden near top. */
 export const CASE_FAB_SHOW_SCROLL_Y = 48;
@@ -348,11 +349,10 @@ function fillContent(content, caseId) {
           : "#";
       btn.href = href;
       if (href !== "#" && !href.startsWith("mailto:")) {
+        // Резюме открываем во вкладке, а не скачиваем: атрибут download отменял бы
+        // target="_blank" и файл падал бы в загрузки мимо просмотрщика.
         btn.setAttribute("target", "_blank");
         btn.setAttribute("rel", "noopener noreferrer");
-        if (action.key === "contact.cv") {
-          btn.setAttribute("download", "CV-Yasinskaya.pdf");
-        }
       }
       const icon = document.createElement("span");
       icon.className = "ds-icon";
@@ -712,6 +712,10 @@ export function initCasePage() {
     unbindNext();
   };
 }
+
+// Case pages carry the theme too, and read the same stored choice as the home
+// page — switching there and navigating here keeps the theme.
+setupTheme();
 
 if (typeof document !== "undefined") {
   if (document.readyState === "loading") {

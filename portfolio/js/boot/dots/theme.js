@@ -40,8 +40,17 @@ const CSS = `
   html[data-theme="dark"] body,
   html[data-theme="dark"] .viewport,
   html[data-theme="dark"] .viewport.portfolio--mobile,
-  html[data-theme="dark"] .portfolio-mobile-host {
+  html[data-theme="dark"] .portfolio-mobile-host,
+  /* Case pages share the page backdrop, not the surface colour. */
+  html[data-theme="dark"] .case-page,
+  html[data-theme="dark"] .case-page__backdrop,
+  html[data-theme="dark"] .ds-showcase {
     background-color: ${DARK.page} !important;
+  }
+  /* Their own surfaces stay one step lighter, as in the design system. */
+  html[data-theme="dark"] .case-page__shell,
+  html[data-theme="dark"] .case-page__sidebar {
+    background-color: transparent;
   }
   /* The scene grid is painted inline and panned with the camera: only the dot
      image is overridden, position and size stay the site's own. */
