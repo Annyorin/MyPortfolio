@@ -30,9 +30,12 @@ const TARGET = path.join(SOURCE, "lq");
 const MANIFEST = path.join(REPO_ROOT, "shared/lowResImages.js");
 
 /** Longest side of a twin, px: enough to read as a preview. */
-const OPAQUE_SIDE = 420;
-const ALPHA_SIDE = 320;
-const JPEG_QUALITY = 55;
+// A preview lives for a fraction of a second: content stays hidden through the
+// animation and surfaces together with the swap to the original. So compress hard —
+// what matters is weight, not detail.
+const OPAQUE_SIDE = 240;
+const ALPHA_SIDE = 200;
+const JPEG_QUALITY = 38;
 /** Keep a twin only if it saves at least this much. */
 const MIN_SAVING = 0.25;
 

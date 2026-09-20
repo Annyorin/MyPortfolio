@@ -68,16 +68,22 @@ export function measuredCacheRatio() {
  * @returns {boolean}
  */
 export function isCachedVisit() {
-  if (typeof performance?.getEntriesByType !== "function") return false;
+  if (typeof performance?.getEntriesByType !== "function") return null;
 
   const nav = performance.getEntriesByType("navigation")[0];
   if (nav && nav.transferSize === 0) return true;
 
   // The document itself may be uncacheable while everything around it is not.
+  // Requiring a zero transferSize across the board is too strict: one file served
+  // without cache headers would mark a fully warm visit as cold. And with no
+  // entries yet there is nothing to judge — let the stored hint answer instead.
   const assets = performance
     .getEntriesByType("resource")
     .filter((e) => /\.(js|css)(\?|$)/.test(e.name));
-  return assets.length >= 2 && assets.every((e) => e.transferSize === 0);
+  if (assets.length < 2) return null;
+
+  const fromCache = assets.filter((e) => e.transferSize === 0).length;
+  return fromCache / assets.length >= 0.8;
 }
 
 /**
@@ -159,13 +165,15 @@ export function assetBase(pathname = location.pathname) {
  */
 export function trackAssets(onProgress, {
   preload = [],
+  warmOnly = [],
   timeout = 15000,
-  idleAfter = 1200,
-  minWait = 600,
+  idleAfter = 700,
+  minWait = 300,
   minTotal = 8,
   imageGrace = 2500,
   fastPathMs = 600,
   fastIdleAfter = 180,
+  requireSilence = true,
 } = {}) {
   const startedAt = performance.now();
   let progress = 0;
@@ -185,6 +193,14 @@ export function trackAssets(onProgress, {
     if (link.href) warmUrls.add(link.href);
   }
   preload = Array.from(warmUrls);
+
+  // Everything is warmed, but only `preload` is waited for: icons and stickers are
+  // small, and holding the loader for them buys nothing — by the time the site asks
+  // for them they are in cache anyway.
+  for (const url of warmOnly) {
+    const probe = new Image();
+    probe.src = url;
+  }
 
   for (const url of preload) {
     const probe = new Image();
@@ -242,7 +258,7 @@ export function trackAssets(onProgress, {
       fontsReady &&
       warmed >= preload.length &&
       ready === images.length &&
-      now - lastActivity >= fastIdleAfter
+      (!requireSilence || now - lastActivity >= fastIdleAfter)
     ) {
       return 1;
     }
@@ -252,7 +268,10 @@ export function trackAssets(onProgress, {
     const total = Math.max(minTotal, images.length + 2) + preload.length;
     const done = ready + (fontsReady ? 1 : 0) + (loaded ? 1 : 0) + warmed;
 
-    const quiet = !observer || now - lastActivity >= idleAfter;
+    // When everything came from cache there is no point waiting for silence: the
+    // network is already quiet, and the activity that remains is the site building
+    // its scene underneath an already finished screen.
+    const quiet = !requireSilence || !observer || now - lastActivity >= idleAfter;
     const settled = fontsReady && quiet && elapsed >= minWait && warmed >= preload.length;
     if (settled && !settledAt) settledAt = now;
 

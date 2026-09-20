@@ -9,6 +9,7 @@ export const LOW_RES_IMAGES = Object.freeze({
   "images/card-innodragon.png": "images/lq/card-innodragon.png",
   "images/card-innophish.png": "images/lq/card-innophish.png",
   "images/case-dragon-hero.png": "images/lq/case-dragon-hero.png",
+  "images/comp.png": "images/lq/comp.png",
   "images/dragon.png": "images/lq/dragon.png",
   "images/img-1.png": "images/lq/img-1.png",
   "images/img-2.png": "images/lq/img-2.png",
@@ -17,5 +18,7 @@ export const LOW_RES_IMAGES = Object.freeze({
   "images/macbook-lid.png": "images/lq/macbook-lid.jpg",
   "images/macbook.png": "images/lq/macbook.jpg",
   "images/me.png": "images/lq/me.png",
-  "images/phish.png": "images/lq/phish.png"
+  "images/phish.png": "images/lq/phish.png",
+  "images/stickers/seal.png": "images/lq/stickers/seal.png",
+  "images/stickers/sport.png": "images/lq/stickers/sport.png"
 });

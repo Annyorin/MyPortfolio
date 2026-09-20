@@ -68,8 +68,8 @@ export const DOTS_BOOT_CONFIG = Object.freeze({
   explodeFlare: 0,
   sizeSnap: 0.15,
   explodeFlash: 60,
-  morphDuration: 900,
-  morphStagger: 200,
+  morphDuration: 700,
+  morphStagger: 150,
 });
 
 /** Overrides for the dark theme: light dots on a dark backdrop. */
@@ -103,12 +103,13 @@ export function mountDotsBootLoader({
   fallbackGridTo = null,
   fallbackClearBg = null,
   alwaysShow = false,
+  canShow = null,
   slowAfter = 600,
-  minShow = 1300,
-  reveal = 480,
-  gridFade = 520,
-  gridHold = 260,
-  fadeOut = 260,
+  minShow = 850,
+  reveal = 380,
+  gridFade = 420,
+  gridHold = 140,
+  fadeOut = 200,
   onDone,
 } = {}) {
   if (!root) return null;
@@ -322,6 +323,13 @@ export function mountDotsBootLoader({
 
   function show() {
     if (finished || shown) return;
+    // Whether to show at all is decided here, not at mount time: by now it is
+    // visible whether the assets came from cache or over the wire. At startup
+    // there is no such data yet — resource entries appear only once a file lands.
+    if (canShow && !canShow()) {
+      skip();
+      return;
+    }
     shown = true;
     shownAt = performance.now();
     html.classList.add("is-boot-slow");
@@ -389,7 +397,11 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
 
   // The hint from the previous visit is known immediately, before anything can
   // be measured; this visit's own measurement then confirms or denies it.
-  const cached = readCacheHint() || isCachedVisit();
+  // Measurement beats memory: the stored hint outlives a cache purge, and trusting
+  // it alone would hide the loader even while the page is honestly downloading.
+  // The hint therefore only covers the window where there is nothing to measure.
+  const cachedNow = () => isCachedVisit() ?? readCacheHint();
+  const cached = cachedNow();
 
   const loader = mountDotsBootLoader({
     root,
@@ -403,6 +415,7 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
     // load turns out slow anyway, the rings still appear instead of a blank
     // page.
     slowAfter: cached ? 2600 : 600,
+    canShow: () => !cachedNow(),
     onDone: () => {
       writeCacheHint(measuredCacheRatio() > 0.9);
       // The page is on screen: pull in the full-size images behind it.
@@ -412,12 +425,27 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
   if (!loader) return;
 
   const base = assetBase();
+  // Only the heavy scene images are waited for — they are what shows first.
+  // Icons and stickers are warmed alongside but never hold the loader back.
+  const heavy = PRELOAD_PATHS.filter((path) => lightestPath(path) !== path);
+  const light = PRELOAD_PATHS.filter((path) => lightestPath(path) === path);
+
   const stop = trackAssets((p) => loader.setProgress(p), {
-    preload: PRELOAD_PATHS.map((path) => base + lightestPath(path)),
+    preload: heavy.map((path) => base + lightestPath(path)),
+    warmOnly: light.map((path) => base + path),
     // Nothing is being fetched on a cached visit, so readiness should not wait
     // out the silence window — the fast path may fire as soon as warm-up ends.
     fastPathMs: cached ? 2500 : 600,
+    minWait: cached ? 120 : 300,
+    requireSilence: !cached,
+    // The grace period exists to let images added after `load` arrive. Out of
+    // cache they are instant, so there is nothing to wait for.
+    imageGrace: cached ? 250 : 2500,
   });
+
+  // Everything is cached — release the page at once instead of holding a blank
+  // screen. Progress is still tracked so the hint gets written for next time.
+  if (cached) loader.finish();
 
   await new Promise((resolve) => {
     const done = () => {

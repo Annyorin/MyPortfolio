@@ -244,13 +244,35 @@ describe("dots boot: repeat visits", () => {
             ? [{ transferSize: 3623 }]
             : [
               { name: "/a/app.js", transferSize: 4096 },
-              { name: "/a/app.css", transferSize: 0 },
+              { name: "/a/app.css", transferSize: 4096 },
             ],
       };
-      assert.equal(isCachedVisit(), false, "something came over the wire");
+      assert.equal(isCachedVisit(), false, "everything came over the wire");
+
+      // One uncached file out of many is not a cold visit: a single asset served
+      // without cache headers would otherwise mark the whole visit as fresh.
+      globalThis.performance = {
+        getEntriesByType: (type) =>
+          type === "navigation"
+            ? [{ transferSize: 3623 }]
+            : [
+              { name: "/a/app.js", transferSize: 0 },
+              { name: "/a/app.css", transferSize: 0 },
+              { name: "/a/vendor.js", transferSize: 0 },
+              { name: "/a/ui.js", transferSize: 0 },
+              { name: "/a/theme.css", transferSize: 300 },
+            ],
+      };
+      assert.equal(isCachedVisit(), true, "four out of five from cache is a warm visit");
+
+      // Nothing measured yet — the caller should fall back to the stored hint.
+      globalThis.performance = {
+        getEntriesByType: (type) => (type === "navigation" ? [{ transferSize: 3623 }] : []),
+      };
+      assert.equal(isCachedVisit(), null, "no data, no verdict");
 
       globalThis.performance = {};
-      assert.equal(isCachedVisit(), false, "no timing API, no guessing");
+      assert.equal(isCachedVisit(), null, "no timing API, no guessing");
     } finally {
       globalThis.performance = saved;
     }
