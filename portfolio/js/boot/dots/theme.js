@@ -80,7 +80,7 @@ const CSS = `
   .dots-theme-toggle {
     position: fixed;
     right: 20px;
-    bottom: 20px;
+    top: 20px;
     z-index: 99999;
     width: 44px;
     height: 44px;
@@ -120,6 +120,50 @@ function noopTheme() {
     set() {},
     toggle() { return "light"; },
   };
+}
+
+/** Things the button must not sit on top of: headers, toolbars, burger menus. */
+const CHROME = '.ds-header__burger, .ds-toolbar__burger, .ds-toolbar, .ds-header, .case-page__toolbar';
+
+/**
+ * Places the button wherever the top-right corner is free.
+ *
+ * Every page fills that corner differently: the home page leaves it empty, case pages
+ * put a burger there, and the mobile layout runs a toolbar across the full width. So
+ * the position is measured rather than hardcoded — step aside if something is next to
+ * it, drop below if something spans the width.
+ *
+ * @param {HTMLElement} button
+ */
+function place(button) {
+  if (typeof document.querySelectorAll !== 'function') return;
+
+  const GAP = 12;
+  const EDGE = 20;
+  button.style.right = `${EDGE}px`;
+  button.style.top = `${EDGE}px`;
+
+  const self = button.getBoundingClientRect();
+  let right = EDGE;
+  let top = EDGE;
+
+  for (const el of document.querySelectorAll(CHROME)) {
+    const box = el.getBoundingClientRect();
+    if (!box.width || !box.height) continue;
+    // Only actual overlaps matter; neighbours that clear the button are fine.
+    const overlaps = !(box.right < self.left || box.left > self.right
+      || box.bottom < self.top || box.top > self.bottom);
+    if (!overlaps) continue;
+
+    const wide = box.width > innerWidth * 0.6;
+    if (wide) top = Math.max(top, box.bottom + GAP);
+    else right = Math.max(right, innerWidth - box.left + GAP);
+  }
+
+  // Having dropped below a full-width header there is no reason to also move left:
+  // that space is free, and the button sits better flush with the edge.
+  button.style.right = `${top > EDGE ? EDGE : right}px`;
+  button.style.top = `${top}px`;
 }
 
 /**
@@ -201,6 +245,18 @@ export function setupTheme({ mount = true } = {}) {
     });
     document.body.append(button);
     apply(theme);
+
+    // Measure after paint: before it the neighbours may not be on screen yet. In
+    // environments without a layout (tests, SSR) placement is simply skipped.
+    if (typeof requestAnimationFrame === "function" && button.getBoundingClientRect) {
+      const reposition = () => place(button);
+      requestAnimationFrame(reposition);
+      window.addEventListener?.("resize", reposition);
+      // The scene is built after startup — re-measure when it changes.
+      if (typeof MutationObserver === "function") {
+        new MutationObserver(reposition).observe(document.body, { childList: true, subtree: true });
+      }
+    }
   }
 
   return {

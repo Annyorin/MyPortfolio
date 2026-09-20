@@ -425,3 +425,41 @@ describe("input gesture layer", () => {
     assert.equal(await zoomWith("ctrl"), await zoomWith("meta"));
   });
 });
+
+describe("wheel zoom sensitivity", () => {
+  it("scales the step with how hard the gesture pushes", async () => {
+    const { bindInput } = await import(
+      pathToFileURL(path.join(REPO_ROOT, "portfolio/js/input.js")).href
+    );
+
+    const steps = [];
+    const listeners = {};
+    const viewportEl = {
+      addEventListener(type, fn) { (listeners[type] ??= []).push(fn); },
+      removeEventListener() {},
+      getBoundingClientRect: () => ({ left: 0, top: 0 }),
+      focus() {},
+    };
+    const camera = {
+      zoomStep: 0.1,
+      zoomBy: (step) => steps.push(step),
+      panBy: () => {},
+    };
+
+    bindInput(viewportEl, camera, { doc: { addEventListener() {}, removeEventListener() {} } });
+    const wheel = (deltaY) => (listeners.wheel ?? []).forEach((fn) => fn({
+      deltaY, deltaMode: 0, ctrlKey: true, clientX: 10, clientY: 10, preventDefault() {},
+    }));
+
+    wheel(-100); // один щелчок мыши
+    wheel(-3);   // одно событие щипка на тачпаде
+
+    const [mouse, trackpad] = steps;
+    assert.ok(mouse > 0 && trackpad > 0, "обе стороны двигают масштаб");
+    assert.ok(
+      trackpad < mouse / 5,
+      `щипок шагает мельче щелчка (${trackpad.toFixed(3)} против ${mouse.toFixed(3)})`
+    );
+    assert.ok(mouse <= 0.15, "щелчок мыши остаётся привычным шагом");
+  });
+});
