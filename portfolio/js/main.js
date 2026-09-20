@@ -8,7 +8,7 @@ import { contentMap } from "../../shared/content.js";
 import { isMobileViewport, selectSceneLayout } from "../../shared/layout.js";
 import { bindAboutExpand } from "./aboutExpand.js";
 import { createCameraController } from "./camera.js";
-import { runPortfolioBoot } from "./bootLoader.js";
+import { runDotsBoot } from "./bootDots.js";
 import { createInfiniteBg } from "./infiniteBg.js";
 import { bindInput } from "./input.js";
 import { bindInteractions } from "./interactions.js";
@@ -357,7 +357,7 @@ export function initPortfolioStubs() {
 
 if (typeof document !== "undefined") {
   const boot = initPortfolioStubs();
-  runPortfolioBoot(
+  runDotsBoot(
     boot?.viewportEl || document.querySelector(".viewport"),
     null
   ).catch(() => {
