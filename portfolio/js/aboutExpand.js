@@ -1,5 +1,5 @@
 /**
- * Smooth About-me expand: Macbook grows to Figma 248:17178 fraction of the viewport.
+ * Smooth About-me expand: Macbook grows to Figma 201:19914 fraction of the viewport.
  * Motion language matches rickyzhang.me / card expand (cubic-bezier 0.32, 0.72, 0, 1).
  */
 
@@ -45,11 +45,33 @@ function nextFrame(fn) {
  * @returns {void}
  */
 function applyGeom(el, geom) {
+  const rot = Number(geom.rotation) || 0;
+  const isStiker =
+    el.dataset?.nodeKind === "stiker" ||
+    (typeof el.className === "string" && el.className.includes("ds-stiker"));
+
   el.style.left = `${geom.x}px`;
   el.style.top = `${geom.y}px`;
+
+  // Stiker keeps its 81×32 design box; visual size tracks Macbook via scale().
+  // Scaling width/height alone leaves caption font/padding unscaled.
+  if (isStiker) {
+    const baseW = 81;
+    const baseH = 32;
+    const sx = baseW > 0 ? geom.width / baseW : 1;
+    const sy = baseH > 0 ? geom.height / baseH : 1;
+    el.style.width = `${baseW}px`;
+    el.style.height = `${baseH}px`;
+    const parts = [];
+    if (rot !== 0) parts.push(`rotate(${-rot}deg)`);
+    if (sx !== 1 || sy !== 1) parts.push(`scale(${sx}, ${sy})`);
+    el.style.transform = parts.length ? parts.join(" ") : "none";
+    el.style.transformOrigin = "0 0";
+    return;
+  }
+
   el.style.width = `${geom.width}px`;
   el.style.height = `${geom.height}px`;
-  const rot = Number(geom.rotation) || 0;
   if (rot !== 0) {
     el.style.transform = `rotate(${-rot}deg)`;
     el.style.transformOrigin = "0 0";
@@ -108,6 +130,8 @@ function cardNodes(root) {
  *     getState?: Function,
  *     apply?: Function,
  *     panBy?: Function,
+ *     fitInteractiveStage?: Function,
+ *     fitToContent?: Function,
  *   }|null,
  *   layoutId?: string|null,
  *   viewportEl?: HTMLElement|Element|null,
@@ -123,9 +147,24 @@ function cardNodes(root) {
 export function createAboutExpand(options) {
   const aboutEl = options.aboutEl;
   const worldEl = options.worldEl || aboutEl?.parentElement || null;
+  /**
+   * Camera API used for About focus / restore-to-home.
+   * @type {{
+   *   zoomTo?: Function,
+   *   worldToScreen?: Function,
+   *   screenToWorld?: Function,
+   *   getState?: Function,
+   *   apply?: Function,
+   *   panBy?: Function,
+   *   fitInteractiveStage?: Function,
+   *   fitToContent?: Function,
+   * }|null}
+   */
   const camera = options.camera || null;
   let layoutId = options.layoutId || null;
   const viewportEl = options.viewportEl || null;
+  /** Same breakpoint as main.js — wide canvas uses stage-fit on first load. */
+  const HOME_VIEWPORT_MIN = 1024;
 
   /** @type {boolean} */
   let expanded = false;
@@ -161,9 +200,9 @@ export function createAboutExpand(options) {
   }
 
   /**
-   * Expanded Macbook size: Figma screen fraction (~787/1366) of the live viewport,
-   * converted to world units. Anchor stays the canonical expanded layout center
-   * (same as before the size bump — not the collapsed About position).
+   * Expanded Macbook size: Figma 201:19914 screen fraction of the live viewport,
+   * converted to world units. me/Stiker scale with the Macbook (width+height).
+   * Anchor stays the canonical expanded layout center.
    *
    * @returns {import("../../shared/layout.js").AboutExpandedLayout}
    */
@@ -212,16 +251,16 @@ export function createAboutExpand(options) {
           me: {
             x: base.children.me.x * childScale,
             y: base.children.me.y * childScale,
-            width: base.children.me.width,
-            height: base.children.me.height,
-            rotation: 0,
+            width: base.children.me.width * childScale,
+            height: base.children.me.height * childScale,
+            rotation: base.children.me.rotation,
           },
           stiker: {
             x: base.children.stiker.x * childScale,
             y: base.children.stiker.y * childScale,
-            width: base.children.stiker.width,
-            height: base.children.stiker.height,
-            rotation: 0,
+            width: base.children.stiker.width * childScale,
+            height: base.children.stiker.height * childScale,
+            rotation: base.children.stiker.rotation,
           },
         },
       };
@@ -261,6 +300,27 @@ export function createAboutExpand(options) {
     const screenX = cx * scale + Number(state.translateX);
     const screenY = cy * scale + Number(state.translateY);
     camera.panBy(stageCx - screenX, stageCy - screenY);
+    camera.apply?.();
+  }
+
+  /**
+   * Restore first-load framing (all objects visible) after leaving About.
+   * Mirrors main.js applyStartCamera: stage-fit on wide, content-fit on narrow.
+   * @returns {void}
+   */
+  function restoreHomeCamera() {
+    if (!camera) {
+      return;
+    }
+    const vw = Number(
+      /** @type {HTMLElement|null} */ (viewportEl)?.clientWidth
+    );
+    const narrow = Number.isFinite(vw) && vw > 0 && vw < HOME_VIEWPORT_MIN;
+    if (narrow) {
+      camera.fitToContent?.(24);
+    } else {
+      camera.fitInteractiveStage?.(16);
+    }
     camera.apply?.();
   }
 
@@ -321,6 +381,8 @@ export function createAboutExpand(options) {
 
     if (open) {
       focusCluster(cluster);
+    } else {
+      restoreHomeCamera();
     }
   }
 

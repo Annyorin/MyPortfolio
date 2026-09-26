@@ -62,7 +62,16 @@ function readViewportSize(viewportEl) {
       return { width, height };
     }
   }
-  return { width: REF_VIEWPORT_WIDTH, height: REF_VIEWPORT_HEIGHT };
+  // Before first layout clientWidth can be 0 — do not fall back to 1024 or we
+  // mount the canvas on a phone-sized window (overflow, no mobile sheet).
+  const ww =
+    typeof window !== "undefined" ? Number(window.innerWidth) : NaN;
+  const wh =
+    typeof window !== "undefined" ? Number(window.innerHeight) : NaN;
+  return {
+    width: Number.isFinite(ww) && ww > 0 ? ww : REF_VIEWPORT_WIDTH,
+    height: Number.isFinite(wh) && wh > 0 ? wh : REF_VIEWPORT_HEIGHT,
+  };
 }
 
 /**

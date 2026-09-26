@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сводка ИБ v2 — улучшения (конкуренты + лит-ра) — lo-fi</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  .desk-frame.tall{height:auto; min-height:920px}
+  .metrics-5{display:flex; gap:8px; flex-wrap:wrap}
+  .metrics-5 .metric{
+    flex:1; min-width:88px;
+    border:1px solid var(--line); border-radius:10px;
+    padding:8px 10px; background:#fff;
+  }
+  .metrics-5 .ml{font-size:10px; color:var(--mut)}
+  .metrics-5 .mv{font-size:18px; font-weight:700; margin-top:2px}
+  .metrics-5 .ms{font-size:10px; color:var(--mut); margin-top:2px; font-variant-numeric:tabular-nums}
+  .delta{font-size:10px; font-weight:600; margin-top:2px}
+  .delta.up{color:var(--mut)}
+  .delta.down{color:var(--ink)}
+  .spark{
+    height:28px; margin-top:6px; border:1px solid var(--line); border-radius:6px;
+    background:#fff; position:relative; overflow:hidden;
+  }
+  .spark svg{position:absolute; inset:0; width:100%; height:100%}
+  .dist-row{display:flex; gap:6px; align-items:center; font-size:11px; margin-top:4px}
+  .dist-bar{flex:1; height:10px; border-radius:5px; overflow:hidden; display:flex; border:1px solid var(--line)}
+  .dist-bar i{display:block; height:100%}
+  .dist-bar .hi{background:var(--ink); flex:38}
+  .dist-bar .mid{background:var(--work); flex:214}
+  .dist-bar .lo{background:var(--block); flex:932}
+  .person-list, .dept-table{
+    display:flex; flex-direction:column; gap:0;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff;
+  }
+  .person-list .prow, .dept-table .drow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .person-list .prow:last-child, .dept-table .drow:last-child{border-bottom:none}
+  .person-list .prow.head, .dept-table .drow.head{
+    background:var(--block); color:var(--mut); font-weight:600; font-size:10px;
+  }
+  .person-list .c-name{flex:1.6; min-width:0}
+  .person-list .c-meta{flex:2.2; color:var(--mut); font-size:10px}
+  .person-list .c-prio{flex:.7; text-align:right; font-weight:700; font-size:10px}
+  .dept-table .c-dept{flex:2.2; min-width:0}
+  .dept-table .c-n{flex:.7; text-align:right; font-weight:700; font-variant-numeric:tabular-nums}
+  .dept-table .c-r{flex:.85; text-align:right; color:var(--mut); font-variant-numeric:tabular-nums}
+  .cohort{
+    border:1px dashed var(--line); border-radius:10px; padding:10px 12px;
+    background:var(--block); font-size:11px;
+  }
+  .cohort .bars{display:flex; gap:8px; margin-top:8px; align-items:flex-end; height:36px}
+  .cohort .bars > div{
+    border:1.5px solid var(--ink); border-radius:4px; background:var(--block2);
+    display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;
+  }
+  .src-grid{display:grid; gap:10px; max-width:960px}
+  .src-card{
+    border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+    background:var(--frame); font-size:12px;
+  }
+  .src-card b{display:block; margin-bottom:4px}
+  .role-note{
+    margin-top:8px; padding:8px 10px; border:1px dashed var(--line);
+    border-radius:8px; background:var(--block); font-size:11px; color:var(--mut);
+  }
+  .empty-box{
+    border:1px dashed var(--line); border-radius:12px; padding:28px 20px;
+    text-align:center; background:#fff; margin-top:12px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Сводка ИБ v2 — улучшения по конкурентам и ИБ-литературе</h1>
+<p class="sub">Отдельная страница-предложение к primary <a href="dashboard-wireframes-desktop.html">DB-IB-D</a>. Вносит правки из разбора искажений: знаменатели, miss rate, тренд, статус обучения у уязвимых, нормализация отделов, когорта «с курсом / без», подписи учебных метрик. Референсы: KnowBe4 PPP / repeat clickers, Proofpoint VAP vs simulation, Hoxhunt click·report·miss. Это структура, не визуальный стиль.</p>
+
+<div class="princ">
+  <span>% + абсолют от доставленных</span>
+  <span>Miss рядом с click / report</span>
+  <span>Risk: выше = лучше + Δ</span>
+  <span>Топ с обучением и приоритетом</span>
+  <span>Отделы: % внутри headcount</span>
+  <span>Когорта эффекта курса</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Чтение среза ИБ</div>
+  <div><span class="dot" style="background:var(--f2)">2</span> Назначить / дообучить</div>
+  <div><span class="dot" style="background:var(--f4)">4</span> Drill Атаки / Пользователи</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>DB-IB-D</b> baseline</span>
+  <span class="arr">→</span>
+  <span class="node"><b>DB-IB-V2-D</b> эта страница</span>
+  <span class="arr">→</span>
+  <span class="node"><b>Выход</b>: утвердить → влить в primary / design_spec</span>
+</div>
+
+<section>
+  <h2>1. Primary ИБ v2 — desktop</h2>
+  <p>Тот же shell и чипы. Данные = org 1 184, кампания «Счёт за услуги» 12 сен 2026 (доставлено 1 142). Не dual-mode, не traffic-light, не 3–6–12 на первом экране — только Δ к предыдущей кампании и мини-история Risk.</p>
+
+  <div class="row">
+    <div class="cell desk">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f2)">2</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">Программа А</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика · ИБ</div>
+              <div class="note">Учебная кампания «Счёт за услуги» · 12 сен 2026 · доставлено 1 142 из 1 184 · YTD кампаний: 8</div>
+            </div>
+            <div class="h-right">
+              <span class="chip on">ИБ</span>
+              <span class="chip">Обучение</span>
+              <span class="chip">Реакции</span>
+              <span class="chip">SOC</span>
+              <div class="btn ghost">Кампания</div>
+              <div class="btn pr">Экспорт</div>
+            </div>
+          </div>
+
+          <!-- Risk + trend -->
+          <div class="desk-row">
+            <div class="metric risk-big col-1">
+              <div class="ml">Индекс защищённости</div>
+              <div class="mv">71</div>
+              <div class="note" style="margin-top:4px">выше = лучше · янв 54</div>
+              <div class="delta down">▲ +6 к авг (65)</div>
+              <div class="spark" aria-label="Тренд индекса янв–сен">
+                <svg viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+                  <polyline fill="none" stroke="#1f1d1a" stroke-width="1.6" points="2,24 16,22 30,20 44,16 58,14 72,18 86,12 98,8"/>
+                </svg>
+              </div>
+              <div class="note" style="margin-top:4px">клик → CHART-1 (линия click% + Гант)</div>
+            </div>
+            <div class="desk-panel col-2">
+              <div class="pt">Распределение риска · люди</div>
+              <div class="dist-row">
+                <span style="width:52px">выс. 38</span>
+                <div class="dist-bar" aria-hidden="true"><i class="hi"></i><i class="mid"></i><i class="lo"></i></div>
+              </div>
+              <div class="note" style="margin-top:6px">сред. 214 · низ. 932 · сумма 1 184. Без drill и без «плохо» по отделу.</div>
+              <div class="note" style="margin-top:6px">Уровень риска учитывает реакции <b>и</b> статус обучения (после курса весит выше).</div>
+            </div>
+          </div>
+
+          <!-- Attack metrics with denominators + miss -->
+          <div class="desk-panel">
+            <div class="pt">Учебные реакции · от доставленных 1 142</div>
+            <div class="metrics-5">
+              <div class="metric">
+                <div class="ml">Open</div>
+                <div class="mv">48%</div>
+                <div class="ms">548 чел.</div>
+                <div class="delta down">−3 п.п. к 28 авг</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Click</div>
+                <div class="mv">9%</div>
+                <div class="ms">103 чел.</div>
+                <div class="delta down">−7 п.п. (было 16%)</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Attachment</div>
+                <div class="mv">3%</div>
+                <div class="ms">34 чел.</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Submit</div>
+                <div class="mv">2%</div>
+                <div class="ms">23 чел.</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Report</div>
+                <div class="mv">18%</div>
+                <div class="ms">206 чел.</div>
+                <div class="delta down">+4 п.п.</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Miss</div>
+                <div class="mv">71%</div>
+                <div class="ms">ни клик, ни репорт · ~810</div>
+              </div>
+            </div>
+            <div class="note" style="margin-top:8px">
+              Все % — от <b>доставленных</b>, не от открывших. Click / Attachment / Submit могут пересекаться у одного человека (как failures в KnowBe4); в «уязвимых» ниже — уникальные.
+              Miss = не кликнул и не репортнул (паттерн Hoxhunt). Метрики → EXT-ATTACKS.
+            </div>
+          </div>
+
+          <!-- Cohort effect -->
+          <div class="cohort">
+            <b>Эффект обучения на этой кампании</b>
+            <div style="margin-top:4px; color:var(--mut)">
+              Click среди завершивших «Фишинг базовый» до 1 сен: <b style="color:var(--ink)">5% (38 / 760)</b>
+              · среди не начавших / без курса: <b style="color:var(--ink)">18% (65 / 361)</b>
+            </div>
+            <div class="bars">
+              <div style="width:28%; height:28%">5%</div>
+              <div style="width:72%; height:100%; background:var(--ink); color:#fff; opacity:.85">18% без курса</div>
+            </div>
+            <div class="note" style="margin-top:6px">Когорта к одной симуляции — честнее линии «после курса всегда лучше». Не Proofpoint VAP (реальный targeting).</div>
+          </div>
+
+          <!-- Training linked to attacks -->
+          <div class="desk-row">
+            <div class="desk-panel col-eq">
+              <div class="pt">Обучение · сен · и хвост после атаки</div>
+              <div class="metrics-5" style="margin-top:6px">
+                <div class="metric"><div class="ml">Завершено</div><div class="mv" style="font-size:16px">210</div><div class="ms">42% из 506</div></div>
+                <div class="metric"><div class="ml">Провалено</div><div class="mv" style="font-size:16px">58</div><div class="ms">11%</div></div>
+                <div class="metric"><div class="ml">В процессе</div><div class="mv" style="font-size:16px">126</div><div class="ms">25%</div></div>
+                <div class="metric"><div class="ml">Не начато</div><div class="mv" style="font-size:16px">112</div><div class="ms">22%</div></div>
+              </div>
+              <div class="note" style="margin-top:8px">
+                Из 94 уязвимых этой кампании: <b>41 без курса / не начато</b> · <b>28 после курса снова</b> · 25 в процессе/провалено.
+                Блок → DASH-TRAIN. Не подменяет вкладку Обучение.
+              </div>
+            </div>
+            <div class="desk-panel col-eq">
+              <div class="pt">Приоритет · уязвимые (уникальные)</div>
+              <div class="person-list" style="margin-top:6px">
+                <div class="prow head">
+                  <span class="c-name">Сотрудник</span>
+                  <span class="c-meta">Реакция · обучение</span>
+                  <span class="c-prio">Прио</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Иванов И.И.</b></div>
+                  <div class="c-meta">click+submit · завершено · после курса</div>
+                  <div class="c-prio">1</div>
+                  <span class="tgbtn">Дообучить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Сидоров П.К.</b></div>
+                  <div class="c-meta">attachment · провалено курс</div>
+                  <div class="c-prio">2</div>
+                  <span class="tgbtn">Дообучить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Новикова А.С.</b></div>
+                  <div class="c-meta">click · не начато · без курса</div>
+                  <div class="c-prio">3</div>
+                  <span class="tgbtn">Назначить</span>
+                </div>
+              </div>
+              <div class="note" style="margin-top:6px">Сорт: после курса / провал курса → выше, чем первый клик без обучения. ФИО → EXT-USERS.</div>
+            </div>
+          </div>
+
+          <!-- Depts normalized -->
+          <div class="desk-panel">
+            <div class="pt">Подразделения · % уязвимых внутри отдела</div>
+            <div class="dept-table">
+              <div class="drow head">
+                <span class="c-dept">Отдел · headcount</span>
+                <span class="c-n">Уязв.</span>
+                <span class="c-r">% отдела</span>
+                <span class="c-r">Тип</span>
+                <span class="c-r">% org-fail</span>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Бухгалтерия</b> · 41</div>
+                <div class="c-n">12</div>
+                <div class="c-r">29%</div>
+                <div class="c-r">вложение</div>
+                <div class="c-r">13%</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Продажи</b> · 128</div>
+                <div class="c-n">21</div>
+                <div class="c-r">16%</div>
+                <div class="c-r">данные</div>
+                <div class="c-r">22%</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Поддержка</b> · 86</div>
+                <div class="c-n">11</div>
+                <div class="c-r">13%</div>
+                <div class="c-r">ссылка</div>
+                <div class="c-r">12%</div>
+              </div>
+            </div>
+            <div class="note" style="margin-top:8px">
+              Сорт по <b>% отдела</b> (норма на headcount) — бухгалтерия выше продаж, хотя абсолют меньше.
+              «% org-fail» = доля уязвимых отдела среди всех 94 уязвимых — отдельно, не смешивать.
+              Без светофора. Строка → DASH-REACT-DEPT / фильтр.
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="btn ghost" style="flex:1">Открыть Атаки</div>
+            <div class="btn ghost" style="flex:1">Вкладка Реакции</div>
+            <div class="btn pr" style="flex:1">Назначить массово</div>
+          </div>
+
+          <div class="role-note">
+            <b>ИБ:</b> один экран — «насколько защищены», «что сделали в кампании», «кого учить первым».
+            <b>SOC:</b> чип SOC — учебные типы + люди; не SIEM. Реальные Very Attacked People — только если появится mail-security связка (как Proofpoint), отдельно от этой таблицы.
+            <b>Не здесь:</b> лидеры обучения (→ Обучение); полный Гант (→ разворот индекса).
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-IB-V2-D. Сводка ИБ · улучшенный каркас</div>
+        <div class="d">Индекс+Δ+спарклайн · метрики с знаменателем и miss · когорта курса · обучение↔уязвимые · топ с приоритетом · отделы с двумя %.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Пустые состояния (чего не хватало)</h2>
+  <p>Разные empty → разные CTA. Не один текст «пока нет кампаний».</p>
+
+  <div class="row">
+    <div class="cell desk">
+      <div class="desk-frame" style="height:auto; min-height:360px">
+        <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
+        <nav class="desk-nav"><div class="brand">Программа А</div><span class="on">Сводка</span></nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика · ИБ</div>
+              <div class="note">Кампания есть · реакций пока 0</div>
+            </div>
+          </div>
+          <div class="empty-box">
+            <div style="font-weight:700">Кампания доставлена, реакций ещё нет</div>
+            <div class="note" style="margin:8px auto; max-width:420px">«Счёт за услуги» · доставлено 1 142 · прошло 2 ч. Open/click появятся по мере открытия писем.</div>
+            <div class="btn ghost" style="display:inline-block; min-width:160px; margin-top:4px">К атаке</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-IB-V2-EMPTY-WAIT</div><div class="d">Кампания запущена, данных реакций нет — не путать с «нет кампаний».</div></div>
+    </div>
+
+    <div class="cell desk">
+      <div class="desk-frame" style="height:auto; min-height:360px">
+        <div class="flows"><span class="dot" style="background:var(--f2)">2</span></div>
+        <nav class="desk-nav"><div class="brand">Программа А</div><span class="on">Сводка</span></nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика · ИБ</div>
+              <div class="note">Есть клики · обучения не назначено</div>
+            </div>
+          </div>
+          <div class="empty-box">
+            <div style="font-weight:700">94 уязвимых · назначений обучения 0</div>
+            <div class="note" style="margin:8px auto; max-width:420px">Реакции есть, курсов в программе на этих людей нет. Следующий шаг — назначить, не «запустить атаку».</div>
+            <div class="btn pr" style="display:inline-block; min-width:180px; margin-top:4px">Назначить уязвимым</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-IB-V2-EMPTY-TRAIN</div><div class="d">Атаки без training loop — отдельный empty под ИБ/HR.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>3. Откуда улучшения (конкуренты + литература)</h2>
+  <div class="src-grid">
+    <div class="src-card">
+      <b>KnowBe4 — Phish-prone % / failures</b>
+      % и failures считаются от доставленных; в одном письме несколько failures (click + attachment). → у нас % + абсолют от 1 142; пересечения оговорены; уязвимые = уникальные.
+      <div class="note" style="margin-top:6px">support.knowbe4.com · Failures and Phish-prone Percentages</div>
+    </div>
+    <div class="src-card">
+      <b>KnowBe4 / Canham — repeat clickers</b>
+      Повторные провалы (часто ≥3 симуляции) — малая доля людей, непропорциональный риск; remedial после курса. → приоритет «после курса» выше «не начато».
+      <div class="note" style="margin-top:6px">KnowBe4 blog · A Clicking Time Bomb; NIST/Canham differential susceptibility</div>
+    </div>
+    <div class="src-card">
+      <b>Hoxhunt — click / report / miss</b>
+      Failure rate недостаточен; report и miss (ни клик, ни репорт) обязательны для картины human risk. → колонка Miss 71%.
+      <div class="note" style="margin-top:6px">Hoxhunt · Guide to Cybersecurity Training Metrics</div>
+    </div>
+    <div class="src-card">
+      <b>Hoxhunt / KnowBe4 — связка training ↔ phishing</b>
+      PPP / risk рядом с completion; эффект программы виден в динамике. → блок «хвост после атаки» + когорта 5% vs 18%.
+      <div class="note" style="margin-top:6px">KnowBe4 reporting (PPP by training); Hoxhunt Human Risk Dashboard</div>
+    </div>
+    <div class="src-card">
+      <b>Proofpoint — VAP ≠ simulation fail</b>
+      Very Attacked People = реальный targeting. Не смешивать с учебным топом уязвимых. → явная подпись «учебные реакции»; VAP только при интеграции.
+      <div class="note" style="margin-top:6px">Proofpoint Security Awareness Reporting / TAP</div>
+    </div>
+    <div class="src-card">
+      <b>Нормализация отделов (IB practice)</b>
+      Абсолюты по большим отделам искажают приоритет. → сорт по % внутри headcount + отдельная колонка % org-fail.
+      <div class="note" style="margin-top:6px">Стандарт reporting SAT: rate per population, не raw counts</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>4. Логика вне каркаса</h2>
+  <div class="desk-panel" style="max-width:960px">
+    <ul class="note" style="margin:0 0 0 16px; line-height:1.55; color:var(--mut)">
+      <li><b>Знаменатель метрик атаки</b> — всегда delivered (и подпись). Не open-rate base для click, если не переключили явно.</li>
+      <li><b>Уязвимый</b> — уникальный человек с ≥1 из {click, attachment, submit} в срезе. Report сам по себе не делает уязвимым.</li>
+      <li><b>Приоритет топа:</b> (1) завершено/провалено курса + опасная реакция, (2) в процессе + реакция, (3) не начато + реакция. Внутри — тяжесть submit &gt; attachment &gt; click, затем число кампаний.</li>
+      <li><b>Индекс защищённости</b> — выше лучше; на каркасе показан тренд. Формула — open Q (A3); не путать ось с click% (выше хуже).</li>
+      <li><b>Miss</b> — 100% − (доля с click∪report) приближённо; точная формула Hoxhunt — за окно N дней после доставки.</li>
+      <li><b>Когорта</b> — только люди, получившие эту кампанию; «с курсом» = завершили релевантный курс до даты старта кампании.</li>
+      <li><b>Не вливать слепо в DB-IB-D</b> без выбора: высота экрана, обязателен ли Miss на первом экране, когорта на primary или в развороте кампании.</li>
+      <li><b>Связь:</b> baseline <a href="dashboard-wireframes-desktop.html">dashboard-wireframes-desktop.html</a> · график <a href="risk-index-chart-wireframe.html">risk-index-chart-wireframe.html</a> · реакции <a href="reactions-tab-wireframe.html">reactions-tab-wireframe.html</a>.</li>
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

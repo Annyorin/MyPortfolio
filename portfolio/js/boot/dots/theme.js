@@ -12,42 +12,42 @@ const STORAGE_KEY = "portfolio-theme";
 const INLINE_CLASS = "dots-theme-toggle--inline";
 const SLOT_CLASS = "dots-theme-slot";
 
-/** Dark palette. Light is simply the absence of the attribute. */
+/**
+ * Dark palette (Figma DarkColors 383:15362 fills + home 386:20585).
+ * Color tokens live in tokens.css under html[data-theme="dark"];
+ * these values drive canvas/boot surfaces that CSS variables cannot reach.
+ */
 export const DARK = Object.freeze({
   page: "#121214",
-  surface: "#1c1c1e",
-  raised: "#2a2a2d",
-  line: "#34343a",
-  text: "#ececec",
-  muted: "#9a9aa2",
+  surface: "#232323",
+  raised: "#2f2f35",
+  line: "#2f2f35",
+  text: "#f5f5f5",
+  muted: "#b4b4bd",
   soft: "#b4b4bd",
-  dot: "#34343d",
+  dot: "#2f2f35",
+  primary: "#2d97f7",
+  primaryHover: "#3983ea",
 });
 
 const R = INFINITE_BG.worldDotRadius;
 
 const CSS = `
-  html[data-theme="dark"] {
-    color-scheme: dark;
-    --color-white: ${DARK.surface};
-    --color-black: ${DARK.text};
-    --color-secondary: ${DARK.raised};
-    --color-gray-dark: ${DARK.line};
-    --color-gray-text: ${DARK.muted};
-    --color-gray-l: ${DARK.soft};
-    --shadow: 0 5px 14px #00000066;
-    --shadow-mobile: 0 3px 10px #00000059;
-  }
+  /* Token overrides are in ds-showcase/css/tokens.css (html[data-theme="dark"]). */
   html[data-theme="dark"],
   html[data-theme="dark"] body,
   html[data-theme="dark"] .viewport,
   html[data-theme="dark"] .viewport.portfolio--mobile,
-  html[data-theme="dark"] .portfolio-mobile-host,
-  /* Case pages share the page backdrop, not the surface colour. */
+  /* Case pages share the page backdrop, not the surface colour.
+     Do NOT paint .case-page__backdrop — it is a click-catcher over the
+     page while MenuMobile is open; an opaque fill would hide the content. */
   html[data-theme="dark"] .case-page,
-  html[data-theme="dark"] .case-page__backdrop,
   html[data-theme="dark"] .ds-showcase {
     background-color: ${DARK.page} !important;
+  }
+  /* Mobile sheet stays clear so the dotted viewport grid shows through. */
+  html[data-theme="dark"] .portfolio-mobile-host {
+    background-color: transparent !important;
   }
   /* Their own surfaces stay one step lighter, as in the design system. */
   html[data-theme="dark"] .case-page__shell,
@@ -73,12 +73,15 @@ const CSS = `
   html[data-theme="dark"] .boot-loader { background-color: ${DARK.page}; }
   html[data-theme="dark"] .boot-loader__badge { background: ${DARK.surface}; }
   html[data-theme="dark"] .boot-loader__pct { color: ${DARK.text}; }
-  /* Some icons are images drawn in dark ink on transparent: those get inverted. */
-  html[data-theme="dark"] .ds-icon { filter: invert(1) hue-rotate(180deg); }
-  /* On buttons an icon is a mask filled with currentColor — it already takes its
-     color from the tokens, and inverting would turn it black again. */
-  html[data-theme="dark"] .ds-button .ds-icon { filter: none; }
-
+  /* Placeholder slots: light #ededed fringe shows as white hairline in dark. */
+  html[data-theme="dark"] .ds-avatar.ds-placeholder,
+  html[data-theme="dark"] .scene-comp.ds-placeholder,
+  html[data-theme="dark"] .ds-media-slot--broken,
+  html[data-theme="dark"] .ds-card__media.ds-placeholder {
+    background-color: ${DARK.raised};
+  }
+  /* Some icons are images drawn in dark ink on transparent: those get inverted
+     in tokens.css (html[data-theme="dark"] .ds-icon:has(> img)). */
   .dots-theme-toggle {
     position: fixed;
     right: 20px;
@@ -91,7 +94,7 @@ const CSS = `
     border: 1px solid var(--color-gray-dark, #e4e4e4);
     border-radius: 50%;
     background: var(--color-white, #fefefe);
-    color: var(--color-black, #232323);
+    color: var(--color-black, #121214);
     cursor: pointer;
     padding: 0;
     box-shadow: var(--shadow, 0 5px 9px #bbbbbd40);
@@ -100,6 +103,27 @@ const CSS = `
     transition-timing-function: cubic-bezier(.22,.82,.18,1);
   }
   .dots-theme-toggle:hover { transform: translateY(-2px); }
+
+  /* Figma Tooltip 92:11490 — home ≥1024 only (cases / narrow: aria-label) */
+  .dots-theme-toggle .ds-tooltip {
+    position: absolute;
+    right: calc(100% + 12px);
+    top: 50%;
+    left: auto;
+    transform: translateY(-50%);
+    z-index: 1;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 120ms ease, visibility 120ms ease;
+  }
+  @media (min-width: 1024px) {
+    body:not(.case-page) .dots-theme-toggle:hover .ds-tooltip,
+    body:not(.case-page) .dots-theme-toggle:focus-visible .ds-tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
 
   /* Inside the menu the button is just another icon: no fill, no border, no fixing.
      It sits out of flow — otherwise its width shifts the header layout and the title
@@ -139,6 +163,7 @@ function noopTheme() {
     get isDark() { return false; },
     set() {},
     toggle() { return "light"; },
+    syncPlacement() {},
   };
 }
 
@@ -149,7 +174,22 @@ const BURGER = '.ds-header__burger, .ds-toolbar__burger';
 
 const visible = (el) => {
   const box = el.getBoundingClientRect();
-  return box.width > 0 && box.height > 0;
+  if (!(box.width > 0 && box.height > 0)) return false;
+  // Opacity-0 desktop burger (≥1366) still has a box — skip it so the theme
+  // docks only to a real menu control, otherwise floats in the free corner.
+  try {
+    if (typeof getComputedStyle === "function") {
+      const cs = getComputedStyle(el);
+      if (cs) {
+        if (cs.display === "none" || cs.visibility === "hidden") return false;
+        const opacity = Number.parseFloat(cs.opacity);
+        if (Number.isFinite(opacity) && opacity <= 0.01) return false;
+      }
+    }
+  } catch {
+    /* stub DOM in tests — size alone is enough */
+  }
+  return true;
 };
 
 /**
@@ -170,10 +210,33 @@ function dockNextTo(burger, button) {
     burger.replaceWith(slot);
     slot.append(burger);
   }
-  // Theme button first, menu toggle stays rightmost.
-  if (button.parentElement !== slot || button.nextElementSibling !== burger) {
-    slot.insertBefore(button, burger);
+  // Already docked — do not re-insert (stub DOMs may duplicate on insertBefore).
+  if (button.parentElement === slot && button.nextElementSibling === burger) {
+    return;
   }
+  // Real DOM insertBefore moves the node; stubs may need an explicit detach.
+  if (button.parentElement && typeof button.remove === "function") {
+    button.remove();
+  }
+  slot.insertBefore(button, burger);
+}
+
+/**
+ * Menu toggle to dock beside. Prefer a fully visible control; on case desktop
+ * (≥1366) the burger stays opacity 0 but is still the dock target in the header.
+ *
+ * @returns {HTMLElement|null}
+ */
+function findDockBurger() {
+  if (typeof document.querySelectorAll !== "function") return null;
+  const all = Array.from(document.querySelectorAll(BURGER));
+  const shown = all.find(visible);
+  if (shown) return /** @type {HTMLElement} */ (shown);
+  const laidOut = all.find((el) => {
+    const box = el.getBoundingClientRect();
+    return box.width > 0 && box.height > 0;
+  });
+  return laidOut ? /** @type {HTMLElement} */ (laidOut) : null;
 }
 
 /**
@@ -190,8 +253,9 @@ function place(button) {
   if (typeof document.querySelectorAll !== 'function') return;
 
   // A page with a menu gets the button inside it, beside the toggle.
-  // Of the two headers (regular and mobile toolbar) take the one on screen.
-  const burger = Array.from(document.querySelectorAll(BURGER)).find(visible);
+  // Of the two headers (regular and mobile toolbar) take the one on screen,
+  // or the opacity-0 desktop burger that still owns the header slot.
+  const burger = findDockBurger();
   if (burger) {
     button.classList.add(INLINE_CLASS);
     button.style.right = '';
@@ -285,17 +349,51 @@ export function setupTheme({ mount = true } = {}) {
   document.head.append(style);
 
   let button = null;
+  /** @type {HTMLElement|null} */
+  let tip = null;
+
+  function themeLabel() {
+    return theme === "dark" ? "Включить светлую" : "Включить тёмную";
+  }
+
+  function isCasePage() {
+    try {
+      return Boolean(document.body?.classList?.contains("case-page"));
+    } catch {
+      return false;
+    }
+  }
+
+  function syncButton() {
+    if (!button) return;
+    const label = themeLabel();
+    button.setAttribute("aria-label", label);
+    button.removeAttribute("title");
+
+    button.replaceChildren();
+    button.insertAdjacentHTML("afterbegin", theme === "dark" ? SUN : MOON);
+
+    // Tooltip DOM only on home; visibility ≥1024 is CSS. Cases — aria-label only.
+    if (isCasePage()) {
+      if (tip?.parentNode) tip.remove();
+      return;
+    }
+
+    if (!tip) {
+      tip = document.createElement("span");
+      tip.className = "ds-tooltip";
+      tip.setAttribute("role", "tooltip");
+      tip.setAttribute("aria-hidden", "true");
+    }
+    tip.textContent = label;
+    button.appendChild(tip);
+  }
 
   function apply(next) {
     theme = next;
     if (theme === "dark") html.setAttribute("data-theme", "dark");
     else html.removeAttribute("data-theme");
-    if (button) {
-      button.innerHTML = theme === "dark" ? SUN : MOON;
-      const label = theme === "dark" ? "Включить светлую тему" : "Включить тёмную тему";
-      button.setAttribute("aria-label", label);
-      button.title = label;
-    }
+    syncButton();
   }
 
   apply(theme);
@@ -308,20 +406,47 @@ export function setupTheme({ mount = true } = {}) {
       apply(theme === "dark" ? "light" : "dark");
       writeStored(theme);
     });
-    document.body.append(button);
+
+    // Case pages: mount straight into the header/toolbar slot so the control
+    // never appears as the home floating button, even for one frame.
+    const burger = findDockBurger();
+    if (burger) {
+      button.classList.add(INLINE_CLASS);
+      dockNextTo(burger, button);
+    } else {
+      document.body.append(button);
+    }
     apply(theme);
 
-    // Measure after paint: before it the neighbours may not be on screen yet. In
-    // environments without a layout (tests, SSR) placement is simply skipped.
+    const reposition = () => {
+      if (button) place(button);
+    };
+    // Re-dock if chrome swaps (Header ↔ Toolbar) after layout / resize.
+    reposition();
     if (typeof requestAnimationFrame === "function" && button.getBoundingClientRect) {
-      const reposition = () => place(button);
       requestAnimationFrame(reposition);
       window.addEventListener?.("resize", reposition);
-      // The scene is built after startup — re-measure when it changes.
+      window.addEventListener?.("load", reposition, { once: true });
       if (typeof MutationObserver === "function") {
-        new MutationObserver(reposition).observe(document.body, { childList: true, subtree: true });
+        new MutationObserver(reposition).observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
       }
     }
+
+    return {
+      get theme() { return theme; },
+      get isDark() { return theme === "dark"; },
+      set(next) { apply(next); writeStored(next); },
+      toggle() {
+        apply(theme === "dark" ? "light" : "dark");
+        writeStored(theme);
+        return theme;
+      },
+      /** Re-dock after case chrome is ready (header / toolbar burger). */
+      syncPlacement: reposition,
+    };
   }
 
   return {
@@ -333,5 +458,6 @@ export function setupTheme({ mount = true } = {}) {
       writeStored(theme);
       return theme;
     },
+    syncPlacement() {},
   };
 }

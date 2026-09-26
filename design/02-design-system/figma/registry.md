@@ -1,7 +1,7 @@
 ---
 type: registry
 env: 02-design-system
-updated: 2026-09-14
+updated: 2026-09-26
 mcp: remote https://mcp.figma.com/mcp
 account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 ---
@@ -73,7 +73,8 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Card / default | `40:1208` | xboMnqU5JURL0xlzxN7edN | Card покой · Shadow | Property 1=default | `components/card.md` | synced | 2026-09-13 |
 | Card / hover | `40:1207` | xboMnqU5JURL0xlzxN7edN | Card наведение · Shadow | Property 1=hover | `components/card.md` | synced | 2026-09-08 |
 | Sidebar (profile) | `158:11468` | xboMnqU5JURL0xlzxN7edN | Сайдбар профиля 310×561 | default | `components/sidebar.md` | synced | 2026-09-13 |
-| Header | `226:15768` | xboMnqU5JURL0xlzxN7edN | Шапка кейса 620×81 · py 16 | default | `components/header.md` | synced | 2026-09-14 |
+| Header | `226:15768` | xboMnqU5JURL0xlzxN7edN | Шапка кейса 620×81 · py 16 · px 0 | default | `components/header.md` | synced | 2026-09-26 |
+| Header (desktop) | `401:23328` | xboMnqU5JURL0xlzxN7edN | Product Header · py 16 · px 0 (без pr) | default | `components/header.md` | synced | 2026-09-26 |
 | Toolbar | `247:16546` | xboMnqU5JURL0xlzxN7edN | Mobile case bar 360×48 · взамен Header ≤480 | default | `components/toolbar.md` | synced | 2026-09-14 |
 | SegmentsControl (Segmets_control) | `226:15785` | xboMnqU5JURL0xlzxN7edN | Сегмент-переключатель 620×42 | long, short | `components/segments-control.md` | synced | 2026-09-13 |
 | SegmentsControl / long | `226:15785` | xboMnqU5JURL0xlzxN7edN | Active «Длинная версия» | Property 1=long | `components/segments-control.md` | synced | 2026-09-13 |
@@ -88,8 +89,11 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | IMG_2 | `41:11478` | xboMnqU5JURL0xlzxN7edN | Медиа 345×230 | — | `components/media.md` | synced | 2026-09-08 |
 | IMG_3 | `41:11476` | xboMnqU5JURL0xlzxN7edN | Медиа 345×345 | — | `components/media.md` | synced | 2026-09-08 |
 | Comp | `41:11511` | xboMnqU5JURL0xlzxN7edN | Композитный превью | — | `components/media.md` | synced | 2026-09-08 |
-| me | `105:11564` | xboMnqU5JURL0xlzxN7edN | Портрет 254×254 | — | `components/media.md` | synced | 2026-09-08 |
+| me | `105:11564` | xboMnqU5JURL0xlzxN7edN | Портрет 254×254 | — | `components/media.md` | synced | 2026-09-26 |
 | Macbook | `248:17115` | xboMnqU5JURL0xlzxN7edN | Девайс-мок + стикеры 388×283 (был `247:16308`) | — | `components/media.md` | synced | 2026-09-14 |
+| About me | `391:22957` | xboMnqU5JURL0xlzxN7edN | Композит About · **209.61×116.01** · me +12.596° / Macbook −10° / Stiker · home instance `391:22959` · `.ds-about-me` | — | `components/media.md` | synced | 2026-09-26 |
+| About me (home) | `391:22959` | xboMnqU5JURL0xlzxN7edN | Instance About me на Главной | — | `components/media.md` | synced | 2026-09-26 |
+| MacbookPng | `391:22958` | xboMnqU5JURL0xlzxN7edN | Плоский прелоад · **310×226** · `macbook-png.png` (keys `macbook` / `macbook.png`) | — | `components/media.md` | synced | 2026-09-26 |
 | SityBike | `164:11800` | xboMnqU5JURL0xlzxN7edN | Cover CityBike 308×190 | — | `components/sitybike.md` | synced | 2026-09-08 |
 | Dragon | `232:16826` | xboMnqU5JURL0xlzxN7edN | Cover InnoDragon 308×190 | — | `components/dragon.md` | synced | 2026-09-14 |
 | Phish | `232:16829` | xboMnqU5JURL0xlzxN7edN | Cover InnoPhish 308×190 | — | `components/phish.md` | synced | 2026-09-14 |

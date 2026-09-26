@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сводка · вкладка Реакции — lo-fi wireframe</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  .desk-frame.tall{height:auto; min-height:780px}
+  .scope-row{display:flex; gap:8px; flex-wrap:wrap}
+  .scope-row .metric{
+    flex:1; min-width:100px;
+    border:1px solid var(--line); border-radius:10px;
+    padding:8px 10px; background:#fff;
+  }
+  .scope-row .ml{font-size:10px; color:var(--mut)}
+  .scope-row .mv{font-size:18px; font-weight:700; margin-top:4px}
+  .scope-row .metric .note{font-size:9px; margin-top:2px}
+  .dept-table, .person-list{
+    display:flex; flex-direction:column; gap:0;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff;
+  }
+  .dept-table .drow, .person-list .prow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .dept-table .drow:last-child, .person-list .prow:last-child{border-bottom:none}
+  .dept-table .drow.head, .person-list .prow.head{
+    background:var(--block); color:var(--mut); font-weight:600; font-size:10px;
+  }
+  .dept-table .c-dept{flex:2; min-width:0}
+  .dept-table .c-n{flex:.7; text-align:right; font-weight:700}
+  .dept-table .c-r{flex:.85; text-align:right; color:var(--mut); font-variant-numeric:tabular-nums}
+  .person-list .c-name{flex:2; min-width:0}
+  .person-list .c-meta{flex:2; color:var(--mut); font-size:10px}
+  .person-list .c-val{flex:1; text-align:right; font-weight:700}
+  .seg-tabs{
+    display:flex; gap:0; border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff; width:fit-content; flex-wrap:wrap;
+  }
+  .seg-tabs span{
+    padding:6px 12px; font-size:11px; color:var(--mut);
+    border-right:1px solid var(--line);
+  }
+  .seg-tabs span:last-child{border-right:none}
+  .seg-tabs span.on{background:var(--ink); color:#fff; font-weight:700}
+  .filter-row{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+  .role-note{
+    margin-top:8px; padding:8px 10px; border:1px dashed var(--line);
+    border-radius:8px; background:var(--block); font-size:11px; color:var(--mut);
+  }
+  .rank{width:18px; text-align:center; font-weight:700; color:var(--mut); font-size:10px; flex:none}
+  .three-col{display:flex; gap:10px; align-items:stretch}
+  .three-col > *{flex:1; min-width:0}
+</style>
+</head>
+<body>
+
+<h1>Сводка · вкладка «Реакции»</h1>
+<p class="sub">Lo-fi каркас отдельной вкладки: реакции на учебный фишинг по подразделениям и людям. Аудитория — специалисты ИБ (и смежно SOC). Без порога «плохо» / traffic-light. Это структура, не визуальный стиль. Рядом: <a href="training-tab-wireframe.html">Обучение</a>, <a href="dashboard-wireframes-desktop.html">сводка desktop</a>.</p>
+
+<div class="princ">
+  <span>Отделы: сколько уязвимых + какие реакции</span>
+  <span>Подразделения по типу реакции (ссылка / вложение / данные)</span>
+  <span>Топ-5 устойчивости · список по риску</span>
+  <span>Частые: клики · вложения · отправка данных</span>
+  <span>Без dual-mode · без светофора по отделам</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Разбор реакций</div>
+  <div><span class="dot" style="background:var(--f2)">2</span> Назначить обучение</div>
+  <div><span class="dot" style="background:var(--f4)">4</span> Drill в Пользователи / Атаки</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>Сводка</b></span>
+  <span class="arr">→</span>
+  <span class="tabs">
+    <span class="tab">ИБ</span>
+    <span class="tab">Обучение</span>
+    <span class="tab">Реакции</span>
+    <span class="tab">SOC</span>
+  </span>
+  <span class="arr">→</span>
+  <span class="node"><b>Выход</b>: Пользователи · Атаки · назначение курса</span>
+</div>
+
+<section>
+  <h2>1. Вкладка «Реакции» — desktop</h2>
+  <p>Чип рядом с ИБ / Обучение / SOC. Период = последняя кампания или выбранный срез (не must 3–6–12 на первом экране ИБ).</p>
+
+  <div class="row">
+    <div class="cell desk">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f2)">2</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">Программа А</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика · Реакции</div>
+              <div class="note">Кампания «Счёт за услуги» · 12 сен 2026 · доставлено 1 142 · реакции на учебные атаки</div>
+            </div>
+            <div class="h-right">
+              <span class="chip">ИБ</span>
+              <span class="chip">Обучение</span>
+              <span class="chip on">Реакции</span>
+              <span class="chip">SOC</span>
+              <div class="btn ghost">Кампания</div>
+              <div class="btn pr">Экспорт</div>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <span class="chip on">Все подразделения</span>
+            <span class="chip">Все кампании периода</span>
+            <span class="note">фильтр сужает таблицы отделов и списки людей</span>
+          </div>
+
+          <div class="scope-row">
+            <div class="metric"><div class="ml">Уязвимых сотрудников</div><div class="mv">94</div><div class="note">8% от 1 184</div></div>
+            <div class="metric"><div class="ml">Подразделений с реакцией</div><div class="mv">9</div><div class="note">из 24</div></div>
+            <div class="metric"><div class="ml">Переходы по ссылке</div><div class="mv">103</div><div class="note">9% delivered</div></div>
+            <div class="metric"><div class="ml">Открытия вложений</div><div class="mv">34</div><div class="note">3%</div></div>
+            <div class="metric"><div class="ml">Отправили данные</div><div class="mv">23</div><div class="note">2%</div></div>
+          </div>
+
+          <!-- Уязвимые отделы -->
+          <div class="desk-panel">
+            <div class="pt">Уязвимые подразделения</div>
+            <div class="dept-table">
+              <div class="drow head">
+                <span class="c-dept">Подразделение</span>
+                <span class="c-n">Уязв.</span>
+                <span class="c-r">Ссылка</span>
+                <span class="c-r">Вложение</span>
+                <span class="c-r">Данные</span>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Продажи</b><br><span class="note">21 из 128 · 16%</span></div>
+                <div class="c-n">21</div>
+                <div class="c-r">28</div>
+                <div class="c-r">5</div>
+                <div class="c-r">9</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Бухгалтерия</b><br><span class="note">12 из 41 · 29%</span></div>
+                <div class="c-n">12</div>
+                <div class="c-r">6</div>
+                <div class="c-r">15</div>
+                <div class="c-r">4</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Поддержка</b><br><span class="note">11 из 86 · 13%</span></div>
+                <div class="c-n">11</div>
+                <div class="c-r">14</div>
+                <div class="c-r">4</div>
+                <div class="c-r">3</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Маркетинг</b><br><span class="note">7 из 57 · 12%</span></div>
+                <div class="c-n">7</div>
+                <div class="c-r">9</div>
+                <div class="c-r">2</div>
+                <div class="c-r">1</div>
+              </div>
+            </div>
+            <div class="note">Уязв. = уникальные люди с ≥1 опасной реакцией. События могут быть > людей (один кликнул дважды). Без порога «плохо».</div>
+          </div>
+
+          <!-- Подразделения по типу реакции -->
+          <div class="desk-panel">
+            <div class="pt">Подразделения по типу реакции</div>
+            <div class="seg-tabs" aria-label="Тип реакции">
+              <span class="on">Переходили по ссылке</span>
+              <span>Открывали вложения</span>
+              <span>Отправляли данные</span>
+            </div>
+            <div class="dept-table" style="margin-top:8px">
+              <div class="drow head">
+                <span class="c-dept">Подразделение</span>
+                <span class="c-n">Людей</span>
+                <span class="c-r">Событий</span>
+                <span class="c-r">Доля событий</span>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Продажи</b></div>
+                <div class="c-n">19</div>
+                <div class="c-r">28</div>
+                <div class="c-r">27%</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Поддержка</b></div>
+                <div class="c-n">11</div>
+                <div class="c-r">14</div>
+                <div class="c-r">14%</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Маркетинг</b></div>
+                <div class="c-n">7</div>
+                <div class="c-r">9</div>
+                <div class="c-r">9%</div>
+              </div>
+            </div>
+            <div class="note">Доля = % от всех 103 кликов по org. «Людей» ≠ «событий»: в Продажах 19 человек дали 28 кликов.</div>
+          </div>
+
+          <!-- Топ устойчивость | риск -->
+          <div class="desk-row">
+            <div class="desk-panel col-eq">
+              <div class="pt">Топ-5 · устойчивость</div>
+              <div class="person-list">
+                <div class="prow head">
+                  <span class="rank">#</span>
+                  <span class="c-name">Сотрудник</span>
+                  <span class="c-meta">Подразделение</span>
+                  <span class="c-val">Индекс</span>
+                </div>
+                <div class="prow">
+                  <span class="rank">1</span>
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Петрова А.С.</b></div>
+                  <div class="c-meta">Маркетинг · 6 репортов</div>
+                  <div class="c-val">94</div>
+                </div>
+                <div class="prow">
+                  <span class="rank">2</span>
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Ким В.Л.</b></div>
+                  <div class="c-meta">ИТ · 5 репортов</div>
+                  <div class="c-val">92</div>
+                </div>
+                <div class="prow">
+                  <span class="rank">3</span>
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Нурматов Р.</b></div>
+                  <div class="c-meta">Финансы · 4 репорта</div>
+                  <div class="c-val">90</div>
+                </div>
+                <div class="prow">
+                  <span class="rank">4</span>
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Лебедева И.</b></div>
+                  <div class="c-meta">HR · 4 репорта</div>
+                  <div class="c-val">88</div>
+                </div>
+                <div class="prow">
+                  <span class="rank">5</span>
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Савин О.П.</b></div>
+                  <div class="c-meta">ИТ · 3 репорта</div>
+                  <div class="c-val">87</div>
+                </div>
+              </div>
+              <div class="note">Высокая устойчивость = мало/нет опасных реакций + репорт [open Q формула]. Без CTA «обучить».</div>
+            </div>
+
+            <div class="desk-panel col-eq">
+              <div class="pt">Сотрудники по уровню риска</div>
+              <div class="seg-tabs" aria-label="Уровень риска">
+                <span class="on">Высокий</span>
+                <span>Средний</span>
+                <span>Низкий</span>
+              </div>
+              <div class="person-list" style="margin-top:8px">
+                <div class="prow head">
+                  <span class="c-name">Сотрудник</span>
+                  <span class="c-meta">Реакции · обучение</span>
+                  <span class="c-val"></span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Иванов И.И.</b></div>
+                  <div class="c-meta">click + submit · <b>завершено</b> · после курса</div>
+                  <span class="tgbtn">Дообучить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Сидоров П.К.</b></div>
+                  <div class="c-meta">attachment + click · <b>провалено</b></div>
+                  <span class="tgbtn">Дообучить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Новикова А.С.</b></div>
+                  <div class="c-meta">click · <b>не начато</b> · без курса</div>
+                  <span class="tgbtn">Назначить</span>
+                </div>
+              </div>
+              <div class="note">
+                Статус обучения — те же 4: завершено · провалено · в процессе · не начато.
+                <b>После курса + реакция</b> выше по приоритету, чем первый клик без обучения.
+                ФИО → EXT-USERS. CTA → DASH-ASSIGN.
+              </div>
+            </div>
+          </div>
+
+          <!-- Частые реакции людей -->
+          <div class="desk-panel">
+            <div class="pt">Повторные реакции · repeat clickers</div>
+            <div class="seg-tabs" aria-label="Частая реакция">
+              <span class="on">Переходят по ссылкам</span>
+              <span>Открывают вложения</span>
+              <span>Отправляют данные</span>
+            </div>
+            <div class="person-list" style="margin-top:8px">
+              <div class="prow head">
+                <span class="c-name">Сотрудник</span>
+                <span class="c-meta">Отдел · обучение</span>
+                <span class="c-val">Кампаний</span>
+              </div>
+              <div class="prow">
+                <div class="avatar" style="width:22px;height:22px"></div>
+                <div class="c-name"><b>Иванов И.И.</b></div>
+                <div class="c-meta">Продажи · <b>завершено</b> · после курса · 12 сен</div>
+                <div class="c-val">4</div>
+                <span class="tgbtn">Дообучить</span>
+              </div>
+              <div class="prow">
+                <div class="avatar" style="width:22px;height:22px"></div>
+                <div class="c-name"><b>Козлова М.В.</b></div>
+                <div class="c-meta">Поддержка · <b>завершено</b> · после курса · 28 авг</div>
+                <div class="c-val">3</div>
+                <span class="tgbtn">Дообучить</span>
+              </div>
+              <div class="prow">
+                <div class="avatar" style="width:22px;height:22px"></div>
+                <div class="c-name"><b>Белов Н.Г.</b></div>
+                <div class="c-meta">Продажи · <b>не начато</b> · без курса · 12 сен</div>
+                <div class="c-val">2</div>
+                <span class="tgbtn">Назначить</span>
+              </div>
+            </div>
+            <div class="note">
+              <b>«Кампаний»</b> = разные учебные рассылки с этой реакцией (не доставки, не клики внутри одного письма).
+              <b>Обучение</b> рядом обязательно: «завершено + снова реакция» — остаточный риск, выше приоритета, чем «не начато + те же N кампаний».
+              Порог входа ≥2 кампаний (≥3 — Canham/KnowBe4; open Q). CTA: после курса → «Дообучить», без курса → «Назначить».
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="btn ghost" style="flex:1">Открыть Атаки</div>
+            <div class="btn ghost" style="flex:1">Открыть Пользователи</div>
+            <div class="btn pr" style="flex:1">Назначить массово</div>
+          </div>
+
+          <div class="role-note">
+            <b>ИБ:</b> основная аудитория вкладки — кого учить после реакций.
+            <b>SOC:</b> может landиться сюда или оставаться на тонком SOC (уязвимые + типы инцидентов); open Q — слить или держать рядом.
+            <b>HR:</b> на эту вкладку не ведём по умолчанию (нет атак на Обучении).
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-REACT-D. Вкладка Реакции · Desktop</div>
+        <div class="d">Объём → уязвимые отделы → по типу реакции → устойчивость | риск (+ обучение) → repeat clickers (кампании + статус обучения).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Разворот подразделения (опция)</h2>
+  <p>После клика по строке «Продажи» — уязвимые люди отдела и их реакции. Не отдельный продукт: sheet или тот же экран с хлебными крошками.</p>
+
+  <div class="row">
+    <div class="cell desk">
+      <div class="desk-frame" style="height:auto; min-height:480px">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f2)">2</span>
+        </div>
+        <nav class="desk-nav">
+          <div class="brand">Программа А</div>
+          <span class="on">Сводка</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="note">Реакции → <b>Продажи</b></div>
+              <div class="h-title">Подразделение · уязвимые и реакции</div>
+              <div class="note">Уязвимых 21 из 128 · ссылка 28 · вложение 5 · данные 9</div>
+            </div>
+            <div class="h-right">
+              <div class="btn ghost">← К отделам</div>
+              <div class="btn pr">Обучить отдел</div>
+            </div>
+          </div>
+          <div class="person-list">
+            <div class="prow head">
+              <span class="c-name">Сотрудник</span>
+              <span class="c-meta">Реакции · обучение</span>
+              <span class="c-val">Риск</span>
+            </div>
+            <div class="prow">
+              <div class="avatar" style="width:22px;height:22px"></div>
+              <div class="c-name"><b>Иванов И.И.</b></div>
+              <div class="c-meta">ссылка · данные · <b>завершено</b> · после курса</div>
+              <div class="c-val">выс.</div>
+              <span class="tgbtn">Дообучить</span>
+            </div>
+            <div class="prow">
+              <div class="avatar" style="width:22px;height:22px"></div>
+              <div class="c-name"><b>Белов Н.Г.</b></div>
+              <div class="c-meta">ссылка ×2 · <b>не начато</b></div>
+              <div class="c-val">сред.</div>
+              <span class="tgbtn">Назначить</span>
+            </div>
+            <div class="prow">
+              <div class="avatar" style="width:22px;height:22px"></div>
+              <div class="c-name"><b>Ершова Т.</b></div>
+              <div class="c-meta">вложение · <b>в процессе</b></div>
+              <div class="c-val">сред.</div>
+              <span class="tgbtn">Напомнить</span>
+            </div>
+          </div>
+          <div class="note">Статус обучения в каждой строке. Массовое «Обучить отдел» → DASH-ASSIGN с фильтром подразделения.</div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-REACT-DEPT-D. Отдел · уязвимые</div>
+        <div class="d">Люди отдела + реакции + статус обучения + риск + CTA. Назад к таблице отделов.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>3. Логика вне каркаса</h2>
+  <div class="desk-panel" style="max-width:920px">
+    <ul class="note" style="margin:0 0 0 16px; line-height:1.55; color:var(--mut)">
+      <li><b>Реакция</b> — событие учебной атаки: переход по ссылке · открытие вложения · отправка данных (и опц. report отдельно, не в «уязвимости»).</li>
+      <li><b>Уязвимый сотрудник</b> — есть ≥1 опасная реакция в срезе (не репорт). Формула — open Q / Risk.</li>
+      <li><b>Устойчивость (топ-5)</b> — обратная сторона: нет опасных реакций / есть репорты / низкий risk. Не смешивать с лидерами обучения.</li>
+      <li><b>Частые / repeat clickers:</b> колонка «Кампаний» = число <b>разных учебных кампаний</b> с этой реакцией. Порог ≥2 (или ≥3 по Canham/KnowBe4). Не VAP.</li>
+      <li><b>Статус обучения у людей</b> (обязательно в списках риска / repeat / отдела): завершено · провалено · в процессе · не начато — тот же словарь, что на вкладке Обучение. Контекст «после курса» = опасная реакция при статусе «завершено» (и опц. «провалено» курса). Такой кейс <b>выше приоритета</b>, чем первый клик у «не начато»: обучение уже было, поведение не сменилось → remediация / другой курс, не «просто назначить базовый».</li>
+      <li><b>CTA по статусу:</b> не начато → «Назначить»; в процессе → «Напомнить»; завершено/провалено + реакция → «Дообучить». Все → DASH-ASSIGN с разным префиллом.</li>
+      <li><b>Отделы по типу реакции</b> — тот же пул подразделений, три фильтра; не три разных KPI «плохо».</li>
+      <li><b>Не делать:</b> traffic-light по отделам; dual-mode; подмену разделом Атаки; путать вкладку Обучение со списками людей на Реакциях; скрывать обучение у repeat clickers.</li>
+      <li><b>Open Q:</b> вкладка Реакции vs тонкий SOC; порог «часто»; входит ли «провалено» курса в «после курса»; формула риска с весом post-training fail.</li>
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
  * Shared DS CSS linkage: portfolio + Storybook → ds-showcase (task 3.3).
  *
  * TC-E2E-02: no second tokens.css / components.css outside ds-showcase/css
- * TC-UNIT-01: Black token remains product #232323
+ * TC-UNIT-01: Black token remains product #121214
  * Linkage: portfolio HTML and Storybook preview reference ds-showcase/css/*
  * Parity: Tapper 104×40, Card 310×310 declared in shared components.css
  */
@@ -209,7 +209,7 @@ describe("ds CSS shared linkage (no fork)", () => {
     );
   });
 
-  it("TC-UNIT-01: Black token in tokens.css remains product #232323", () => {
+  it("TC-UNIT-01: Black token in tokens.css remains product #121214", () => {
     const css = fs.readFileSync(CANON_TOKENS, "utf8");
     const rootMatch = /:root\s*\{([\s\S]*?)\}/m.exec(css);
     assert.ok(rootMatch, ":root block required");
@@ -217,8 +217,8 @@ describe("ds CSS shared linkage (no fork)", () => {
     assert.ok(black, "--color-black required");
     assert.equal(
       black[1].trim().toLowerCase(),
-      "#232323",
-      "Black must stay product #232323"
+      "#121214",
+      "Black must stay product #121214"
     );
   });
 

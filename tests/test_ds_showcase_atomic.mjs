@@ -42,10 +42,10 @@ const COLOR_TOKENS_REGRESSION = {
   "--color-primary-hover": "#79befc",
   "--color-secondary": "#ededed",
   "--color-white": "#fefefe",
-  "--color-black": "#232323",
+  "--color-black": "#121214",
   "--color-gray-text": "#888888",
   "--color-gray-dark": "#e4e4e4",
-  "--color-gray-l": "#6b6b6b",
+  "--color-gray-l": "#888888",
 };
 
 /**

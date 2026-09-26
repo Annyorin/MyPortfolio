@@ -10,6 +10,11 @@ body {
   background-color: #f5f5f5;
 }
 
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+  background-color: #121214;
+}
+
 /* Boot loader (Figma 348:15274) — full-viewport until grid handoff */
 .boot-loader {
   position: fixed;
@@ -22,6 +27,10 @@ body {
   visibility: hidden;
   pointer-events: none;
   transition: opacity 180ms ease, visibility 0s linear 180ms;
+}
+
+html[data-theme="dark"] .boot-loader {
+  background-color: #121214;
 }
 
 /* Quiet cover while JS/assets start — rings only after html.is-boot-slow (>1s). */
@@ -81,6 +90,10 @@ html.is-boot-slow .boot-loader__badge {
     transform 420ms cubic-bezier(0.22, 0.82, 0.18, 1);
 }
 
+html[data-theme="dark"] .boot-loader__badge {
+  background: #232323;
+}
+
 .boot-loader__pct {
   font-family: Inter, sans-serif;
   font-weight: 600;
@@ -89,6 +102,10 @@ html.is-boot-slow .boot-loader__badge {
   color: #232323;
   font-variant-numeric: tabular-nums;
   user-select: none;
+}
+
+html[data-theme="dark"] .boot-loader__pct {
+  color: #f5f5f5;
 }
 
 .boot-loader.is-fading-badge .boot-loader__badge {
@@ -400,8 +417,68 @@ html.is-boot-reveal .viewport {
 .scene-about__me,
 .scene-about__macbook {
   display: block;
-  overflow: visible;
   pointer-events: auto;
+}
+
+.scene-about__me {
+  overflow: visible;
+}
+
+.scene-about__macbook {
+  position: relative;
+  /* Figma Macbook 248:17115 — 18px @ 388×283; clips white photo corners */
+  overflow: hidden;
+  border-radius: 4.639% / 6.36%;
+}
+
+.scene-about__macbook-live {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 520ms cubic-bezier(0.22, 0.82, 0.18, 1);
+  pointer-events: none;
+}
+
+.scene-about__macbook.is-macbook-ready .scene-about__macbook-live {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scene-about__macbook-png {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 3;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  opacity: 1;
+  transition: opacity 520ms cubic-bezier(0.22, 0.82, 0.18, 1);
+}
+
+.scene-about__macbook.is-macbook-ready .scene-about__macbook-png {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 520ms cubic-bezier(0.22, 0.82, 0.18, 1),
+    visibility 0s linear 520ms;
+}
+
+/* Warm revisit: no PNG↔layers fade (return from case / HTTP cache). */
+.scene-about__macbook.is-macbook-instant .scene-about__macbook-live,
+.scene-about__macbook.is-macbook-instant .scene-about__macbook-png,
+.scene-about__macbook.is-macbook-instant.is-macbook-ready .scene-about__macbook-png {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-about__macbook-live,
+  .scene-about__macbook-png,
+  .scene-about__macbook.is-macbook-ready .scene-about__macbook-png {
+    transition: none;
+  }
 }
 
 .scene-about__me > img,
@@ -412,6 +489,13 @@ html.is-boot-reveal .viewport {
   object-fit: fill;
   pointer-events: none;
   -webkit-user-drag: none;
+}
+
+.scene-about__macbook-live > .scene-about__macbook-lid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .scene-about__stickers {
@@ -551,11 +635,31 @@ html.is-boot-reveal .viewport {
 
 .scene-about-cluster .ds-stiker {
   pointer-events: auto;
-  z-index: 2;
+  z-index: 3;
 }
 
 .scene-about__me {
+  z-index: 1;
+}
+
+.scene-about__macbook {
   z-index: 2;
+}
+
+/* Expanded «О себе» (201:19914): me sits on the lid, above Macbook */
+.scene-about-cluster.is-about-open .scene-about__me,
+.scene-about-cluster.is-about-expanding .scene-about__me {
+  z-index: 3;
+}
+
+.scene-about-cluster.is-about-open .scene-about__macbook,
+.scene-about-cluster.is-about-expanding .scene-about__macbook {
+  z-index: 2;
+}
+
+.scene-about-cluster.is-about-open .ds-stiker,
+.scene-about-cluster.is-about-expanding .ds-stiker {
+  z-index: 4;
 }
 
 .scene-bg {
@@ -660,10 +764,28 @@ html.is-boot-reveal .viewport {
 
 /* —— Mobile/tablet document mode (Figma Портфолио.768 169:13122; denser ≤480 / 360) —— */
 .viewport.portfolio--mobile {
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* Same FigJam dots as interactive canvas (INFINITE_BG: 4px + 16px gap). */
   background-color: #f6f5f8;
+  background-image: radial-gradient(
+    circle 2px at 2px 2px,
+    #e4e4e4 99%,
+    transparent 100%
+  );
+  background-size: 20px 20px;
+  background-position: 8px 8px;
   cursor: auto;
+}
+
+html[data-theme="dark"] .viewport.portfolio--mobile {
+  background-color: #121214;
+  background-image: radial-gradient(
+    circle 2px at 2px 2px,
+    #2f2f35 99%,
+    transparent 100%
+  );
 }
 
 .viewport.portfolio--mobile #camera-pan,
@@ -683,7 +805,12 @@ html.is-boot-reveal .viewport {
   width: 100%;
   min-height: 100%;
   box-sizing: border-box;
-  background-color: #f6f5f8;
+  /* Let viewport dots show through gaps between cards. */
+  background-color: transparent;
+}
+
+html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portfolio-mobile:not([hidden]) {
+  background-color: transparent;
 }
 
 /* Side margins ~16px → content ~736 on 768 */
@@ -693,17 +820,20 @@ html.is-boot-reveal .viewport {
   gap: 12px;
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   padding: 16px;
+  overflow-x: clip;
 }
 
 .portfolio-mobile__sidebar.ds-sidebar {
   width: 100%;
+  max-width: 100%;
   height: auto;
   min-height: 0;
   justify-content: flex-start;
   align-items: stretch;
   padding: 16px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Figma Designer gap 24 (Портфолио.768) */
@@ -882,6 +1012,10 @@ body.is-page-crossfading {
   transition: opacity 240ms cubic-bezier(0.33, 0.05, 0.2, 1);
 }
 
+html[data-theme="dark"] .portfolio-page-transition {
+  background-color: #121214;
+}
+
 .portfolio-page-transition.is-active {
   opacity: 1;
   pointer-events: auto;
@@ -898,6 +1032,10 @@ body.is-page-crossfading .portfolio-mobile-host {
 
 html.is-page-enter-crossfade {
   background-color: #fefefe;
+}
+
+html[data-theme="dark"].is-page-enter-crossfade {
+  background-color: #121214;
 }
 
 html.is-page-enter-crossfade body {

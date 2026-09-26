@@ -118,22 +118,16 @@ export const PRELOAD_PATHS = Object.freeze([
   "images/img-2.png",
   "images/img-3.png",
   "images/img-bg.png",
-  "images/macbook-248-17115.png",
+  "images/macbook-png.png",
   "images/macbook-lid.png",
   "images/me.png",
   "images/phish.png",
   "images/stickers/anime.png",
-  "images/stickers/anime.svg",
   "images/stickers/books.png",
-  "images/stickers/books.svg",
   "images/stickers/create.png",
-  "images/stickers/create.svg",
   "images/stickers/question.png",
-  "images/stickers/question.svg",
   "images/stickers/seal.png",
-  "images/stickers/seal.svg",
   "images/stickers/sport.png",
-  "images/stickers/sport.svg",
 ]);
 
 /**

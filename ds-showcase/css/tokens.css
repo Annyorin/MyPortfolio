@@ -6,20 +6,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 
 :root {
-  /* ColorToken — Colors 41:1550 */
+  /* ColorToken — DarkColors 383:15362 (light column fills) */
   --color-primary: #64b3f9;
   --color-primary-hover: #79befc;
   --color-secondary: #ededed;
   --color-white: #fefefe;
-  --color-black: #232323;
+  --color-black: #121214;
   --color-gray-text: #888888;
   --color-gray-dark: #e4e4e4;
-  --color-gray-l: #6b6b6b;
+  --color-gray-l: #888888;
 
   /* ElevationToken — Shadow only (no alternate Card elevation token) */
   --shadow: 0 5px 9px #bbbbbd40;
-  /* Mobile menu elevation (Figma MenuMobile 245:17643 «Mobile») */
-  --shadow-mobile: 0 3px 9px #8b8b8e40;
+  /* Mobile menu elevation (Figma DarkColors / MenuMobile) */
+  --shadow-mobile: 0 3px 9px #bbbbbd40;
 
   /* TypographyStyle — H1: 20px / 24px / 600 (Заголовок 1) */
   --type-h1-size: 20px;
@@ -46,6 +46,50 @@
   --type-caption-line: 16px;
   --type-caption-weight: 500;
 
-  /* Page — light theme (white / near-white) */
-  --page-bg: var(--color-white);
+  /* Page — light theme (Figma page #F5F5F5; surfaces stay --color-white) */
+  --page-bg: #f5f5f5;
+}
+
+/* Dark — fills from DarkColors 383:15362 + Портфолио.Главная 386:20585 */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-primary: #2d97f7;
+  --color-primary-hover: #3983ea;
+  --color-secondary: #2f2f35;
+  --color-white: #232323;
+  --color-black: #f5f5f5;
+  --color-gray-text: #b4b4bd;
+  --color-gray-dark: #2f2f35;
+  --color-gray-l: #b4b4bd;
+  --shadow: 0 5px 9px #2f2f3540;
+  --shadow-mobile: 0 3px 9px #2f2f3540;
+  --page-bg: #121214;
+}
+
+/* On-primary / inverse ink: --color-white is remapped to surface in dark */
+html[data-theme="dark"] .ds-button--primary,
+html[data-theme="dark"] .ds-chip--active,
+html[data-theme="dark"] .ds-hover,
+html[data-theme="dark"] .ds-hover__label,
+html[data-theme="dark"] .ds-hover .ds-icon {
+  color: var(--color-black);
+}
+
+/* Raster icons drawn in light-theme ink */
+html[data-theme="dark"] .ds-icon:has(> img) {
+  filter: invert(1) hue-rotate(180deg);
+}
+html[data-theme="dark"] .ds-button .ds-icon,
+html[data-theme="dark"] .ds-fab .ds-icon,
+html[data-theme="dark"] .ds-hover .ds-icon,
+/* Toolbar back uses a CSS mask + currentColor (already light in dark) —
+   the hidden <img> would still match :has(> img) and invert it to dark. */
+html[data-theme="dark"] .ds-toolbar__back .ds-icon {
+  filter: none;
+}
+
+/* Stiker pill stays Figma White (#FEFEFE) on dark (About me 386:20585 / cards) */
+html[data-theme="dark"] .ds-stiker {
+  background-color: #fefefe;
+  color: var(--color-primary);
 }

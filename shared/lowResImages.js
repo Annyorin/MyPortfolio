@@ -15,11 +15,5 @@ export const LOW_RES_IMAGES = Object.freeze({
   "images/img-2.png": "images/lq/img-2.webp",
   "images/img-3.png": "images/lq/img-3.webp",
   "images/img-bg.png": "images/lq/img-bg.webp",
-  "images/macbook-248-17115.png": "images/lq/macbook-248-17115.webp",
-  "images/macbook-lid.png": "images/lq/macbook-lid.webp",
-  "images/macbook.png": "images/lq/macbook.webp",
-  "images/me.png": "images/lq/me.webp",
-  "images/phish.png": "images/lq/phish.webp",
-  "images/stickers/anime.png": "images/lq/stickers/anime.webp",
-  "images/stickers/seal.png": "images/lq/stickers/seal.webp"
+  "images/phish.png": "images/lq/phish.webp"
 });

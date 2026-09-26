@@ -1,7 +1,7 @@
-﻿---
+---
 type: notes
 env: 02-design-system
-updated: 2026-09-14
+updated: 2026-09-26
 ---
 
 # Рабочие заметки
@@ -9,10 +9,10 @@ updated: 2026-09-14
 Прогресс длинных задач этой среды. Читается и дополняется только внутри среды.
 
 ## Активная задача
-_нет_ — Header `226:15768` refresh → **620×81**, py 16; manifest **v0.1.9**.
+_нет_ — Header padding sync (снят pr 24) → manifest **v0.1.12**.
 
 ## Открытые вопросы
-- Macbook About на Главной: оставить scene bbox **140.61×111.01** или подогнать aspect к kit **388×283**? Сейчас drift зафиксирован, composition не трогали.
+_нет_
 
 ## Решения
 - 2026-09-06: источник истины при синке — Figma Variables/metadata; дрейф с ТЗ зафиксирован в sync-log.
@@ -33,3 +33,7 @@ _нет_ — Header `226:15768` refresh → **620×81**, py 16; manifest **v0.1.
 - 2026-09-14: stickers anime/books/create/question/seal/sport — декоратив About; SVG в `stickers/`.
 - 2026-09-14: **Hint** (`251:21308`) — white tip для Macbook sticker hover; PNG stickers + `macbook-lid.png` на сцене.
 - 2026-09-14: **Header** (`226:15768`) — **620×81**, py **16** (было 24 / 85); title = flex slot space-between, не absolute-center.
+- 2026-09-26: **Header** — снят **pr 24**; факт Figma `226:15768` + desktop `401:23328`: только **py 16 · px 0** (`padding: 16px 0`).
+- 2026-09-26: **About me** (`391:22957`, home `391:22959`) — frame **209.61×116.01**; children: me **83.45² @ +12.596°**, Macbook **126×92 @ −10°**, Stiker **81×32**; paint me→Macbook→Stiker; `.ds-about-me`.
+- 2026-09-26: **MacbookPng** (`391:22958`) → `macbook-png.png`; keys `macbook` / `macbook.png`. Старый AABB **140.61×111.01** и `macbook-248-17115.png` закрыты.
+- 2026-09-26: Dark About Stiker — fill White `#FEFEFE`, text Primary `#2D97F7` (не surface `#232323`).

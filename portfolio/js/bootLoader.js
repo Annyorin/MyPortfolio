@@ -83,7 +83,7 @@ export function buildRadialDots(cx, cy, maxR) {
   }));
 }
 
-const CRITICAL_SLOTS = new Set(["card", "avatar", "macbook.lid", "me"]);
+const CRITICAL_SLOTS = new Set(["card", "avatar", "macbook.png", "macbook.lid", "me"]);
 
 /**
  * @param {ParentNode|null|undefined} root

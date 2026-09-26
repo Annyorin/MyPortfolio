@@ -291,6 +291,7 @@ describe("theme toggle placement", () => {
         style: {},
         attrs: {},
         classes: new Set(),
+        textContent: "",
         classList: {
           add: (...n) => n.forEach((x) => node.classes.add(x)),
           remove: (...n) => n.forEach((x) => node.classes.delete(x)),
@@ -301,6 +302,7 @@ describe("theme toggle placement", () => {
         parentElement: null,
         append(child) { node.children.push(child); child.parentElement = node; },
         insertBefore(child, before) {
+          if (child.parentElement) child.remove();
           node.children.splice(node.children.indexOf(before), 0, child);
           child.parentElement = node;
         },
@@ -309,8 +311,28 @@ describe("theme toggle placement", () => {
           parent.children[parent.children.indexOf(node)] = other;
           other.parentElement = parent;
         },
+        remove() {
+          const parent = node.parentElement;
+          if (!parent) return;
+          const i = parent.children.indexOf(node);
+          if (i >= 0) parent.children.splice(i, 1);
+          node.parentElement = null;
+        },
+        get nextElementSibling() {
+          const parent = node.parentElement;
+          if (!parent) return null;
+          const i = parent.children.indexOf(node);
+          return i >= 0 ? parent.children[i + 1] || null : null;
+        },
         querySelector: () => null,
         setAttribute(k, v) { node.attrs[k] = v; },
+        removeAttribute(k) { delete node.attrs[k]; },
+        replaceChildren(...kids) {
+          node.children = [];
+          for (const kid of kids) node.append(kid);
+        },
+        insertAdjacentHTML() {},
+        appendChild(child) { node.append(child); return child; },
         addEventListener() {},
         getBoundingClientRect: () => ({ left: 0, top: 0, right: 40, bottom: 40, width: 40, height: 40 }),
       };

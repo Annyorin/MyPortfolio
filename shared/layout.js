@@ -96,47 +96,47 @@ const CARD_C_CONTENT_KEYS = [
 ];
 
 /**
- * Figma 41:1416 «About me» (120:11877), origin = cluster top-left.
- * Paint order: Macbook (back) → me → Stiker (front).
- * x/y/w/h + rotation° from Plugin API (me 12.6°, macbook −10.44°, stiker 3.89°).
+ * Figma 391:22959 «About me» (component 391:22957), origin = cluster top-left.
+ * Paint order: me (back) → Macbook → Stiker (front).
+ * Local x/y/w/h + rotation° from Plugin API (me 12.596°, macbook −10°, stiker 0°).
  * Scene applies CSS rotate(−θ) with origin top-left to match Figma relativeTransform.
  */
 const ABOUT_CHILDREN_1024 = [
   {
-    id: "macbook",
-    kind: "macbook",
-    x: 85.23,
-    y: 5,
-    width: 140.61,
-    height: 111.01,
-    rotation: -10.44,
-    assetKeys: ["macbook", "macbook.lid"],
-  },
-  {
     id: "me",
     kind: "me",
     x: 0,
-    y: 18.2,
-    width: 99.64,
-    height: 99.64,
-    rotation: 12.6,
+    y: 10.2,
+    width: 83.45,
+    height: 83.45,
+    rotation: 12.596,
     assetKeys: ["me"],
+  },
+  {
+    id: "macbook",
+    kind: "macbook",
+    x: 84.98,
+    y: 5,
+    width: 126,
+    height: 92,
+    rotation: -10,
+    assetKeys: ["macbook.png", "macbook.lid"],
   },
   {
     id: "stiker",
     kind: "stiker",
-    x: 24,
-    y: 83.49,
-    width: 82.98,
-    height: 37.42,
-    rotation: 3.89,
+    x: 29,
+    y: 78,
+    width: 81,
+    height: 32,
+    rotation: 0,
     contentKeys: ["stiker.label"],
   },
 ];
 
 /**
- * Figma 248:17178 / 248:19301 — expanded Macbook with stickers (787×574 on 1366).
- * Covers ~58% of frame width; children relative to Macbook top-left.
+ * Figma 201:19914 «Портфолио. О себе» — expanded Macbook + me + Stiker.
+ * Children are relative to Macbook top-left; all sizes scale with the Macbook.
  * @typedef {{ x: number, y: number, width: number, height: number, rotation: number }} AboutChildGeom
  * @typedef {{
  *   cluster: { x: number, y: number, width: number, height: number },
@@ -144,21 +144,59 @@ const ABOUT_CHILDREN_1024 = [
  * }} AboutExpandedLayout
  */
 
-/** Figma Macbook 248:19301 on home 1366×768. */
+/** Figma Macbook 248:17163 on «О себе» 1024×609 (201:19914). */
 export const ABOUT_EXPANDED_MACBOOK = Object.freeze({
-  width: 787,
-  height: 574,
+  width: 581,
+  height: 424,
   /** Figma frame used as the screen-fraction reference. */
-  refFrameW: 1366,
-  refFrameH: 768,
-  /** Absolute top-left on the 1366 home frame. */
-  refX: 430,
-  refY: 96,
+  refFrameW: 1024,
+  refFrameH: 609,
+  /** Absolute top-left on the 1024 «О себе» frame. */
+  refX: 375,
+  refY: 86,
 });
 
 /**
+ * me + Stiker local geom on 201:19914, relative to Macbook (375, 86).
+ * Plugin API box + rotation (not AABB).
+ */
+const ABOUT_EXPANDED_CHILDREN_REF = Object.freeze({
+  me: {
+    x: 112,
+    y: 13.198,
+    width: 83.446,
+    height: 83.446,
+    rotation: 12.596,
+  },
+  stiker: {
+    x: 142,
+    y: 77.491,
+    width: 81,
+    height: 32,
+    rotation: 3.887,
+  },
+});
+
+/**
+ * Scale a child geom uniformly with the Macbook.
+ *
+ * @param {AboutChildGeom} ref
+ * @param {number} scale
+ * @returns {AboutChildGeom}
+ */
+function scaleAboutChild(ref, scale) {
+  return {
+    x: ref.x * scale,
+    y: ref.y * scale,
+    width: ref.width * scale,
+    height: ref.height * scale,
+    rotation: ref.rotation,
+  };
+}
+
+/**
  * Build expanded About geometry so Macbook keeps the Figma screen fraction
- * (~787/1366 of width) on any artboard size.
+ * (~581/1024 of width) on any artboard size; me/Stiker scale with it.
  *
  * @param {number} frameW
  * @param {number} frameH
@@ -184,8 +222,8 @@ export function buildAboutExpandedLayout(frameW, frameH, pos = {}) {
     Number.isFinite(pos.x)
       ? /** @type {number} */ (pos.x)
       : Number.isFinite(frameW) && frameW > 0
-        ? (frameW - width) / 2
-        : ABOUT_EXPANDED_MACBOOK.refX * (frameW / ABOUT_EXPANDED_MACBOOK.refFrameW);
+        ? ABOUT_EXPANDED_MACBOOK.refX * (frameW / ABOUT_EXPANDED_MACBOOK.refFrameW)
+        : ABOUT_EXPANDED_MACBOOK.refX;
   const y =
     Number.isFinite(pos.y)
       ? /** @type {number} */ (pos.y)
@@ -195,55 +233,20 @@ export function buildAboutExpandedLayout(frameW, frameH, pos = {}) {
     cluster: { x, y, width, height },
     children: {
       macbook: { x: 0, y: 0, width, height, rotation: 0 },
-      me: {
-        x: 110 * (ABOUT_EXPANDED_MACBOOK.width / 570) * scale,
-        y: 20.197784423828125 * (ABOUT_EXPANDED_MACBOOK.width / 570) * scale,
-        width: 99.63565793613043,
-        height: 99.63565793613043,
-        rotation: 0,
-      },
-      stiker: {
-        x: 140 * (ABOUT_EXPANDED_MACBOOK.width / 570) * scale,
-        y: 84.49113464355469 * (ABOUT_EXPANDED_MACBOOK.width / 570) * scale,
-        width: 82.98299378156662,
-        height: 37.4175218641758,
-        rotation: 0,
-      },
+      me: scaleAboutChild(ABOUT_EXPANDED_CHILDREN_REF.me, scale),
+      stiker: scaleAboutChild(ABOUT_EXPANDED_CHILDREN_REF.stiker, scale),
     },
   };
 }
 
-/** Expanded About on 1024 — larger Macbook, same center as prior 570×415.57 @ (384, 92). */
+/** Expanded About on 1024 — Figma 201:19914. */
 export const ABOUT_EXPANDED_1024 = Object.freeze(
-  (() => {
-    const prev = { x: 384, y: 92, width: 570, height: 415.57 };
-    const fitted = buildAboutExpandedLayout(1024, 609);
-    const cx = prev.x + prev.width / 2;
-    const cy = prev.y + prev.height / 2;
-    return buildAboutExpandedLayout(1024, 609, {
-      x: cx - fitted.cluster.width / 2,
-      y: cy - fitted.cluster.height / 2,
-    });
-  })()
+  buildAboutExpandedLayout(1024, 609)
 );
 
-/** Expanded About on 1366 — larger Macbook, same center as prior kit offset layout. */
+/** Expanded About on 1366 — same screen fractions as 201:19914. */
 export const ABOUT_EXPANDED_1366 = Object.freeze(
-  (() => {
-    const prev = {
-      x: 384 + (1366 - 1024) / 2,
-      y: 92 + (768 - 609) / 2,
-      width: 570,
-      height: 415.57,
-    };
-    const fitted = buildAboutExpandedLayout(1366, 768);
-    const cx = prev.x + prev.width / 2;
-    const cy = prev.y + prev.height / 2;
-    return buildAboutExpandedLayout(1366, 768, {
-      x: cx - fitted.cluster.width / 2,
-      y: cy - fitted.cluster.height / 2,
-    });
-  })()
+  buildAboutExpandedLayout(1366, 768)
 );
 
 /**

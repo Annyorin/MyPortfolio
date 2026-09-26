@@ -66,11 +66,11 @@ export const contentMap = {
 
   "stiker.label": "Обо мне",
 
-  "hint.create": "Всегда пробую что-то новое в\u00A0творчестве))",
+  "hint.create": "Всегда пробую что-то новое\u00A0— сейчас увлеклась вязанием))",
 
   "hint.question": "Мне нравится участвовать в\u00A0различных квизах",
 
-  "hint.sport": "Я люблю танцевать!",
+  "hint.sport": "Я люблю танцевать Zumba Fitness!",
 
   "hint.anime": "Фанат аниме со\u00A0стажем более 15 лет)",
 
@@ -292,25 +292,27 @@ export const contentMap = {
 
     me: { pathFromDsRoot: "images/me.png" },
 
-    macbook: { pathFromDsRoot: "images/macbook-248-17115.png" },
+    macbook: { pathFromDsRoot: "images/macbook-png.png" },
 
     "macbook.lid": { pathFromDsRoot: "images/macbook-lid.png" },
+
+    "macbook.png": { pathFromDsRoot: "images/macbook-png.png" },
 
     dragon: { pathFromDsRoot: "images/dragon.png", intrinsicWidth: 924, intrinsicHeight: 570 },
 
     phish: { pathFromDsRoot: "images/phish.png", intrinsicWidth: 924, intrinsicHeight: 570 },
 
-    anime: { pathFromDsRoot: "images/stickers/anime.svg" },
+    anime: { pathFromDsRoot: "images/stickers/anime.png" },
 
-    books: { pathFromDsRoot: "images/stickers/books.svg" },
+    books: { pathFromDsRoot: "images/stickers/books.png" },
 
-    create: { pathFromDsRoot: "images/stickers/create.svg" },
+    create: { pathFromDsRoot: "images/stickers/create.png" },
 
-    question: { pathFromDsRoot: "images/stickers/question.svg" },
+    question: { pathFromDsRoot: "images/stickers/question.png" },
 
-    seal: { pathFromDsRoot: "images/stickers/seal.svg" },
+    seal: { pathFromDsRoot: "images/stickers/seal.png" },
 
-    sport: { pathFromDsRoot: "images/stickers/sport.svg" },
+    sport: { pathFromDsRoot: "images/stickers/sport.png" },
 
     "macbook.sticker.anime": { pathFromDsRoot: "images/stickers/anime.png" },
 

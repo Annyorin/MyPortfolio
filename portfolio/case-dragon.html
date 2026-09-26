@@ -3,6 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    try {
+      var storedTheme = localStorage.getItem("portfolio-theme");
+      var prefersDark =
+        storedTheme !== "light" &&
+        (storedTheme === "dark" ||
+          (window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches));
+      if (prefersDark) {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.style.backgroundColor = "#121214";
+      }
+    } catch (e) {}
+    try {
+      if (sessionStorage.getItem("portfolio-page-enter") === "crossfade") {
+        document.documentElement.classList.add("is-page-enter-crossfade");
+      }
+    } catch (e) {}
+  </script>
   <title>Аня Ясинская — Продуктовый дизайнер · UX/UI дизайнер</title>
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../ds-showcase/assets/images/avatar.png" type="image/png" sizes="90x90">
@@ -10,13 +29,6 @@
   <link rel="stylesheet" href="../ds-showcase/css/tokens.css">
   <link rel="stylesheet" href="../ds-showcase/css/components.css">
   <link rel="stylesheet" href="css/case.css">
-  <script>
-    try {
-      if (sessionStorage.getItem("portfolio-page-enter") === "crossfade") {
-        document.documentElement.classList.add("is-page-enter-crossfade");
-      }
-    } catch (e) {}
-  </script>
   <script>
     (function (m, e, t, r, i, k, a) {
       m[i] =
@@ -52,9 +64,7 @@
         <img data-case="toolbar-back-icon" src="../ds-showcase/assets/icons/arrow-left.svg" alt="" width="20" height="20">
       </span>
     </a>
-    <p class="ds-toolbar__label">
-      <a class="case-page__back-text" href="main.html" data-case="toolbar-back-label">Назад</a>
-    </p>
+    <p class="ds-toolbar__label" data-case="toolbar-back-label">Назад</p>
     <button
       type="button"
       class="ds-toolbar__burger"

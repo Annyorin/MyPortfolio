@@ -26,6 +26,10 @@ export default defineConfig(({ mode }) => {
       fs: {
         allow: [rootDir],
       },
+      // Windows often locks files under .tmp-frames; watching them crashes Vite (EBUSY).
+      watch: {
+        ignored: ["**/.tmp-frames/**", "**/.tmp-macbook-assets/**"],
+      },
     },
     build: {
       outDir: "dist",

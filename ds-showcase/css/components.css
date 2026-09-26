@@ -56,6 +56,8 @@
   flex-shrink: 0;
   overflow: hidden;
   border-radius: 50%;
+  /* Match surface so dark theme has no light clip fringe */
+  background-color: var(--color-white);
 }
 
 .ds-avatar > img {
@@ -63,6 +65,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Cover 1px antialias gap against rounded overflow clip */
+  transform: scale(1.02);
 }
 
 /* —— Profile (column: avatar → name/role) —— */
@@ -397,8 +401,9 @@
   margin: 0;
   border: none;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 4px 9px 18.7px rgba(177, 179, 187, 0.25);
+  /* Figma Tapper 41:1311 / dark home 386:20632 — White + Shadow tokens */
+  background-color: var(--color-white);
+  box-shadow: var(--shadow);
   cursor: default;
   /* visible so hit tooltips are not clipped */
   overflow: visible;
@@ -480,6 +485,71 @@
   font-weight: var(--type-caption-weight);
   color: var(--color-primary);
   white-space: nowrap;
+}
+
+/* —— About me (Figma 391:22957 / instance 391:22959) — me + Macbook(−10°) + Stiker —— */
+.ds-about-me {
+  box-sizing: border-box;
+  position: relative;
+  width: 209.61px;
+  height: 116.01px;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.ds-about-me__me {
+  position: absolute;
+  left: 0;
+  top: 10.2px;
+  width: 83.45px;
+  height: 83.45px;
+  transform: rotate(-12.596deg);
+  transform-origin: 0 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ds-about-me__me > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+
+.ds-about-me__macbook {
+  position: absolute;
+  left: 84.98px;
+  top: 5px;
+  width: 126px;
+  height: 92px;
+  transform: rotate(10deg);
+  transform-origin: 0 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ds-about-me__macbook-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 4.639% / 6.36%;
+}
+
+.ds-about-me__macbook-frame > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+
+.ds-about-me > .ds-stiker {
+  position: absolute;
+  left: 29px;
+  top: 78px;
+  z-index: 3;
 }
 
 /* —— Hover / CursorHover (CTA) —— Figma 41:1548 / 260:24098 Behance / 260:24115 Посмотреть —— */
@@ -611,6 +681,8 @@
   max-height: 172px;
   position: relative;
   overflow: hidden;
+  /* Match card surface — avoids light hairline in dark theme */
+  background-color: var(--color-white);
 }
 
 .ds-card__media > img {
@@ -623,6 +695,8 @@
   image-rendering: auto;
   -ms-interpolation-mode: bicubic;
   -webkit-user-drag: none;
+  /* Cover 1px antialias gap against rounded overflow clip */
+  transform: scale(1.02);
 }
 
 .ds-card__body {
@@ -788,7 +862,7 @@
   white-space: nowrap;
 }
 
-/* —— Header (Figma Ui kit 226:15768) · 620×81 · py 16 pr 24 —— */
+/* —— Header (Figma Ui kit 226:15768 / desktop 401:23328) · 620×81 · py 16 · no px —— */
 .ds-header {
   box-sizing: border-box;
   display: flex;
@@ -797,7 +871,7 @@
   width: 620px;
   max-width: 100%;
   min-height: 81px;
-  padding: 16px 24px 16px 0;
+  padding: 16px 0;
   border-bottom: 1px solid var(--color-gray-dark);
   background-color: transparent;
 }
@@ -847,6 +921,21 @@
   display: block;
   width: 24px;
   height: 24px;
+}
+
+/* ≥1366: Header without BurgerMenu (Figma 401:23328 showBurgerMenu=false) */
+@media (min-width: 1366px) {
+  .ds-header__burger {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+/* <550: hide brand title; keep «На главную» + icons */
+@media (max-width: 549.98px) {
+  .ds-header__title {
+    display: none;
+  }
 }
 
 /* —— Toolbar (Figma 247:16546) — mobile case chrome · 360×48 —— */

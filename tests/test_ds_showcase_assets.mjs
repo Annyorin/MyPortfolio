@@ -41,16 +41,17 @@ const MEDIA_ASSETS = [
   { key: "img_3", rel: "assets/images/img-3.png" },
   { key: "comp", rel: "assets/images/comp.png" },
   { key: "me", rel: "assets/images/me.png" },
-  { key: "macbook", rel: "assets/images/macbook-248-17115.png" },
+  { key: "macbook", rel: "assets/images/macbook-png.png" },
   { key: "macbook.lid", rel: "assets/images/macbook-lid.png" },
+  { key: "macbook.png", rel: "assets/images/macbook-png.png" },
   { key: "dragon", rel: "assets/images/dragon.png" },
   { key: "phish", rel: "assets/images/phish.png" },
-  { key: "anime", rel: "assets/images/stickers/anime.svg" },
-  { key: "books", rel: "assets/images/stickers/books.svg" },
-  { key: "create", rel: "assets/images/stickers/create.svg" },
-  { key: "question", rel: "assets/images/stickers/question.svg" },
-  { key: "seal", rel: "assets/images/stickers/seal.svg" },
-  { key: "sport", rel: "assets/images/stickers/sport.svg" },
+  { key: "anime", rel: "assets/images/stickers/anime.png" },
+  { key: "books", rel: "assets/images/stickers/books.png" },
+  { key: "create", rel: "assets/images/stickers/create.png" },
+  { key: "question", rel: "assets/images/stickers/question.png" },
+  { key: "seal", rel: "assets/images/stickers/seal.png" },
+  { key: "sport", rel: "assets/images/stickers/sport.png" },
   { key: "macbook.sticker.anime", rel: "assets/images/stickers/anime.png" },
   { key: "macbook.sticker.books", rel: "assets/images/stickers/books.png" },
   { key: "macbook.sticker.create", rel: "assets/images/stickers/create.png" },
@@ -81,6 +82,7 @@ const INDEX_MEDIA_KEYS = new Set([
   "comp",
   "me",
   "macbook",
+  "macbook.png",
   "dragon",
   "phish",
   "anime",
@@ -99,16 +101,17 @@ const MEDIA_BOXES = {
   img_3: { w: 345, h: 345 },
   comp: { w: 149, h: 103 },
   me: { w: 254, h: 254 },
-  macbook: { w: 388, h: 283 },
+  macbook: { w: 310, h: 226 },
+  "macbook-png": { w: 310, h: 226 },
   sitybike: { w: 308, h: 190 },
   dragon: { w: 308, h: 190 },
   phish: { w: 308, h: 190 },
-  anime: { w: 100, h: 91 },
-  books: { w: 84, h: 73 },
-  create: { w: 62, h: 62 },
-  question: { w: 59, h: 69 },
+  anime: { w: 100, h: 92 },
+  books: { w: 99, h: 85 },
+  create: { w: 61, h: 60 },
+  question: { w: 40, h: 48 },
   seal: { w: 144, h: 60 },
-  sport: { w: 102, h: 87 },
+  sport: { w: 122, h: 104 },
 };
 
 /**
@@ -280,7 +283,7 @@ describe("TC-E2E-02 missing asset keeps placeholder proportions (A2)", () => {
 });
 
 describe("Regression smoke inventory and foundations tokens", () => {
-  it("five sections and media×16 slots remain in index.html", () => {
+  it("five sections and media×17 slots remain in index.html", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const titles = [];
     const re = /<h2\b[^>]*>([^<]*)<\/h2>/gi;
@@ -292,7 +295,7 @@ describe("Regression smoke inventory and foundations tokens", () => {
 
     const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(mediaSection);
-    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 16);
+    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 17);
   });
 
   it("tokens.css still declares foundation color and shadow variables", () => {

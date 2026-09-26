@@ -1,7 +1,7 @@
 ---
 type: index
 env: 02-design-system
-updated: 2026-09-14
+updated: 2026-09-26
 ---
 
 # Индекс компонентов
@@ -26,7 +26,7 @@ updated: 2026-09-14
 | FloatingAction | `floating-action.md` | synced | 2026-09-08 | `169:13303` |
 | Card | `card.md` | synced | 2026-09-13 | `40:1209` |
 | Sidebar (profile) | `sidebar.md` | synced | 2026-09-13 | `158:11468` |
-| Header | `header.md` | synced | 2026-09-14 | `226:15768` |
+| Header | `header.md` | synced | 2026-09-26 | `226:15768` |
 | Toolbar | `toolbar.md` | synced | 2026-09-14 | `247:16546` |
 | SegmentsControl (Figma Segmets_control) | `segments-control.md` | synced | 2026-09-13 | `226:15785` |
 | TitleSidebar | `title-sidebar.md` | synced | 2026-09-13 | `227:16230` |
@@ -35,8 +35,8 @@ updated: 2026-09-14
 | SityBike (CityBike) | `sitybike.md` | synced | 2026-09-08 | `164:11800` |
 | Dragon (InnoDragon) | `dragon.md` | synced | 2026-09-14 | `232:16826` |
 | Phish (InnoPhish) | `phish.md` | synced | 2026-09-14 | `232:16829` |
-| Media (IMG_*, Comp, me, Macbook, stickers) | `media.md` | synced | 2026-09-14 | `41:11477` |
+| Media (IMG_*, Comp, me, Macbook, **About me**, **MacbookPng**, stickers) | `media.md` | synced | 2026-09-26 | `41:11477` (+ `391:22957`, `391:22958`) |
 
 Статусы: `draft` → `in-figma` → `synced` → `deprecated`.
 
-Именованных единиц в Figma Ui kit (основные): **≈49+**. Файлов-карточек: **26**.
+Именованных единиц в Figma Ui kit (основные): **≈51+**. Файлов-карточек: **26**.

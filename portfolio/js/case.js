@@ -1,11 +1,19 @@
 /**
- * Portfolio case page: segments, FAB scroll-to-top, side-nav active, mobile drawer.
+ * Portfolio case page: segments, FAB scroll-to-top, side-nav active, mobile drawer,
+ * section fade-up reveal (setupCaseReveal).
  */
 
 import { contentMap } from "../../shared/content.js";
 import { fixHangingPrepositions } from "../../shared/typography.js";
 import { bindSegmentsControl } from "../../ds-showcase/js/segments.js";
-import { consumeEnterCrossfade, navigateWithExpand, isInternalPortfolioUrl } from "./pageTransition.js";
+import {
+  consumeEnterCrossfade,
+  navigateWithExpand,
+  isInternalPortfolioUrl,
+  prefetchInternalPage,
+  HOME_HREF_KEY,
+  PAGE_CROSSFADE_MS,
+} from "./pageTransition.js";
 import { resolveAsset } from "./resolveAsset.js";
 import { setupTheme } from "./boot/dots/theme.js";
 
@@ -13,6 +21,16 @@ import { setupTheme } from "./boot/dots/theme.js";
 export const CASE_FAB_SHOW_SCROLL_Y = 48;
 /** Ignore scroll deltas smaller than this (px) to avoid flicker. */
 export const CASE_FAB_DIR_SLOP_PX = 4;
+
+/** Block units that fade-up once when scrolled into view (not on first paint). */
+const CASE_REVEAL_SELECTORS = [
+  ".case-page__intro",
+  "#context > .case-page__picture",
+  "#context > .case-page__fill-block",
+  "#context > .case-page__text-block",
+  ".case-page__section-stub",
+  ".case-page__footer",
+];
 
 /** @type {Record<string, string>} */
 const CASE_CARD_PREFIX = {
@@ -474,7 +492,7 @@ function bindSideNavActive(nav) {
 }
 
 /**
- * BurgerMenu → MenuMobile popover (≤1365 via CSS; desktop burger is opacity 0).
+ * BurgerMenu → MenuMobile popover (<1366 via CSS; ≥1366 burger is hidden, theme stays).
  *
  * @param {{ burgers: HTMLElement[], backdrop: HTMLElement, nav: HTMLElement }} parts
  * @returns {() => void}
@@ -654,24 +672,180 @@ function bindNextCaseLink() {
 }
 
 /**
+ * Collects non-nested reveal targets for the case main column.
+ *
+ * @returns {HTMLElement[]}
+ */
+function collectCaseRevealTargets() {
+  /** @type {HTMLElement[]} */
+  const out = [];
+  for (const selector of CASE_REVEAL_SELECTORS) {
+    const nodes = document.querySelectorAll(selector);
+    for (const node of nodes) {
+      if (node instanceof HTMLElement) {
+        out.push(node);
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * @returns {boolean}
+ */
+function prefersReducedMotion() {
+  return Boolean(
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
+  );
+}
+
+/**
+ * True if the block overlaps the visible viewport at all
+ * (or was already scrolled past). Those stay static — no fade.
+ *
+ * @param {HTMLElement} el
+ * @returns {boolean}
+ */
+function isCaseBlockOnScreenOrPast(el) {
+  const rect = el.getBoundingClientRect();
+  const vh = window.innerHeight || 0;
+  if (vh <= 0) {
+    return false;
+  }
+  // Scrolled past (above the fold) or any pixel still in the viewport.
+  return rect.bottom <= 0 || (rect.bottom > 0 && rect.top < vh);
+}
+
+/**
+ * Marks only off-screen blocks with `is-reveal` and fades them once via
+ * IntersectionObserver (`is-in`) when the user scrolls them into view.
+ * Anything already in the visible viewport stays without animation.
+ * Long/short toggle does not call this again — no replay.
+ *
+ * @returns {() => void} teardown
+ */
+export function setupCaseReveal() {
+  if (typeof document === "undefined" || typeof window === "undefined") {
+    return () => {};
+  }
+  if (!document.body?.classList?.contains("case-page")) {
+    return () => {};
+  }
+
+  const targets = collectCaseRevealTargets();
+  if (targets.length === 0) {
+    return () => {};
+  }
+
+  if (prefersReducedMotion()) {
+    return () => {};
+  }
+
+  /** @type {Set<HTMLElement>} */
+  const revealed = new Set();
+  /** @type {IntersectionObserver | null} */
+  let observer = null;
+  /** @type {ReturnType<typeof setTimeout> | null} */
+  let startTimer = null;
+
+  /**
+   * @param {HTMLElement} el
+   * @returns {void}
+   */
+  function markIn(el) {
+    if (revealed.has(el) || el.classList.contains("is-in")) {
+      revealed.add(el);
+      return;
+    }
+    revealed.add(el);
+    el.classList.add("is-in");
+    observer?.unobserve(el);
+  }
+
+  /**
+   * @returns {void}
+   */
+  function startReveal() {
+    startTimer = null;
+    /** @type {HTMLElement[]} */
+    const offScreen = [];
+    for (const el of targets) {
+      if (isCaseBlockOnScreenOrPast(el)) {
+        continue;
+      }
+      el.classList.add("is-reveal");
+      offScreen.push(el);
+    }
+
+    if (offScreen.length === 0) {
+      return;
+    }
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) {
+            continue;
+          }
+          const target = entry.target;
+          if (target instanceof HTMLElement) {
+            markIn(target);
+          }
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px 0px -8% 0px",
+        threshold: [0, 0.12],
+      }
+    );
+
+    for (const el of offScreen) {
+      observer.observe(el);
+    }
+  }
+
+  const waitEnter = document.documentElement.classList.contains(
+    "is-page-enter-crossfade"
+  );
+  if (waitEnter) {
+    startTimer = window.setTimeout(startReveal, PAGE_CROSSFADE_MS);
+  } else {
+    startReveal();
+  }
+
+  return () => {
+    if (startTimer != null) {
+      window.clearTimeout(startTimer);
+      startTimer = null;
+    }
+    observer?.disconnect();
+    observer = null;
+  };
+}
+
+/**
  * Bootstraps the case page.
  */
 export function initCasePage() {
   consumeEnterCrossfade();
+  // Warm the home document + keep «Назад» href aligned with the entry file.
   try {
-    const home = sessionStorage.getItem("portfolio-home-href");
-    if (home && /^[A-Za-z0-9._-]+\.html$/.test(home)) {
+    const home = sessionStorage.getItem(HOME_HREF_KEY) || "main.html";
+    if (/^[A-Za-z0-9._-]+\.html$/.test(home)) {
+      prefetchInternalPage(home);
       const links = document.querySelectorAll('a[href="main.html"]');
       for (const link of links) {
         link.setAttribute("href", home);
       }
     }
   } catch {
-    /* private mode */
+    prefetchInternalPage("main.html");
   }
 
   const caseId = readCaseId();
   fillContent(contentMap, caseId);
+  const unbindReveal = setupCaseReveal();
 
   const segments = document.querySelector(".ds-segments");
   const unbindSegments =
@@ -704,6 +878,7 @@ export function initCasePage() {
   const unbindNext = bindNextCaseLink();
 
   return () => {
+    unbindReveal();
     unbindSegments();
     unbindFab();
     unbindNav();
@@ -714,15 +889,22 @@ export function initCasePage() {
 }
 
 // Case pages carry the theme too, and read the same stored choice as the home
-// page — switching there and navigating here keeps the theme.
-setupTheme();
+// page — switching there and navigating here keeps the theme. Toggle docks
+// next to the burger (Header / Toolbar) via setupTheme placement.
+const theme = setupTheme();
 
 if (typeof document !== "undefined") {
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => initCasePage(), {
-      once: true,
-    });
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        initCasePage();
+        theme.syncPlacement?.();
+      },
+      { once: true }
+    );
   } else {
     initCasePage();
+    theme.syncPlacement?.();
   }
 }

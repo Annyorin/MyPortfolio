@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Аня Ясинская — Продуктовый дизайнер · UX/UI дизайнер</title>
-  <link rel="icon" href="../favicon.ico" sizes="any">
-  <link rel="icon" href="../ds-showcase/assets/images/avatar.png" type="image/png" sizes="90x90">
-  <link rel="apple-touch-icon" href="../ds-showcase/assets/images/avatar.png">
-  <link rel="preload" as="image" href="../ds-showcase/assets/images/avatar.png">
-  <link rel="preload" as="image" href="../ds-showcase/assets/images/img-1.png">
-  <link rel="preload" as="image" href="../ds-showcase/assets/images/img-2.png">
-  <link rel="preload" as="image" href="../ds-showcase/assets/images/card-citybike.png">
-  <link rel="stylesheet" href="../ds-showcase/css/tokens.css">
-  <link rel="stylesheet" href="../ds-showcase/css/components.css">
-  <link rel="stylesheet" href="css/portfolio.css">
   <script>
+    try {
+      var storedTheme = localStorage.getItem("portfolio-theme");
+      var prefersDark =
+        storedTheme !== "light" &&
+        (storedTheme === "dark" ||
+          (window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches));
+      if (prefersDark) {
+        document.documentElement.setAttribute("data-theme", "dark");
+        document.documentElement.style.backgroundColor = "#121214";
+      }
+    } catch (e) {}
     try {
       if (sessionStorage.getItem("portfolio-page-enter") === "crossfade") {
         document.documentElement.classList.add("is-page-enter-crossfade");
@@ -28,6 +29,17 @@
       }
     } catch (e) {}
   </script>
+  <title>Аня Ясинская — Продуктовый дизайнер · UX/UI дизайнер</title>
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="icon" href="../ds-showcase/assets/images/avatar.png" type="image/png" sizes="90x90">
+  <link rel="apple-touch-icon" href="../ds-showcase/assets/images/avatar.png">
+  <link rel="preload" as="image" href="../ds-showcase/assets/images/avatar.png">
+  <link rel="preload" as="image" href="../ds-showcase/assets/images/img-1.png">
+  <link rel="preload" as="image" href="../ds-showcase/assets/images/img-2.png">
+  <link rel="preload" as="image" href="../ds-showcase/assets/images/card-citybike.png">
+  <link rel="stylesheet" href="../ds-showcase/css/tokens.css">
+  <link rel="stylesheet" href="../ds-showcase/css/components.css">
+  <link rel="stylesheet" href="css/portfolio.css">
   <script>
     (function (m, e, t, r, i, k, a) {
       m[i] =

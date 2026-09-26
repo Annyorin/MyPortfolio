@@ -17,6 +17,15 @@ const config = {
       ...(viteConfig.resolve.alias || {}),
       "@ds-assets": path.resolve(dirname, "../ds-showcase/assets"),
     };
+    viteConfig.server = viteConfig.server || {};
+    viteConfig.server.watch = {
+      ...(viteConfig.server.watch || {}),
+      ignored: [
+        ...((viteConfig.server.watch && viteConfig.server.watch.ignored) || []),
+        "**/.tmp-frames/**",
+        "**/.tmp-macbook-assets/**",
+      ],
+    };
     return viteConfig;
   },
 };

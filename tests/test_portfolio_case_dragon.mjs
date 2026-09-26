@@ -108,6 +108,15 @@ describe("portfolio case-dragon page", () => {
   it("case.js exports initCasePage and binds segments/FAB/drawer helpers", () => {
     const src = read("portfolio/js/case.js");
     assert.match(src, /export function initCasePage/);
+    assert.match(src, /export function setupCaseReveal/);
+    assert.match(src, /fillContent\(contentMap,\s*caseId\);\s*const unbindReveal = setupCaseReveal\(\)/);
+    assert.match(src, /rootMargin:\s*["']0px 0px -8% 0px["']/);
+    assert.match(src, /threshold:\s*\[\s*0\s*,\s*0\.12\s*\]/);
+    assert.match(src, /isCaseBlockOnScreenOrPast/);
+    assert.doesNotMatch(src, /CASE_REVEAL_STAGGER/);
+    assert.match(src, /is-page-enter-crossfade/);
+    assert.match(src, /PAGE_CROSSFADE_MS/);
+    assert.match(src, /prefers-reduced-motion:\s*reduce/);
     assert.match(src, /bindSegmentsControl/);
     assert.match(src, /CASE_FAB_SHOW_SCROLL_Y/);
     assert.match(src, /CASE_FAB_DIR_SLOP_PX/);
@@ -158,6 +167,22 @@ describe("portfolio case-dragon page", () => {
     assert.match(
       css,
       /@media\s*\(max-width:\s*480px\)[\s\S]*\.case-page__meta-value[\s\S]*--type-caption-size/
+    );
+    assert.match(
+      css,
+      /body\.case-page\s+\.is-reveal[\s\S]*opacity:\s*0[\s\S]*translateY\(10px\)/
+    );
+    assert.match(
+      css,
+      /body\.case-page\s+\.is-reveal\.is-in[\s\S]*opacity:\s*1/
+    );
+    assert.match(
+      css,
+      /360ms\s+cubic-bezier\(0\.33,\s*0\.05,\s*0\.2,\s*1\)/
+    );
+    assert.match(
+      css,
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*body\.case-page\s+\.is-reveal[\s\S]*transition:\s*none/
     );
     assert.doesNotMatch(css, /--color-primary\s*:/);
   });

@@ -212,7 +212,7 @@ describe("TC-E2E-01 no-mock smoke entrypoint", () => {
         );
       }
       const mediaSlots = mediaSection[0].match(/data-media="/g) || [];
-      assert.equal(mediaSlots.length, 16, "Media×16");
+      assert.equal(mediaSlots.length, 17, "Media×17");
     } finally {
       await close();
     }

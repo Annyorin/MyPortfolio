@@ -1,5 +1,5 @@
 /**
- * About-me Macbook expand (Figma 248:17178).
+ * About-me Macbook expand (Figma 201:19914).
  */
 import assert from "node:assert/strict";
 import path from "node:path";
@@ -8,6 +8,7 @@ import { describe, it } from "node:test";
 import {
   ABOUT_EXPANDED_1024,
   ABOUT_EXPANDED_1366,
+  buildAboutExpandedLayout,
   getAboutExpandedLayout,
 } from "../shared/layout.js";
 import {
@@ -104,15 +105,15 @@ function makeAboutDom() {
   about.dataset.aboutCollapsed = JSON.stringify({
     cluster: { x: 763, y: 16, width: 209.61, height: 116.01 },
     children: {
+      me: { x: 0, y: 10.2, width: 83.45, height: 83.45, rotation: 12.596 },
       macbook: {
-        x: 85.23,
+        x: 84.98,
         y: 5,
-        width: 140.61,
-        height: 111.01,
-        rotation: -10.44,
+        width: 126,
+        height: 92,
+        rotation: -10,
       },
-      me: { x: 0, y: 18.2, width: 99.64, height: 99.64, rotation: 12.6 },
-      stiker: { x: 24, y: 83.49, width: 82.98, height: 37.42, rotation: 3.89 },
+      stiker: { x: 29, y: 78, width: 81, height: 32, rotation: 0 },
     },
   });
   for (const kind of ["macbook", "me", "stiker"]) {
@@ -125,32 +126,51 @@ function makeAboutDom() {
   return { world, about, byKind };
 }
 
-describe("about expanded layout (Figma 248:17178 Macbook)", () => {
-  it("keeps prior expand center while using larger Macbook fraction", () => {
-    const prev1024 = { x: 384, y: 92, width: 570, height: 415.57 };
-    const prev1366 = {
-      x: 384 + (1366 - 1024) / 2,
-      y: 92 + (768 - 609) / 2,
-      width: 570,
-      height: 415.57,
-    };
-    const c1024 = {
-      x: ABOUT_EXPANDED_1024.cluster.x + ABOUT_EXPANDED_1024.cluster.width / 2,
-      y: ABOUT_EXPANDED_1024.cluster.y + ABOUT_EXPANDED_1024.cluster.height / 2,
-    };
-    const c1366 = {
-      x: ABOUT_EXPANDED_1366.cluster.x + ABOUT_EXPANDED_1366.cluster.width / 2,
-      y: ABOUT_EXPANDED_1366.cluster.y + ABOUT_EXPANDED_1366.cluster.height / 2,
-    };
-    assert.ok(Math.abs(c1024.x - (prev1024.x + prev1024.width / 2)) < 0.01);
-    assert.ok(Math.abs(c1024.y - (prev1024.y + prev1024.height / 2)) < 0.01);
-    assert.ok(Math.abs(c1366.x - (prev1366.x + prev1366.width / 2)) < 0.01);
-    assert.ok(Math.abs(c1366.y - (prev1366.y + prev1366.height / 2)) < 0.01);
-    assert.ok(ABOUT_EXPANDED_1024.cluster.width > 580);
-    assert.equal(ABOUT_EXPANDED_1366.cluster.width, 787);
-    assert.equal(ABOUT_EXPANDED_1366.cluster.height, 574);
+describe("about expanded layout (Figma 201:19914 О себе)", () => {
+  it("keeps Figma screen fraction and scales me/stiker with Macbook", () => {
+    assert.equal(ABOUT_EXPANDED_1024.cluster.width, 581);
+    assert.equal(ABOUT_EXPANDED_1024.cluster.height, 424);
+    assert.equal(ABOUT_EXPANDED_1024.cluster.x, 375);
+    assert.equal(ABOUT_EXPANDED_1024.cluster.y, 86);
+    assert.ok(
+      Math.abs(ABOUT_EXPANDED_1024.children.me.width - 83.446) < 0.01
+    );
+    assert.ok(
+      Math.abs(ABOUT_EXPANDED_1024.children.stiker.width - 81) < 0.01
+    );
+    assert.ok(ABOUT_EXPANDED_1024.children.me.rotation > 0);
+    assert.ok(ABOUT_EXPANDED_1024.children.stiker.rotation > 0);
+
+    const s1366 =
+      ABOUT_EXPANDED_1366.cluster.width / ABOUT_EXPANDED_1024.cluster.width;
+    assert.ok(
+      Math.abs(
+        ABOUT_EXPANDED_1366.children.me.width -
+          ABOUT_EXPANDED_1024.children.me.width * s1366
+      ) < 0.05
+    );
+    assert.ok(
+      Math.abs(
+        ABOUT_EXPANDED_1366.children.stiker.width -
+          ABOUT_EXPANDED_1024.children.stiker.width * s1366
+      ) < 0.05
+    );
     assert.equal(getAboutExpandedLayout("51:4107"), ABOUT_EXPANDED_1366);
     assert.equal(getAboutExpandedLayout("41:1416"), ABOUT_EXPANDED_1024);
+  });
+
+  it("buildAboutExpandedLayout scales me/stiker size with Macbook", () => {
+    const a = buildAboutExpandedLayout(1024, 609);
+    const b = buildAboutExpandedLayout(2048, 1218);
+    const ratio = b.cluster.width / a.cluster.width;
+    assert.ok(Math.abs(ratio - 2) < 0.01);
+    assert.ok(
+      Math.abs(b.children.me.width / a.children.me.width - ratio) < 0.01
+    );
+    assert.ok(
+      Math.abs(b.children.stiker.height / a.children.stiker.height - ratio) <
+        0.01
+    );
   });
 });
 
@@ -201,12 +221,90 @@ describe("createAboutExpand", () => {
     assert.equal(ctrl.isExpanded(), false);
     assert.equal(about.style.width, "209.61px");
     assert.equal(about.style.left, "763px");
-    assert.equal(byKind.get("macbook").style.width, "140.61px");
-    assert.match(String(byKind.get("macbook").style.transform), /rotate\(10\.44deg\)/);
+    assert.equal(byKind.get("macbook").style.width, "126px");
+    assert.match(String(byKind.get("macbook").style.transform), /rotate\(10deg\)/);
     for (const card of world._cards) {
       assert.equal(card.classList.contains("is-about-dimmed"), false);
     }
 
+    ctrl.destroy();
+  });
+
+  it("restores home camera framing on close (wide viewport)", () => {
+    const { world, about } = makeAboutDom();
+    const viewport = { clientWidth: 1366, clientHeight: 768 };
+    let fitStage = 0;
+    let fitContent = 0;
+    const camera = {
+      getState: () => ({ scale: 1.4, translateX: -120, translateY: 40 }),
+      panBy() {},
+      apply() {},
+      fitInteractiveStage() {
+        fitStage += 1;
+      },
+      fitToContent() {
+        fitContent += 1;
+      },
+    };
+    const ctrl = createAboutExpand({
+      aboutEl: /** @type {any} */ (about),
+      worldEl: /** @type {any} */ (world),
+      layoutId: "41:1416",
+      viewportEl: /** @type {any} */ (viewport),
+      camera,
+    });
+    const origMatch = globalThis.matchMedia;
+    globalThis.matchMedia = () => ({
+      matches: true,
+      addListener() {},
+      removeListener() {},
+    });
+    try {
+      ctrl.open();
+      ctrl.close();
+    } finally {
+      globalThis.matchMedia = origMatch;
+    }
+    assert.equal(fitStage, 1);
+    assert.equal(fitContent, 0);
+    ctrl.destroy();
+  });
+
+  it("scales me/stiker size with camera zoom compensation", () => {
+    const { world, about, byKind } = makeAboutDom();
+    const viewport = {
+      clientWidth: 1024,
+      clientHeight: 609,
+    };
+    const camera = {
+      getState: () => ({ scale: 2, translateX: 0, translateY: 0 }),
+      panBy() {},
+      apply() {},
+    };
+    const ctrl = createAboutExpand({
+      aboutEl: /** @type {any} */ (about),
+      worldEl: /** @type {any} */ (world),
+      layoutId: "41:1416",
+      viewportEl: /** @type {any} */ (viewport),
+      camera,
+    });
+    const origMatch = globalThis.matchMedia;
+    globalThis.matchMedia = () => ({ matches: true, addListener() {}, removeListener() {} });
+    try {
+      ctrl.open();
+    } finally {
+      globalThis.matchMedia = origMatch;
+    }
+    const macW = Number.parseFloat(byKind.get("macbook").style.width);
+    const meW = Number.parseFloat(byKind.get("me").style.width);
+    const ratio = meW / macW;
+    const expected =
+      ABOUT_EXPANDED_1024.children.me.width /
+      ABOUT_EXPANDED_1024.cluster.width;
+    assert.ok(Math.abs(ratio - expected) < 0.01, `me/macbook ratio ${ratio} vs ${expected}`);
+    // Stiker keeps 81px box; visual scale tracks Macbook
+    assert.equal(byKind.get("stiker").style.width, "81px");
+    assert.match(String(byKind.get("stiker").style.transform), /scale\(/);
     ctrl.destroy();
   });
 
@@ -296,8 +394,12 @@ describe("Macbook sticker content", () => {
     );
     assert.equal(
       contentMap.assets.macbook?.pathFromDsRoot,
-      "images/macbook-248-17115.png"
+      "images/macbook-png.png"
     );
-    assert.match(contentMap.assets.anime.pathFromDsRoot, /\.svg$/);
+    assert.equal(
+      contentMap.assets["macbook.png"]?.pathFromDsRoot,
+      "images/macbook-png.png"
+    );
+    assert.match(contentMap.assets.anime.pathFromDsRoot, /\.png$/);
   });
 });

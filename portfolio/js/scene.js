@@ -408,6 +408,8 @@ const MACBOOK_STICKERS = [
 
 /**
  * Layered Macbook: bare lid + absolute sticker hit buttons with `.ds-hint`.
+ * First paint uses flat MacbookPng (Figma 391:22958), then crossfades to layers.
+ * Warm return (HTTP cache / revisit): skip the swap — layers already decoded.
  *
  * @param {object} content
  * @param {(key: string) => string} resolveAsset
@@ -416,8 +418,10 @@ const MACBOOK_STICKERS = [
  */
 function buildMacbook(content, resolveAsset, size) {
   const wrap = document.createElement("div");
-  wrap.className = "scene-about__macbook";
   wrap.setAttribute("data-media-slot-box", "macbook.lid");
+
+  const live = document.createElement("div");
+  live.className = "scene-about__macbook-live";
 
   const lid = document.createElement("img");
   lid.className = "scene-about__macbook-lid";
@@ -433,6 +437,9 @@ function buildMacbook(content, resolveAsset, size) {
   stickers.className = "scene-about__stickers";
   stickers.setAttribute("inert", "");
 
+  /** @type {HTMLImageElement[]} */
+  const layerImgs = [lid];
+
   for (const id of MACBOOK_STICKERS) {
     const btn = document.createElement("button");
     btn.type = "button";
@@ -445,6 +452,7 @@ function buildMacbook(content, resolveAsset, size) {
     img.alt = "";
     img.decoding = "async";
     img.draggable = false;
+    layerImgs.push(img);
 
     const hintId = `macbook-hint-${id}`;
     const hint = document.createElement("span");
@@ -458,8 +466,97 @@ function buildMacbook(content, resolveAsset, size) {
     stickers.appendChild(btn);
   }
 
-  wrap.append(lid, stickers);
+  live.append(lid, stickers);
+
+  const png = document.createElement("img");
+  png.className = "scene-about__macbook-png";
+  png.src = resolveAsset("macbook.png");
+  png.alt = "";
+  png.width = Math.round(size.width);
+  png.height = Math.round(size.height);
+  png.setAttribute("data-media-slot", "macbook.png");
+  png.decoding = "async";
+  png.draggable = false;
+  png.fetchPriority = "high";
+
+  // Cached revisit (e.g. back from case): lid+stickers already decoded — mount
+  // as ready so PNG→layers crossfade does not flash again.
+  const warm = macbookLayersWarm(layerImgs);
+  if (warm) {
+    wrap.className = "scene-about__macbook is-macbook-ready is-macbook-instant";
+  } else {
+    wrap.className = "scene-about__macbook is-macbook-preload";
+    live.setAttribute("aria-hidden", "true");
+  }
+
+  wrap.append(live, png);
+  if (!warm) scheduleMacbookLayerReveal(wrap, layerImgs);
   return wrap;
+}
+
+/**
+ * @param {HTMLImageElement[]} layerImgs
+ * @returns {boolean}
+ */
+function macbookLayersWarm(layerImgs) {
+  return layerImgs.every(
+    (img) => Boolean(img?.complete && Number(img.naturalWidth) > 0)
+  );
+}
+
+/**
+ * Crossfade flat MacbookPng → layered lid+stickers once layers are ready.
+ *
+ * @param {HTMLElement} wrap
+ * @param {HTMLImageElement[]} layerImgs
+ */
+function scheduleMacbookLayerReveal(wrap, layerImgs) {
+  const reveal = () => {
+    if (!wrap.isConnected || wrap.classList.contains("is-macbook-ready")) return;
+    wrap.classList.remove("is-macbook-preload");
+    // If layers finished from cache before the delayed reveal, skip the fade.
+    if (macbookLayersWarm(layerImgs)) {
+      wrap.classList.add("is-macbook-instant");
+    }
+    wrap.classList.add("is-macbook-ready");
+    const live = wrap.querySelector(".scene-about__macbook-live");
+    if (live) live.removeAttribute("aria-hidden");
+  };
+
+  const waiters = layerImgs.map(
+    (img) =>
+      new Promise((resolve) => {
+        if (img.complete && img.naturalWidth > 0) {
+          resolve(undefined);
+          return;
+        }
+        const done = () => resolve(undefined);
+        if (typeof img.addEventListener === "function") {
+          img.addEventListener("load", done, { once: true });
+          img.addEventListener("error", done, { once: true });
+        } else {
+          resolve(undefined);
+        }
+      })
+  );
+
+  Promise.all(waiters).then(() => {
+    // Warm path: reveal in the same turn — no 120ms beat that re-flashes PNG.
+    if (macbookLayersWarm(layerImgs)) {
+      reveal();
+      return;
+    }
+    // Cold path: let the flat PNG settle, then fade — unnoticed swap.
+    const run = () => {
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(() => requestAnimationFrame(reveal));
+      } else {
+        reveal();
+      }
+    };
+    if (typeof setTimeout === "function") setTimeout(run, 120);
+    else run();
+  });
 }
 
 /**

@@ -234,15 +234,24 @@ body {
   margin-top: 12px;
 }
 
-/* Composite: Header / Segments / Menu / MenuMobile / Card / Sidebar */
+/* Composite: Header / Segments / Menu / MenuMobile / Card / Sidebar / About me */
 .ds-section[aria-labelledby="section-composite"] > .ds-header,
 .ds-section[aria-labelledby="section-composite"] > .ds-toolbar,
 .ds-section[aria-labelledby="section-composite"] > .ds-segments-samples,
 .ds-section[aria-labelledby="section-composite"] > .ds-side-nav,
 .ds-section[aria-labelledby="section-composite"] > .ds-menu-mobile,
 .ds-section[aria-labelledby="section-composite"] > .ds-card-samples,
-.ds-section[aria-labelledby="section-composite"] > .ds-sidebar {
+.ds-section[aria-labelledby="section-composite"] > .ds-sidebar,
+.ds-section[aria-labelledby="section-composite"] > .ds-about-me-samples {
   margin-top: 12px;
+}
+
+.ds-about-me-samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 12px;
+  align-items: flex-start;
 }
 
 .ds-segments-samples {
@@ -275,9 +284,12 @@ body {
   aspect-ratio: 254 / 254;
 }
 
-.ds-media > [data-media="macbook"] {
-  width: 388px;
-  aspect-ratio: 388 / 283;
+.ds-media > [data-media="macbook"],
+.ds-media > [data-media="macbook-png"] {
+  width: 310px;
+  aspect-ratio: 310 / 226;
+  overflow: hidden;
+  border-radius: 4.639% / 6.36%;
 }
 
 .ds-media > [data-media="sitybike"],
@@ -289,22 +301,22 @@ body {
 
 .ds-media > [data-media="anime"] {
   width: 100px;
-  aspect-ratio: 100 / 91;
+  aspect-ratio: 100 / 92;
 }
 
 .ds-media > [data-media="books"] {
-  width: 84px;
-  aspect-ratio: 84 / 73;
+  width: 99px;
+  aspect-ratio: 99 / 85;
 }
 
 .ds-media > [data-media="create"] {
-  width: 62px;
-  aspect-ratio: 62 / 62;
+  width: 61px;
+  aspect-ratio: 61 / 60;
 }
 
 .ds-media > [data-media="question"] {
-  width: 59px;
-  aspect-ratio: 59 / 69;
+  width: 40px;
+  aspect-ratio: 40 / 48;
 }
 
 .ds-media > [data-media="seal"] {
@@ -313,8 +325,8 @@ body {
 }
 
 .ds-media > [data-media="sport"] {
-  width: 102px;
-  aspect-ratio: 102 / 87;
+  width: 122px;
+  aspect-ratio: 122 / 104;
 }
 /**
  * MediaAsset / Avatar box: keeps screen-spec proportions when the file is

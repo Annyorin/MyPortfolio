@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Индекс защищённости — график + Гант обучения — lo-fi</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  /* Локальные примитивы только для каркаса графика — палитра board.css */
+  .chart-frame{
+    width:min(960px, 100%);
+    background:var(--frame);
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px 14px;
+    box-shadow:0 2px 10px rgba(31,29,26,.05);
+  }
+  .chart-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    margin-bottom:12px;
+  }
+  .chart-head .h-title{font-size:15px; font-weight:700}
+  .chart-head .meta{font-size:12px; color:var(--mut); margin-top:4px}
+  .chart-tools{display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end}
+  .plot{
+    display:grid;
+    grid-template-columns:44px 1fr;
+    grid-template-rows:auto auto auto;
+    gap:0 10px;
+  }
+  .y-axis{
+    grid-row:1;
+    grid-column:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:flex-end;
+    padding:4px 0;
+    font-size:10px;
+    color:var(--mut);
+    height:220px;
+  }
+  .plot-area{
+    grid-row:1;
+    grid-column:2;
+    height:220px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:
+      repeating-linear-gradient(
+        to top,
+        transparent 0,
+        transparent 43px,
+        var(--block) 43px,
+        var(--block) 44px
+      );
+    position:relative;
+    overflow:hidden;
+  }
+  .plot-area svg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+  }
+  .gantt{
+    grid-row:2;
+    grid-column:2;
+    margin-top:10px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:#fff;
+    padding:8px 10px 10px;
+  }
+  .gantt .gtitle{
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .gantt-row{
+    display:grid;
+    grid-template-columns:88px 1fr;
+    gap:8px;
+    align-items:center;
+    margin-bottom:6px;
+  }
+  .gantt-row:last-child{margin-bottom:0}
+  .gantt-label{font-size:11px; color:var(--mut)}
+  .gantt-track{
+    position:relative;
+    height:18px;
+    background:var(--block);
+    border-radius:6px;
+    border:1px dashed var(--line);
+  }
+  .gantt-bar{
+    position:absolute;
+    top:2px;
+    bottom:2px;
+    border-radius:4px;
+    background:var(--block2);
+    border:1.5px solid var(--ink);
+    font-size:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 6px;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+  .gantt-bar.soft{
+    background:transparent;
+    border-style:dashed;
+    color:var(--mut);
+    border-color:var(--mut);
+  }
+  .x-axis{
+    grid-row:3;
+    grid-column:2;
+    display:flex;
+    justify-content:space-between;
+    margin-top:6px;
+    font-size:10px;
+    color:var(--mut);
+    padding:0 2px;
+  }
+  .legend-inline{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-top:12px;
+    font-size:12px;
+  }
+  .legend-inline .item{display:flex; align-items:center; gap:6px}
+  .swatch-line{
+    width:22px; height:0;
+    border-top:2.5px solid var(--ink);
+  }
+  .swatch-band{
+    width:18px; height:10px;
+    border:1.5px solid var(--ink);
+    background:var(--block2);
+    border-radius:3px;
+  }
+  .swatch-band.ghost{
+    background:transparent;
+    border-style:dashed;
+    border-color:var(--mut);
+  }
+  .callouts{
+    margin-top:14px;
+    display:grid;
+    gap:8px;
+  }
+  .callout{
+    border:1px dashed var(--line);
+    background:var(--block);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:12px;
+  }
+  .callout b{font-weight:700}
+  .alt-row{margin-top:28px}
+  .mini-pair{display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start}
+  .mini{
+    width:420px;
+    background:var(--frame);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+  }
+  .mini .h{font-size:13px; font-weight:700; margin-bottom:8px}
+  .mini .plot-area{height:120px}
+  .mini .y-axis{height:120px}
+  .logic{
+    margin-top:36px;
+    max-width:920px;
+    padding:16px 18px;
+    background:var(--frame);
+    border:1px solid var(--line);
+    border-radius:14px;
+  }
+  .logic h3{font-size:15px; margin-bottom:8px}
+  .logic ul{margin:8px 0 0 18px; color:var(--mut); font-size:13px}
+  .logic li{margin:4px 0}
+</style>
+</head>
+<body>
+
+<h1>Индекс защищённости — линейный график + Гант обучения</h1>
+<p class="sub">Lo-fi каркас виджета сводки InnoPhish / программы «А»: линия индекса или click%, точки атак, лёгкие метки обучения (CHART-LITE). Полный Гант — backlog. Правила ховера нарисованы отдельно: <a href="chart-hover-rules-wireframe.html">chart-hover-rules-wireframe.html</a>. Это структура, не визуальный стиль.</p>
+
+<div class="princ">
+  <span>Одна ось времени на оба слоя</span>
+  <span>Линия = % попались (click / fail), не «красота»</span>
+  <span>Гант = окна курсов, не легенда ради легенды</span>
+  <span>После курса читается спад или забывание</span>
+  <span>Формула индекса — отдельно; здесь механика графика</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Чтение эффекта обучения</div>
+  <div><span class="dot" style="background:var(--f2)">2</span> Доклад CISO</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>Сводка</b></span>
+  <span class="arr">→</span>
+  <span class="node"><b>Виджет «Индекс / Risk History»</b></span>
+  <span class="arr">→</span>
+  <span class="node"><b>Выход</b>: понять, сработали ли курсы · экспорт в доклад</span>
+</div>
+
+<section>
+  <h2>1. Основной каркас — линия + Гант</h2>
+  <p>Y: доля сотрудников, попавшихся на учебный фишинг (выше = хуже). X: месяцы. Полосы Ганта синхронизированы с той же шкалой: сплошная — активный курс, пунктир — назначение без прохождения.</p>
+
+  <div class="chart-frame">
+    <div class="flows" style="position:relative; float:right; margin:-4px 0 0 0">
+      <span class="dot" style="background:var(--f1)">1</span>
+      <span class="dot" style="background:var(--f2)">2</span>
+    </div>
+    <div class="chart-head">
+      <div>
+        <div class="h-title">Индекс защищённости · попадания на фишинг vs обучение</div>
+        <div class="meta">Org 1 184 · янв–сен 2026 · click% по кампаниям · Risk Score сейчас 71 (янв 54)</div>
+      </div>
+      <div class="chart-tools">
+        <span class="chip on">% click</span>
+        <span class="chip">Risk Score</span>
+        <span class="chip">org</span>
+        <span class="chip">кампания</span>
+      </div>
+    </div>
+
+    <div class="plot">
+      <div class="y-axis" aria-hidden="true">
+        <span>40%</span>
+        <span>30%</span>
+        <span>20%</span>
+        <span>10%</span>
+        <span>0</span>
+      </div>
+
+      <div class="plot-area" aria-label="Линейный график попаданий">
+        <!-- click%: янв31 фев29 мар27 апр24 май15 июн12 июл19 авг16 сен9 · y=100-pct*2.5 -->
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline
+            fill="none"
+            stroke="#1f1d1a"
+            stroke-width="1.8"
+            vector-effect="non-scaling-stroke"
+            points="2,22 14,28 26,33 38,40 50,62 62,70 74,52 86,60 98,77"
+          />
+          <g fill="#1f1d1a">
+            <circle cx="2" cy="22" r="1.2"/>
+            <circle cx="26" cy="33" r="1.2"/>
+            <circle cx="50" cy="62" r="1.2"/>
+            <circle cx="74" cy="52" r="1.2"/>
+            <circle cx="98" cy="77" r="1.2"/>
+          </g>
+          <g stroke="#8a857c" stroke-width="0.6" stroke-dasharray="2 2" vector-effect="non-scaling-stroke">
+            <line x1="35" y1="0" x2="35" y2="100"/>
+            <line x1="52" y1="0" x2="52" y2="100"/>
+            <line x1="78" y1="0" x2="78" y2="100"/>
+            <line x1="96" y1="0" x2="96" y2="100"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="gantt" aria-label="Временная шкала обучения (Гант)">
+        <div class="gtitle">Обучение · окна на той же шкале</div>
+        <div class="gantt-row">
+          <div class="gantt-label">«Фишинг базовый»</div>
+          <div class="gantt-track">
+            <div class="gantt-bar" style="left:33%; width:19%">волна 1 · 318 чел.</div>
+            <div class="gantt-bar" style="left:72%; width:22%">волна 2 · доучивание</div>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">«Вложения»</div>
+          <div class="gantt-track">
+            <div class="gantt-bar soft" style="left:48%; width:16%">назначен · 41%</div>
+            <div class="gantt-bar" style="left:78%; width:18%">идёт · 194 чел.</div>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Симуляции</div>
+          <div class="gantt-track">
+            <div class="gantt-bar soft" style="left:1%; width:3%" title="янв 31%">·</div>
+            <div class="gantt-bar soft" style="left:24%; width:3%" title="мар 27%">·</div>
+            <div class="gantt-bar soft" style="left:48%; width:3%" title="май 15%">·</div>
+            <div class="gantt-bar soft" style="left:72%; width:3%" title="июл 19%">·</div>
+            <div class="gantt-bar soft" style="left:95%; width:3%" title="сен 9%">·</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="x-axis" aria-hidden="true">
+        <span>янв</span><span>мар</span><span>май</span><span>июл</span><span>сен</span>
+      </div>
+    </div>
+
+    <div class="legend-inline">
+      <div class="item"><span class="swatch-line"></span> % click (от доставленных)</div>
+      <div class="item"><span class="swatch-band"></span> окно курса (активно)</div>
+      <div class="item"><span class="swatch-band ghost"></span> назначен / слабое прохождение</div>
+      <div class="item"><span class="note">· = дата симуляции</span></div>
+    </div>
+
+    <div class="callouts">
+      <div class="callout"><b>A.</b> Янв–мар: click 31→27% до волны обучения — база «без программы».</div>
+      <div class="callout"><b>B.</b> Апр–май волна 1 «Фишинг» → май click 15%, июн 12% — спад после курса.</div>
+      <div class="callout"><b>C.</b> Июл 19% — забывание без подкрепления; без второй волны эффект не держится.</div>
+      <div class="callout"><b>D.</b> Авг–сен волна 2 + кампания «Счёт за услуги» → сен click 9% · Risk 71.</div>
+    </div>
+  </div>
+
+  <div class="cap" style="max-width:960px; margin-top:12px">
+    <div class="t">CHART-1. Risk History + Гант обучения</div>
+    <div class="d">Полная механика. Тяжела для v1 (синхрон курсов, статусы, несколько рядов). Ниже — упрощение без потери «когда учили».</div>
+  </div>
+</section>
+
+<section>
+  <h2>1b. Рекомендация v1 — линия + лёгкие метки обучения (без Ганта)</h2>
+  <p>
+    Руководство: убрать обучение с графика (дорого). ИБ: нужны периоды обучения.
+    Компромисс: <b>одна серия данных</b> (индекс или click%) + <b>метки волн</b> (даты начала/конца, не прогресс курсов).
+    Не тянем completion, «назначен/идёт», несколько курсов на треках.
+  </p>
+
+  <div class="chart-frame">
+    <div class="chart-head">
+      <div>
+        <div class="h-title">Индекс защищённости · упрощённо</div>
+        <div class="meta">Одна линия · точки = учебные атаки · пунктир = старт волны обучения (не Гант)</div>
+      </div>
+      <div class="chart-tools">
+        <span class="chip on">% click</span>
+        <span class="chip">Индекс</span>
+        <span class="chip">метки обучения: вкл</span>
+      </div>
+    </div>
+
+    <div class="plot">
+      <div class="y-axis" aria-hidden="true">
+        <span>40%</span><span>20%</span><span>0</span>
+      </div>
+      <div class="plot-area" style="height:160px" aria-label="Упрощённый график">
+        <!-- светлые зоны волн: только 2 прямоугольника, без рядов курсов -->
+        <div style="position:absolute; left:33%; width:4px; top:0; bottom:0; background:var(--ink); opacity:.25" title="старт волны 1"></div>
+        <div style="position:absolute; left:72%; width:4px; top:0; bottom:0; background:var(--ink); opacity:.25" title="старт волны 2"></div>
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
+            points="2,22 14,28 26,33 38,40 50,62 62,70 74,52 86,60 98,77"/>
+          <g fill="#1f1d1a">
+            <circle cx="2" cy="22" r="1.4"/>
+            <circle cx="26" cy="33" r="1.4"/>
+            <circle cx="50" cy="62" r="1.4"/>
+            <circle cx="74" cy="52" r="1.4"/>
+            <circle cx="98" cy="77" r="1.4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="x-axis" aria-hidden="true" style="grid-column:2">
+        <span>янв</span><span>мар</span><span>май</span><span>июл</span><span>сен</span>
+      </div>
+    </div>
+
+    <!-- текстовая лента вместо Ганта — дёшево в API и в UI -->
+    <div style="margin-top:10px; border:1px dashed var(--line); border-radius:8px; padding:8px 10px; background:var(--block); font-size:11px">
+      <b>Периоды обучения</b> (не прогресс курсов):
+      <span style="color:var(--mut)"> · апр–май — волна «Фишинг базовый»</span>
+      <span style="color:var(--mut)"> · авг–сен — волна 2 / доучивание</span>
+      <span style="color:var(--mut)"> · «Вложения» — с авг (идёт)</span>
+    </div>
+
+    <div class="legend-inline">
+      <div class="item"><span class="swatch-line"></span> % click / индекс</div>
+      <div class="item"><span class="note">● учебная атака</span></div>
+      <div class="item"><span class="note">│ старт волны обучения</span></div>
+    </div>
+
+    <div class="callouts">
+      <div class="callout"><b>Почему дешевле:</b> бэкенд отдаёт точки индекса/click + массив из 2–5 событий `{date, type: attack|train_start, label}`. Без join назначений, % завершения, статусов «назначен/идёт».</div>
+      <div class="callout"><b>Почему ИБ не теряет смысл:</b> видно «после черты волны линия пошла вниз» — тот же сюжет, что у Ганта, без календаря HR.</div>
+      <div class="callout"><b>Руководству:</b> чип «метки обучения: выкл» → чистая линия (их запрос). ИБ включает метки по умолчанию.</div>
+      <div class="callout"><b>Позже (v2):</b> полный Гант или зоны курсов — когда будет API волн/completion.</div>
+    </div>
+  </div>
+
+  <div class="cap" style="max-width:960px; margin-top:12px">
+    <div class="t">CHART-LITE. Рекомендация для разработки</div>
+    <div class="d">Линия + точки атак + вертикали старта волн + текстовая лента периодов. Гант и статусы курсов — не в v1 на сводке.</div>
+  </div>
+</section>
+
+<section class="alt-row">
+  <h2>2. Альтернативы структуры (рядом)</h2>
+  <p>Не финальный UI — развилки. Для v1 берите <b>CHART-LITE</b>; полный Гант (CHART-1) и варианты ниже — backlog.</p>
+
+  <div class="mini-pair">
+    <div class="mini">
+      <div class="flows" style="position:relative; float:right">
+        <span class="dot" style="background:var(--f1)">1</span>
+      </div>
+      <div class="h">A · две линии (click + report)</div>
+      <div class="plot" style="grid-template-columns:36px 1fr">
+        <div class="y-axis" style="height:120px"><span>↑</span><span>0</span></div>
+        <div class="plot-area">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polyline fill="none" stroke="#1f1d1a" stroke-width="1.6" vector-effect="non-scaling-stroke" points="2,22 38,40 62,70 98,77"/>
+            <polyline fill="none" stroke="#8a857c" stroke-width="1.4" stroke-dasharray="3 2" vector-effect="non-scaling-stroke" points="2,78 38,70 62,55 98,45"/>
+          </svg>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Click ↓ (9%) и report ↑ (18%) как у Hoxhunt. Гант тот же снизу. Минус: две оси смысла на одной шкале.</div>
+      <div class="cap"><div class="t">CHART-2a</div><div class="d">Две линии + Гант.</div></div>
+    </div>
+
+    <div class="mini">
+      <div class="flows" style="position:relative; float:right">
+        <span class="dot" style="background:var(--f1)">1</span>
+      </div>
+      <div class="h">B · полосы обучения как фон линии</div>
+      <div class="plot" style="grid-template-columns:36px 1fr">
+        <div class="y-axis" style="height:120px"><span>↑</span><span>0</span></div>
+        <div class="plot-area">
+          <div style="position:absolute; left:33%; width:19%; top:0; bottom:0; background:var(--block2); opacity:.55; border-left:1px solid var(--ink); border-right:1px solid var(--ink)"></div>
+          <div style="position:absolute; left:72%; width:22%; top:0; bottom:0; background:var(--block2); opacity:.55; border-left:1px solid var(--ink); border-right:1px solid var(--ink)"></div>
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke" points="2,22 38,40 50,62 74,52 98,77"/>
+          </svg>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Компактнее для первого экрана. Минус: несколько курсов и «назначен/идёт» на фоне не читаются.</div>
+      <div class="cap"><div class="t">CHART-2b</div><div class="d">Гант свёрнут в зоны под линией.</div></div>
+    </div>
+  </div>
+
+  <div class="mini-pair" style="margin-top:16px">
+    <div class="mini">
+      <div class="h">C · кампании столбцами (open / click / submit)</div>
+      <div class="plot" style="grid-template-columns:36px 1fr">
+        <div class="y-axis" style="height:120px"><span>50</span><span>0</span></div>
+        <div class="plot-area" style="display:flex; align-items:flex-end; gap:8px; padding:8px 12px; background:#fff">
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; gap:2px; height:100%">
+            <div style="height:48%; background:var(--block2); border:1px solid var(--line)" title="open"></div>
+            <div style="height:22%; background:var(--ink); opacity:.35" title="click"></div>
+            <div style="height:6%; background:var(--ink)" title="submit"></div>
+            <div class="note" style="text-align:center; margin-top:2px">мар</div>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; gap:2px; height:100%">
+            <div style="height:46%; background:var(--block2); border:1px solid var(--line)"></div>
+            <div style="height:12%; background:var(--ink); opacity:.35"></div>
+            <div style="height:4%; background:var(--ink)"></div>
+            <div class="note" style="text-align:center; margin-top:2px">май</div>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; gap:2px; height:100%">
+            <div style="height:48%; background:var(--block2); border:1px solid var(--line)"></div>
+            <div style="height:7%; background:var(--ink); opacity:.35"></div>
+            <div style="height:3%; background:var(--ink)"></div>
+            <div class="note" style="text-align:center; margin-top:2px">сен</div>
+          </div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px"><b>Рекомендую как дополнение к линии:</b> каждая симуляция = стек метрик атаки. Гант под теми же датами. Плюс: видно состав fail (не только click). Минус: непрерывный тренд слабее.</div>
+      <div class="cap"><div class="t">CHART-2c</div><div class="d">Столбцы кампаний + Гант обучения.</div></div>
+    </div>
+
+    <div class="mini">
+      <div class="h">D · линия Risk + маркеры атак с подписью</div>
+      <div class="plot" style="grid-template-columns:36px 1fr">
+        <div class="y-axis" style="height:120px"><span>80</span><span>50</span></div>
+        <div class="plot-area">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke" points="2,70 38,55 62,42 98,28"/>
+            <g fill="#1f1d1a">
+              <circle cx="26" cy="58" r="2"/>
+              <circle cx="50" cy="48" r="2"/>
+              <circle cx="98" cy="28" r="2"/>
+            </g>
+          </svg>
+          <div style="position:absolute; left:22%; top:8px; font-size:9px; color:var(--mut)">click 27%</div>
+          <div style="position:absolute; left:44%; top:8px; font-size:9px; color:var(--mut)">15%</div>
+          <div style="position:absolute; left:88%; top:8px; font-size:9px; color:var(--mut)">9%</div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Ось = Risk Score (выше лучше). Точки = даты кампаний, подпись = click%. Обучение — Гант или зоны. Плюс: один «индекс» для CISO. Минус: путают «выше лучше» Risk и «выше хуже» click, если смешать без подписи.</div>
+      <div class="cap"><div class="t">CHART-2d</div><div class="d">Risk-линия + аннотированные атаки.</div></div>
+    </div>
+  </div>
+
+  <div class="mini-pair" style="margin-top:16px">
+    <div class="mini">
+      <div class="h">E · % завершения курса как вторая линия</div>
+      <div class="plot" style="grid-template-columns:36px 1fr">
+        <div class="y-axis" style="height:120px"><span>↑</span><span>0</span></div>
+        <div class="plot-area">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polyline fill="none" stroke="#1f1d1a" stroke-width="1.6" vector-effect="non-scaling-stroke" points="2,22 50,62 98,77"/>
+            <polyline fill="none" stroke="#8a857c" stroke-width="1.4" stroke-dasharray="3 2" vector-effect="non-scaling-stroke" points="2,90 38,55 52,40 78,35 98,30"/>
+          </svg>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Сплошная = click%, пунктир = cumulative completion волны. Связка «учили → реже кликают» без Ганта. Минус: completion и click — разные знаменатели; легко исказить causal story.</div>
+      <div class="cap"><div class="t">CHART-2e</div><div class="d">Две линии: атаки и прохождение.</div></div>
+    </div>
+
+    <div class="mini">
+      <div class="h">F · before / after cohort под кампанией</div>
+      <div style="border:1px solid var(--line); border-radius:8px; padding:10px; background:#fff; font-size:11px">
+        <div><b>Кампания 12 сен · click 9%</b></div>
+        <div class="note" style="margin:6px 0">Среди прошедших «Фишинг» до 1 сен: <b>5%</b> · без курса / не завершили: <b>18%</b></div>
+        <div style="display:flex; gap:6px; height:28px; margin-top:4px">
+          <div style="flex:5; background:var(--block2); border:1px solid var(--ink); display:flex; align-items:center; justify-content:center; font-size:10px">с курсом</div>
+          <div style="flex:18; background:var(--ink); opacity:.25; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:10px">без</div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Не тренд, а <b>срез одной атаки</b> рядом с графиком или в tooltip. Самый честный ответ «помогло ли обучение». Минус: нужен quality данных о дате завершения до кампании.</div>
+      <div class="cap"><div class="t">CHART-2f</div><div class="d">Когортный before/after к кампании.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>2b. Ховер на точку атаки (CHART-LITE + когорта F)</h2>
+  <p>
+    Наведение на ● учебной атаки. Не открывать модалку — карточку у точки (или закреплённую снизу на таче).
+    Обучение здесь = <b>контекст к этой кампании</b> (когорта + ближайшая волна), не Гант и не весь курс.
+  </p>
+
+  <div class="chart-frame" style="position:relative; max-width:720px">
+    <div class="chart-head">
+      <div>
+        <div class="h-title">Точка · 12 сен · ховер</div>
+        <div class="meta">Состояние: курсор на последней точке линии</div>
+      </div>
+    </div>
+
+    <div class="plot">
+      <div class="y-axis" style="height:140px" aria-hidden="true"><span>40%</span><span>0</span></div>
+      <div class="plot-area" style="height:140px; position:relative">
+        <div style="position:absolute; left:72%; width:3px; top:0; bottom:0; background:var(--ink); opacity:.2"></div>
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline fill="none" stroke="#1f1d1a" stroke-width="1.6" vector-effect="non-scaling-stroke"
+            points="2,22 26,33 50,62 74,52 98,77"/>
+          <g fill="#1f1d1a">
+            <circle cx="2" cy="22" r="1.2"/>
+            <circle cx="50" cy="62" r="1.2"/>
+            <circle cx="74" cy="52" r="1.2"/>
+            <!-- active point -->
+            <circle cx="98" cy="77" r="2.4"/>
+          </g>
+        </svg>
+        <!-- hover card anchored near point -->
+        <div class="tip" style="
+          position:absolute; right:4%; bottom:8%;
+          width:280px; z-index:2;
+          background:#fff; border:1.5px solid var(--ink); border-radius:10px;
+          padding:10px 12px; font-size:11px;
+          box-shadow:0 2px 10px rgba(31,29,26,.08);
+        ">
+          <div style="font-weight:700; font-size:12px; line-height:1.3">Кликфикс Яндекс Телемост Бэкдор</div>
+          <div class="note" style="margin-top:2px">12 сен 2026 · учебная · доставлено 1 142</div>
+
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+            <div style="flex:1; min-width:56px; border:1px solid var(--line); border-radius:6px; padding:4px 6px">
+              <div class="note">Click</div>
+              <div style="font-weight:700">9%</div>
+              <div class="note">103</div>
+            </div>
+            <div style="flex:1; min-width:56px; border:1px solid var(--line); border-radius:6px; padding:4px 6px">
+              <div class="note">Submit</div>
+              <div style="font-weight:700">2%</div>
+              <div class="note">23</div>
+            </div>
+            <div style="flex:1; min-width:56px; border:1px solid var(--line); border-radius:6px; padding:4px 6px">
+              <div class="note">Фидбэк</div>
+              <div style="font-weight:700">18%</div>
+              <div class="note">206</div>
+            </div>
+          </div>
+
+          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--line)">
+            <div style="font-weight:700; margin-bottom:4px">Обучение к этой атаке</div>
+            <div class="note">Ближайшая волна: «Фишинг базовый» · старт 1 авг (за 6 нед. до атаки)</div>
+            <div style="margin-top:6px; font-size:10px">
+              Click у прошедших курс до старта атаки:
+              <b>5%</b> <span class="note">(38 / 760)</span>
+              · без курса / не завершили:
+              <b>18%</b> <span class="note">(65 / 361)</span>
+            </div>
+            <div style="display:flex; gap:4px; height:16px; margin-top:6px">
+              <div style="flex:5; background:var(--block2); border:1px solid var(--ink); border-radius:3px"></div>
+              <div style="flex:18; background:var(--ink); opacity:.22; border:1px solid var(--line); border-radius:3px"></div>
+            </div>
+            <div class="note" style="margin-top:4px">с курсом ········· без курса</div>
+          </div>
+
+          <div class="note" style="margin-top:8px">Клик по карточке → карточка атаки · «когорта» → список людей</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cap" style="max-width:720px; margin-top:12px">
+    <div class="t">CHART-TIP. Ховер точки атаки</div>
+    <div class="d">Слой 1 — атака (имя ЦИБ, дата, delivered, 3 метрики). Слой 2 — обучение к ней (волна + когорта F). Без списка курсов и без Ганта.</div>
+  </div>
+
+  <div class="logic" style="margin-top:20px">
+    <h3>Правила ховера</h3>
+    <ul>
+      <li><b>Триггер:</b> ● учебной атаки. Ховер на «пустой» линии или только на вертикали волны — другая подсказка (см. ниже) или ничего.</li>
+      <li><b>Слой Атака (всегда):</b> название в стиле ЦИБ; дата старта; доставлено; Click + Submit + Фидбэк (Open — optional, чтобы не раздувать). % и абсолют.</li>
+      <li><b>Слой Обучение (если метки вкл.):</b> одна строка «ближайшая волна до этой атаки» (имя + дата старта / «за N нед.»). Затем когорта F: click% с курсом vs без — знаменатели обязательны.</li>
+      <li><b>Не в ховере:</b> полный Гант; все курсы org; ФИО; статусы назначений; формула индекса; сравнение с предыдущей кампанией длинным текстом (достаточно Δ click в одной строке, если есть).</li>
+      <li><b>Δ к предыдущей атаке (Should):</b> одна строка «click −7 п.п. к 28 авг» — дешёво и полезно для доклада.</li>
+      <li><b>Клик:</b> по карточке / кнопке «Открыть» → EXT-ATTACKS. Вторичная ссылка «Люди когорты» → список с фильтром (с курсом / без) — не в v1 must.</li>
+      <li><b>Ховер на │ старт волны (не точка атаки):</b> короче — только «Волна „Фишинг“ · апр–май · N назначено». Без когорты F (нет кампании-якоря).</li>
+      <li><b>Пусто / дыра данных:</b> если нет даты завершения курса — блок когорты: «Нет данных, кто завершил курс до атаки» + только слой атаки. Не рисовать 5% / 18%.</li>
+      <li><b>Mobile / тач:</b> тап по точке закрепляет карточку снизу графика (sheet), повторный тап / «✕» закрывает. Не полагаться на hover.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>3. В контексте сводки (desktop fragment)</h2>
+  <p>Куда виджет садится на primary: вместо плоского «Risk Score 71» или рядом — блок истории (CHART-LITE).</p>
+
+  <div class="cell desk">
+    <div class="desk-frame" style="height:auto; min-height:420px">
+      <div class="flows">
+        <span class="dot" style="background:var(--f1)">1</span>
+        <span class="dot" style="background:var(--f2)">2</span>
+      </div>
+      <nav class="desk-nav" aria-label="Разделы">
+        <div class="brand">Программа А</div>
+        <span>Пользователи</span>
+        <span>Атаки</span>
+        <span>Шаблоны</span>
+        <span>Обучение</span>
+        <span class="on">Сводка</span>
+        <span>Отчёты</span>
+      </nav>
+      <div class="desk-main">
+        <div class="desk-header">
+          <div class="h-left">
+            <div class="h-title">Сводная аналитика</div>
+            <div class="note">Последняя кампания · 12 сен 2026</div>
+          </div>
+          <div class="h-right">
+            <span class="chip on">ИБ</span>
+            <span class="chip">HR</span>
+            <span class="chip">SOC</span>
+            <div class="btn pr">Экспорт</div>
+          </div>
+        </div>
+
+        <div class="desk-row">
+          <div class="metric risk-big col-1">
+            <div class="ml">Risk Score</div>
+            <div class="mv">71</div>
+            <div class="note" style="margin-top:4px">янв 54 → сен 71</div>
+          </div>
+          <div class="desk-panel col-2" style="padding:10px">
+            <div class="pt">История · click% + обучение</div>
+            <div class="plot-area" style="height:88px; margin-top:6px">
+              <div style="position:absolute; left:33%; width:19%; top:0; bottom:0; background:var(--block2); opacity:.5"></div>
+              <div style="position:absolute; left:72%; width:22%; top:0; bottom:0; background:var(--block2); opacity:.5"></div>
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <polyline fill="none" stroke="#1f1d1a" stroke-width="1.6" vector-effect="non-scaling-stroke" points="2,22 26,33 50,62 74,52 98,77"/>
+              </svg>
+            </div>
+            <div class="note" style="margin-top:6px">31%→9% click · зоны = волны «Фишинг» · развернуть → CHART-1</div>
+          </div>
+        </div>
+
+        <div class="note">Ниже — атаки / обучение / топ (без изменений)</div>
+        <div class="bar" style="width:100%"></div>
+        <div class="txt" style="width:90%; margin-top:6px"></div>
+        <div class="txt" style="width:70%; margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="cap">
+      <div class="t">DB-IB · фрагмент с виджетом</div>
+      <div class="d">Число Risk Score остаётся якорем «сейчас». График — аргумент «курсы сработали / забыли». На первом экране можно зона-Гант; полный Гант с рядами курсов — в развороте или на вкладке тренда.</div>
+    </div>
+  </div>
+</section>
+
+<div class="logic">
+  <h3>Логика, которой нет на каркасе</h3>
+  <ul>
+    <li><b>Метрика линии (выбор):</b> % click / fail учебной атаки — прямо отвечает на «часто попадаются». Альтернатива — Risk Score во времени; тогда ось «выше = лучше» и подпись меняется.</li>
+    <li><b>Гант:</b> ряд = тип курса или волна назначения. Статусы: активно / завершено / назначен без прохождения (пунктир).</li>
+    <li><b>Симуляции</b> — маркеры на оси или отдельный трек «Атаки», иначе не видно проверку после курса.</li>
+    <li><b>Ещё варианты атак+обучение (не внедрены в primary):</b> C столбцы; D Risk-линия; E completion-линия; F когорта — в <b>ховере точки</b> (CHART-TIP), не отдельным виджетом на первом экране.</li>
+    <li><b>Ховер точки атаки:</b> имя + метрики → до 2 релевантных волн → одна когорта (union ≥1 курс до атаки). Не по когорте на каждый курс. Гант в tooltip не тащить.</li>
+    <li><b>Не делать:</b> светофор «плохо» по подразделениям на этом виджете; dual-mode ИБ/руководство; подмену графика разделом «Отчёты»; смешивать «выше лучше» и «выше хуже» без явной подписи оси.</li>
+    <li><b>Открыто:</b> формула Risk Score (A3); дефолт линии click% vs Risk; полный Гант на первом экране или только в развороте; брать ли C или F в доклад CISO.</li>
+  </ul>
+</div>
+
+</body>
+</html>

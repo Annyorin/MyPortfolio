@@ -32,7 +32,7 @@ const SWATCHES = [
   { token: "secondary", label: "Secondary", hex: "#ededed", cssVar: "--color-secondary" },
   { token: "gray-dark", label: "Gray_dark", hex: "#e4e4e4", cssVar: "--color-gray-dark" },
   { token: "gray-text", label: "Gray_text", hex: "#888888", cssVar: "--color-gray-text" },
-  { token: "black", label: "Black", hex: "#232323", cssVar: "--color-black" },
+  { token: "black", label: "Black", hex: "#121214", cssVar: "--color-black" },
   { token: "white", label: "White", hex: "#fefefe", cssVar: "--color-white" },
 ];
 
@@ -80,10 +80,10 @@ const COLOR_TOKENS_REGRESSION = {
   "--color-primary-hover": "#79befc",
   "--color-secondary": "#ededed",
   "--color-white": "#fefefe",
-  "--color-black": "#232323",
+  "--color-black": "#121214",
   "--color-gray-text": "#888888",
   "--color-gray-dark": "#e4e4e4",
-  "--color-gray-l": "#6b6b6b",
+  "--color-gray-l": "#888888",
 };
 
 /**
@@ -259,7 +259,8 @@ describe("TC-E2E-01 Foundations catalog contract", () => {
     assert.ok(
       pageBg === "var(--color-white)" ||
         normalizeHex(pageBg) === "#ffffff" ||
-        normalizeHex(pageBg) === "#fefefe",
+        normalizeHex(pageBg) === "#fefefe" ||
+        normalizeHex(pageBg) === "#f5f5f5",
       `--page-bg must be light, got ${pageBg}`
     );
   });

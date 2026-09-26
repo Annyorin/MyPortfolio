@@ -407,6 +407,27 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
 
   const root = loaderEl || document.getElementById("boot-loader");
 
+  // Soft enter from another portfolio page (case ↔ home): the page is already
+  // painted via crossfade — same as bootLoader's isEnterCrossfade early exit.
+  // Do not re-cover with the dots loader (esp. when localStorage hint is cold).
+  const enterCrossfade =
+    typeof document !== "undefined" &&
+    document.documentElement?.classList?.contains?.("is-page-enter-crossfade");
+  if (enterCrossfade) {
+    if (root) {
+      root.hidden = true;
+      root.setAttribute("hidden", "");
+    }
+    document.documentElement?.classList?.remove?.(
+      "is-booting",
+      "is-boot-slow"
+    );
+    writeCacheHint(true);
+    upgradeImages();
+    watchZoom();
+    return;
+  }
+
   // The hint from the previous visit is known immediately, before anything can
   // be measured; this visit's own measurement then confirms or denies it.
   // Measurement beats memory: the stored hint outlives a cache purge, and trusting

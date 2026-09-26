@@ -25,14 +25,14 @@ const COLOR_TOKENS = {
   "--color-primary-hover": "#79befc",
   "--color-secondary": "#ededed",
   "--color-white": "#fefefe",
-  "--color-black": "#232323",
+  "--color-black": "#121214",
   "--color-gray-text": "#888888",
   "--color-gray-dark": "#e4e4e4",
-  "--color-gray-l": "#6b6b6b",
+  "--color-gray-l": "#888888",
 };
 
 const SHADOW_VALUE = "0 5px 9px #bbbbbd40";
-const SHADOW_MOBILE_VALUE = "0 3px 9px #8b8b8e40";
+const SHADOW_MOBILE_VALUE = "0 3px 9px #bbbbbd40";
 
 const TYPE_TOKENS = {
   "--type-h1-size": "20px",
@@ -187,11 +187,12 @@ describe("TC-UNIT-01 token table vs TZ §3.1", () => {
     assert.ok(
       pageBg === "var(--color-white)" ||
         normalizeHex(pageBg) === "#ffffff" ||
-        normalizeHex(pageBg) === "#fefefe",
+        normalizeHex(pageBg) === "#fefefe" ||
+        normalizeHex(pageBg) === "#f5f5f5",
       `--page-bg must be white/near-white, got ${pageBg}`
     );
 
-    assert.equal(normalizeHex(props.get("--color-black")), "#232323");
+    assert.equal(normalizeHex(props.get("--color-black")), "#121214");
 
     const declaredNames = [...props.keys()];
     const allowedElevation = new Set(["--shadow", "--shadow-mobile"]);
@@ -232,7 +233,7 @@ describe("TC-E2E-01 :root computed contract via served tokens.css", () => {
         normalizeShadow(props.get("--shadow-mobile") || ""),
         normalizeShadow(SHADOW_MOBILE_VALUE)
       );
-      assert.equal(normalizeHex(props.get("--color-black") || ""), "#232323");
+      assert.equal(normalizeHex(props.get("--color-black") || ""), "#121214");
 
       for (const name of Object.keys(TYPE_TOKENS)) {
         assert.ok(props.has(name), `served missing ${name}`);

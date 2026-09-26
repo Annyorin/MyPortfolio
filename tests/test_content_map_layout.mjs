@@ -104,7 +104,7 @@ describe("content map / scene layout / resolveAsset", () => {
     assert.ok(Array.isArray(about.children));
     assert.deepEqual(
       about.children.map((c) => c.kind),
-      ["macbook", "me", "stiker"]
+      ["me", "macbook", "stiker"]
     );
 
     const tapper = byId.tapper;

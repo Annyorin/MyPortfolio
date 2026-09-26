@@ -22,7 +22,7 @@ const SUPPRESSIBLE_SELECTOR = [
 const CARD_SELECTOR =
   ".ds-card, [data-node-kind='card'], .scene-about-cluster, [data-node-kind='about']";
 const CRITICAL_IMG_SELECTOR =
-  "img[data-media-slot], img.scene-comp__img, .scene-about__me img, .scene-about__macbook-lid";
+  "img[data-media-slot], img.scene-comp__img, .scene-about__me img, .scene-about__macbook-lid, .scene-about__macbook-png";
 
 /** Hold duration before card enters grab/drag mode (stationary press). */
 export const CARD_LONG_PRESS_MS = 150;

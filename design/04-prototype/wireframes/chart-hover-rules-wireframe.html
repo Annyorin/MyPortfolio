@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>График индекса — правила ховера — lo-fi</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  .rule-grid{
+    display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start;
+  }
+  .rule-card{
+    width:300px;
+    background:var(--frame);
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 2px 10px rgba(31,29,26,.05);
+  }
+  .rule-card.wide{width:min(640px,100%)}
+  .rule-card .rh{font-size:13px; font-weight:700; margin-bottom:8px}
+  .plot-mini{
+    height:100px; border:1px solid var(--line); border-radius:8px;
+    background:repeating-linear-gradient(to top, transparent 0, transparent 19px, var(--block) 19px, var(--block) 20px);
+    position:relative; overflow:hidden; margin-bottom:8px;
+  }
+  .plot-mini svg{position:absolute; inset:0; width:100%; height:100%}
+  .tip{
+    background:#fff; border:1.5px solid var(--ink); border-radius:10px;
+    padding:10px 12px; font-size:11px;
+  }
+  .tip .t-title{font-weight:700; font-size:12px; line-height:1.3}
+  .mets{display:flex; gap:6px; margin-top:8px}
+  .mets > div{
+    flex:1; border:1px solid var(--line); border-radius:6px;
+    padding:4px 6px; text-align:center;
+  }
+  .mets .ml{font-size:9px; color:var(--mut)}
+  .mets .mv{font-weight:700; font-size:12px}
+  .split{margin-top:8px; padding-top:8px; border-top:1px dashed var(--line)}
+  .bars{display:flex; gap:4px; height:14px; margin-top:6px}
+  .bars .a{flex:5; background:var(--block2); border:1px solid var(--ink); border-radius:3px}
+  .bars .b{flex:18; background:var(--ink); opacity:.22; border:1px solid var(--line); border-radius:3px}
+  .do-dont{display:flex; gap:10px; margin-top:8px}
+  .do-dont > div{
+    flex:1; border-radius:8px; padding:8px; font-size:11px;
+    border:1px solid var(--line); background:#fff;
+  }
+  .do-dont .ok{border-color:var(--ink)}
+  .do-dont .no{border-style:dashed; color:var(--mut)}
+  .flow-steps{
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+    font-size:12px; margin-top:8px;
+  }
+  .flow-steps .box{
+    border:1.5px solid var(--ink); border-radius:8px;
+    padding:8px 10px; background:#fff; font-weight:600;
+  }
+  .flow-steps .arr{color:var(--mut)}
+  .layer{
+    border:1px solid var(--line); border-radius:8px;
+    padding:8px 10px; margin-top:6px; background:#fff; font-size:11px;
+  }
+  .layer .ln{font-size:9px; color:var(--mut); text-transform:uppercase; letter-spacing:.04em}
+  .badge{
+    display:inline-block; font-size:10px; font-weight:700;
+    border:1px solid var(--ink); border-radius:999px;
+    padding:2px 8px; margin-bottom:8px;
+  }
+  .badge.mut{border-color:var(--line); color:var(--mut); font-weight:600}
+</style>
+</head>
+<body>
+
+<h1>График индекса — правила ховера</h1>
+<p class="sub">Визуальные правила подсказки на CHART-LITE: что показывается при наведении на точку учебной атаки и на старт волны обучения. Связь с когортой F (с курсом / без). Это структура, не визуальный стиль. Рядом: <a href="risk-index-chart-wireframe.html">risk-index-chart-wireframe.html</a>.</p>
+
+<div class="princ">
+  <span>● атака ≠ │ волна</span>
+  <span>≤2 волны в ховере</span>
+  <span>Одна когорта = ≥1 релевантный курс</span>
+  <span>Без Ганта в tooltip</span>
+  <span>Тач = sheet снизу</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Чтение графика</div>
+  <div><span class="dot" style="background:var(--f4)">4</span> Drill в атаку</div>
+</div>
+
+<section>
+  <h2>1. Два триггера — два ховера</h2>
+  <p>Не одна универсальная подсказка. Цель курсора задаёт состав карточки.</p>
+
+  <div class="rule-grid">
+    <!-- Attack hover -->
+    <div class="rule-card">
+      <div class="flows" style="position:relative; float:right; margin:-4px -4px 0 0">
+        <span class="dot" style="background:var(--f1)">1</span>
+      </div>
+      <span class="badge">A · точка атаки ●</span>
+      <div class="rh">Ховер на учебную атаку</div>
+      <div class="plot-mini">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
+            points="5,30 40,55 70,45 95,70"/>
+          <circle cx="95" cy="70" r="4" fill="#1f1d1a"/>
+        </svg>
+        <div style="position:absolute; right:6px; top:6px; width:10px; height:10px; border:2px solid var(--ink); border-radius:50%; background:#fff"></div>
+      </div>
+      <div class="tip">
+        <div class="t-title">Кликфикс Яндекс Телемост Бэкдор</div>
+        <div class="note">12 сен · доставлено 1 142</div>
+        <div class="mets">
+          <div><div class="ml">Click</div><div class="mv">9%</div></div>
+          <div><div class="ml">Submit</div><div class="mv">2%</div></div>
+          <div><div class="ml">Фидбэк</div><div class="mv">18%</div></div>
+        </div>
+        <div class="split">
+          <b>Обучение к атаке</b>
+          <div class="note" style="margin-top:2px">Волна «Фишинг» · за 6 нед. до</div>
+          <div style="margin-top:4px">с курсом <b>5%</b> · без <b>18%</b></div>
+          <div class="bars"><div class="a"></div><div class="b"></div></div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Есть когорта F. Клик → карточка атаки.</div>
+      <div class="cap"><div class="t">TIP-A</div><div class="d">Полная карточка: атака + волна + когорта.</div></div>
+    </div>
+
+    <!-- Wave hover -->
+    <div class="rule-card">
+      <div class="flows" style="position:relative; float:right; margin:-4px -4px 0 0">
+        <span class="dot" style="background:var(--f1)">1</span>
+      </div>
+      <span class="badge mut">B · старт волны │</span>
+      <div class="rh">Ховер на вертикаль обучения</div>
+      <div class="plot-mini">
+        <div style="position:absolute; left:55%; top:0; bottom:0; width:3px; background:var(--ink); opacity:.35"></div>
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
+            points="5,30 40,55 70,45 95,70"/>
+          <circle cx="40" cy="55" r="2" fill="#1f1d1a"/>
+          <circle cx="95" cy="70" r="2" fill="#1f1d1a"/>
+        </svg>
+      </div>
+      <div class="tip">
+        <div class="t-title">Волна «Фишинг базовый»</div>
+        <div class="note">старт 1 авг 2026 · доучивание</div>
+        <div class="split">
+          <div class="note">Назначено ~318 · не прогресс курса</div>
+          <div class="note" style="margin-top:4px">Когорты F нет — нет якоря-атаки</div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Коротко. Без click/submit и без 5% vs 18%.</div>
+      <div class="cap"><div class="t">TIP-B</div><div class="d">Только метка волны. Детали курсов → Обучение.</div></div>
+    </div>
+
+    <!-- No hover -->
+    <div class="rule-card">
+      <span class="badge mut">C · пусто</span>
+      <div class="rh">Нет ховера</div>
+      <div class="plot-mini">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
+            points="5,30 40,55 70,45 95,70"/>
+          <circle cx="40" cy="55" r="2" fill="#1f1d1a"/>
+          <circle cx="95" cy="70" r="2" fill="#1f1d1a"/>
+        </svg>
+        <div style="position:absolute; left:20%; top:40%; width:12px; height:12px; border:1.5px dashed var(--mut); border-radius:50%"></div>
+      </div>
+      <div class="note">Курсор на линии между точками, на оси, на легенде, на фоне — карточки нет.</div>
+      <div class="cap"><div class="t">TIP-∅</div><div class="d">Не ловить «почти точку» широким hit-area на всю линию.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Слои внутри карточки атаки (TIP-A)</h2>
+  <p>Порядок фиксирован. Ниже — схема «пирога» карточки, не отдельный UI.</p>
+
+  <div class="rule-card wide">
+    <div class="flows" style="position:relative; float:right">
+      <span class="dot" style="background:var(--f1)">1</span>
+      <span class="dot" style="background:var(--f4)">4</span>
+    </div>
+    <div class="rh">Порядок чтения сверху вниз</div>
+
+    <div class="layer">
+      <div class="ln">Слой 1 · атака · всегда</div>
+      <div style="margin-top:4px"><b>Имя</b> (стиль ЦИБ) · дата · доставлено</div>
+      <div class="mets" style="margin-top:6px">
+        <div><div class="ml">Click</div><div class="mv">9% · 103</div></div>
+        <div><div class="ml">Submit</div><div class="mv">2% · 23</div></div>
+        <div><div class="ml">Фидбэк</div><div class="mv">18% · 206</div></div>
+      </div>
+      <div class="note" style="margin-top:6px">Should: click −7 п.п. к предыдущей атаке</div>
+    </div>
+
+    <div class="flow-steps" style="justify-content:center">
+      <span class="arr">↓ только если метки обучения включены</span>
+    </div>
+
+    <div class="layer">
+      <div class="ln">Слой 2 · обучение к этой атаке</div>
+      <div style="margin-top:4px">Ближайшая волна до даты атаки · имя · «за N нед.»</div>
+      <div style="margin-top:6px"><b>Когорта F:</b> click с курсом vs без · % и знаменатели · мини-полоски</div>
+    </div>
+
+    <div class="flow-steps" style="justify-content:center">
+      <span class="arr">↓ действие</span>
+    </div>
+
+    <div class="layer">
+      <div class="ln">Слой 3 · выход</div>
+      <div style="margin-top:4px">Клик по карточке → EXT-ATTACKS · опц. «Люди когорты» → список</div>
+    </div>
+
+    <div class="cap" style="margin-top:10px">
+      <div class="t">TIP-A · слои</div>
+      <div class="d">Атака всегда. Обучение — опциональный блок. Drill — в конце, не вместо цифр.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>3. Класть / не класть</h2>
+
+  <div class="rule-card wide">
+    <div class="do-dont">
+      <div class="ok">
+        <b>Класть</b>
+        <ul class="note" style="margin:6px 0 0 14px; line-height:1.5">
+          <li>Имя атаки, дата, delivered</li>
+          <li>Click · Submit · Фидбэк (% + N)</li>
+          <li>Одна волна до атаки</li>
+          <li>Когорта F со знаменателями</li>
+          <li>Δ к предыдущей атаке (Should)</li>
+        </ul>
+      </div>
+      <div class="no">
+        <b>Не класть</b>
+        <ul class="note" style="margin:6px 0 0 14px; line-height:1.5">
+          <li>Полный Гант / все курсы</li>
+          <li>ФИО людей</li>
+          <li>Формулу индекса</li>
+          <li>Статусы назначений</li>
+          <li>Open/Attachment, если тесно</li>
+          <li>Выдуманную когорту без данных</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cap" style="margin-top:10px">
+      <div class="t">TIP-RULES</div>
+      <div class="d">Нет даты «курс завершён до атаки» → слой 2 = одна фраза «нет данных по когорте», без 5% / 18%.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>4. Desktop hover vs тач</h2>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <div class="rh">Desktop</div>
+      <div class="flow-steps">
+        <span class="box">hover ●</span>
+        <span class="arr">→</span>
+        <span class="box">карточка у точки</span>
+        <span class="arr">→</span>
+        <span class="box">click → атака</span>
+      </div>
+      <div class="note" style="margin-top:8px">Уход курсора скрывает карточку. Не перекрывать соседние точки.</div>
+      <div class="cap"><div class="t">TIP-DESK</div><div class="d">Позиция: рядом с точкой, flip влево у правого края.</div></div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rh">Тач / узкий экран</div>
+      <div class="flow-steps">
+        <span class="box">tap ●</span>
+        <span class="arr">→</span>
+        <span class="box">sheet снизу</span>
+        <span class="arr">→</span>
+        <span class="box">tap ✕ / фон</span>
+      </div>
+      <div class="note" style="margin-top:8px">Не hover. Повторный tap по той же точке закрывает или оставляет закреплённым (один режим на продукт).</div>
+      <div class="cap"><div class="t">TIP-TOUCH</div><div class="d">Тот же состав TIP-A, другая оболочка.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>6. Несколько курсов и программ в ховере</h2>
+  <p>
+    В org обычно много назначений. Ховер не каталог LMS.
+    Показываем только то, что <b>относится к этой атаке</b>: релевантные волны до даты старта кампании.
+  </p>
+
+  <div class="rule-grid">
+    <div class="rule-card wide">
+      <div class="rh">Алгоритм отбора (до отрисовки)</div>
+      <div class="flow-steps" style="flex-direction:column; align-items:stretch">
+        <div class="box" style="font-weight:500">1. Дата якоря = старт учебной атаки (●)</div>
+        <div class="arr" style="text-align:center">↓</div>
+        <div class="box" style="font-weight:500">2. Кандидаты = волны/курсы с датой старта или завершения <b>до</b> якоря (и в окне lookback, напр. 180 дн.)</div>
+        <div class="arr" style="text-align:center">↓</div>
+        <div class="box" style="font-weight:500">3. Релевантность: тот же риск-домен, что атака (фишинг-ссылка → курсы фишинга/SE; вложение → macros; SSO → identity). Если домена нет — все awareness-волны в lookback</div>
+        <div class="arr" style="text-align:center">↓</div>
+        <div class="box" style="font-weight:500">4. В карточку: макс. <b>2 строки</b> волн + одна сводная когорта. Остальное — «ещё N» → Обучение</div>
+      </div>
+      <div class="cap" style="margin-top:10px">
+        <div class="t">TIP-MULTI · отбор</div>
+        <div class="d">Сначала фильтр по дате и домену, потом лимит 2. Не сортировать «все курсы org по алфавиту».</div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <span class="badge">Вариант 1 · рекомендуемый</span>
+      <div class="rh">Две волны + одна когорта</div>
+      <div class="tip">
+        <div class="t-title">Кликфикс SSO Битрикс</div>
+        <div class="note">28 авг · доставлено 1 098</div>
+        <div class="mets">
+          <div><div class="ml">Click</div><div class="mv">16%</div></div>
+          <div><div class="ml">Submit</div><div class="mv">4%</div></div>
+          <div><div class="ml">Фидбэк</div><div class="mv">12%</div></div>
+        </div>
+        <div class="split">
+          <b>Обучение до атаки</b>
+          <div class="note" style="margin-top:4px">Программа Awareness</div>
+          <div style="margin-top:4px">· «Фишинг базовый» · волна 2 · с 1 авг</div>
+          <div>· «Вложения и macros» · с 10 авг</div>
+          <div class="note" style="margin-top:4px">+ ещё 1 курс в lookback → Обучение</div>
+          <div style="margin-top:8px; padding-top:6px; border-top:1px dashed var(--line)">
+            <b>Когорта</b> (завершил ≥1 релевантный курс до атаки)
+            <div style="margin-top:4px">с курсом <b>7%</b> · без <b>21%</b></div>
+            <div class="bars"><div class="a"></div><div class="b"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Когорта одна: «прошёл хотя бы один релевантный», не три пары %.</div>
+      <div class="cap"><div class="t">TIP-A2</div><div class="d">Список волн ≤2. Когорта — union по людям.</div></div>
+    </div>
+
+    <div class="rule-card">
+      <span class="badge mut">Вариант 2 · не для v1</span>
+      <div class="rh">Когорта на каждый курс</div>
+      <div class="tip">
+        <div class="t-title">…</div>
+        <div class="split">
+          <div>«Фишинг» → 5% vs 18%</div>
+          <div style="margin-top:4px">«Вложения» → 9% vs 17%</div>
+          <div style="margin-top:4px">«SE» → 6% vs 20%</div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Тяжело в API и в чтении; пересечения людей ломают сумму. Отложить в разворот атаки / Обучение.</div>
+      <div class="cap"><div class="t">TIP-A×N</div><div class="d">Не в ховере сводки.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>7. Программа vs курс vs волна — как подписывать</h2>
+  <div class="rule-card wide">
+    <div class="do-dont">
+      <div class="ok">
+        <b>Иерархия в одной строке</b>
+        <div class="note" style="margin-top:6px; line-height:1.55">
+          <b>Программа</b> — один раз над списком ( Awareness / Phishing defense ), если все волны из неё.<br>
+          Если волны из <b>двух программ</b> — не дублировать шапку: в каждой строке префикс программы коротким ярлыком.<br><br>
+          Пример строк:<br>
+          · Awareness / «Фишинг базовый» · волна 2 · с 1 авг<br>
+          · Onboarding / «ОС логин» · с 5 июл
+        </div>
+      </div>
+      <div class="no">
+        <b>Не делать</b>
+        <ul class="note" style="margin:6px 0 0 14px; line-height:1.5">
+          <li>Дерево программ целиком</li>
+          <li>«Все курсы программы Awareness (12)»</li>
+          <li>Смешивать в когорте нерелевантный курс (онбординг firewall к clickfix-ссылке) без домен-фильтра</li>
+          <li>Считать «с курсом», если курс начат после старта атаки</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>8. Определение «с курсом» при многих курсах</h2>
+  <div class="map" style="display:flex; flex-direction:column; align-items:stretch; gap:10px; max-width:720px">
+    <div><b>С курсом</b> = человек завершил ≥1 <b>релевантный</b> курс/волну <b>до</b> даты старта атаки (в lookback).</div>
+    <div><b>Без курса</b> = не завершил ни одного релевантного до якоря (включая «не начато» и «в процессе»).</div>
+    <div><b>Не в когорте</b> = не получал эту атаку (не в delivered) — в знаменатель F не класть.</div>
+    <div><b>Lookback</b> open Q: 90 / 180 дн. Дольше — шум «древних» курсов.</div>
+    <div><b>«Ещё N»</b> в TIP-A2 ведёт на вкладку Обучение с фильтром периода до атаки — не раскрывает список в tooltip.</div>
+  </div>
+</section>
+
+<section>
+  <h2>9. Сводка правил одной строкой</h2>
+  <div class="map" style="display:flex; flex-direction:column; align-items:stretch; gap:10px; max-width:720px">
+    <div><b>●</b> атака → TIP-A / TIP-A2 (атака + до 2 волн + одна когорта) → клик в Атаки</div>
+    <div><b>│</b> волна → TIP-B (только эта волна) → Обучение</div>
+    <div><b>—</b> линия / фон → ничего</div>
+    <div><b>N курсов</b> → отбор по дате + домен + лимит 2; когорта = union «≥1 релевантный»</div>
+    <div><b>?</b> нет данных когорты → заглушка без цифр F</div>
+    <div><b>📱</b> tap → sheet с тем же составом</div>
+  </div>
+</section>
+
+</body>
+</html>

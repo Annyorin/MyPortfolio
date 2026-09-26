@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сводка · вкладка Обучение — lo-fi wireframe</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  /* Локальные примитивы каркаса вкладки — палитра board.css */
+  .desk-frame.tall{height:auto; min-height:720px}
+  .eff-4{display:flex; gap:8px}
+  .eff-4 .metric{flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:#fff}
+  .eff-4 .ml{font-size:10px; color:var(--mut)}
+  .eff-4 .mv{font-size:18px; font-weight:700; margin-top:4px}
+  .eff-4 .ms{font-size:10px; color:var(--mut); margin-top:2px}
+  .stack-bar{
+    display:flex; height:14px; border-radius:7px; overflow:hidden;
+    border:1px solid var(--line); margin-top:8px;
+  }
+  .stack-bar i{display:block; height:100%}
+  .stack-bar .s1{background:var(--ink); flex:42}
+  .stack-bar .s2{background:var(--block2); flex:24}
+  .stack-bar .s3{background:var(--work); flex:12}
+  .stack-bar .s4{background:var(--block); flex:22; border-left:1px dashed var(--line)}
+  .scope-5{display:flex; gap:8px; flex-wrap:wrap}
+  .scope-5 .metric{
+    flex:1; min-width:110px;
+    border:1px solid var(--line); border-radius:10px;
+    padding:8px 10px; background:#fff;
+  }
+  .person-list{display:flex; flex-direction:column; gap:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#fff}
+  .person-list .prow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .person-list .prow:last-child{border-bottom:none}
+  .person-list .prow.head{background:var(--block); color:var(--mut); font-weight:600; font-size:10px}
+  .person-list .c-name{flex:2; min-width:0}
+  .person-list .c-meta{flex:2; color:var(--mut); font-size:10px}
+  .person-list .c-val{flex:1; text-align:right; font-weight:700}
+  .filter-row{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+  .role-note{
+    margin-top:10px; padding:8px 10px; border:1px dashed var(--line);
+    border-radius:8px; background:var(--block); font-size:11px; color:var(--mut);
+  }
+  .seg-tabs{display:flex; gap:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#fff; width:fit-content}
+  .seg-tabs span{padding:6px 12px; font-size:11px; color:var(--mut); border-right:1px solid var(--line)}
+  .seg-tabs span:last-child{border-right:none}
+  .seg-tabs span.on{background:var(--ink); color:#fff; font-weight:700}
+  .course-table{display:flex; flex-direction:column; gap:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#fff}
+  .course-table .crow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .course-table .crow:last-child{border-bottom:none}
+  .course-table .crow.head{background:var(--block); color:var(--mut); font-weight:600; font-size:10px}
+  .course-table .crow.on{background:var(--block); outline:1.5px solid var(--ink); outline-offset:-1.5px}
+  .course-table .cc{flex:2.4; min-width:0}
+  .course-table .cn{flex:1; text-align:right; font-variant-numeric:tabular-nums}
+  .course-table .cs{flex:1; text-align:right; font-weight:700}
+  .course-table .ct{flex:1.1; text-align:right; color:var(--mut)}
+  .crumb{font-size:11px; color:var(--mut)}
+  .crumb b{color:var(--ink); font-weight:600}
+</style>
+</head>
+<body>
+
+<h1>Сводка · вкладка «Обучение»</h1>
+<p class="sub">Lo-fi каркас вкладки эффективности обучения на дашборде. Аудитория: специалисты ИБ и HR — один layout, без dual-mode. Смотрят статусы курсов, объём программы и два списка людей: лидеры и требующие внимания. Это структура, не визуальный стиль. Связь: расширяет тонкий срез DB-HR-D из <a href="dashboard-wireframes-desktop.html">dashboard-wireframes-desktop.html</a>.</p>
+
+<div class="princ">
+  <span>Эффективность = завершено · провалено · в процессе · не начато</span>
+  <span>Объём: люди · активные · группы · программы · курсы</span>
+  <span>Лидеры и «внимание» — рядом, не вместо друг друга</span>
+  <span>ИБ и HR на одном каркасе · без Risk/атак как primary</span>
+  <span>Раздел shell «Обучение» = EXT · вкладка = сводка</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Эффективность обучения</div>
+  <div><span class="dot" style="background:var(--f2)">2</span> Действие с человека (назначить / открыть)</div>
+  <div><span class="dot" style="background:var(--f3)">3</span> Роль HR / ИБ на одном экране</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>Сводка</b></span>
+  <span class="arr">→</span>
+  <span class="tabs">
+    <span class="tab">ИБ</span>
+    <span class="tab">Обучение</span>
+    <span class="tab">SOC</span>
+  </span>
+  <span class="arr">→</span>
+  <span class="node"><b>Выход</b>: Пользователи · EXT-Обучение · назначение</span>
+</div>
+
+<!-- ── PRIMARY ─────────────────────────────────────────────── -->
+<section>
+  <h2>1. Вкладка «Обучение» — desktop (primary)</h2>
+  <p>Чип «Обучение» на сводке (рядом с ИБ / SOC). HR может landиться сразу сюда. Без Risk Score и метрик атак как якоря экрана.</p>
+
+  <div class="row">
+    <div class="cell desk">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f2)">2</span>
+          <span class="dot" style="background:var(--f3)">3</span>
+        </div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">Программа А</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика · Обучение</div>
+              <div class="note">Период: 1–30 сен 2026 · org-срез · без атак на этом экране</div>
+            </div>
+            <div class="h-right">
+              <span class="chip">ИБ</span>
+              <span class="chip on">Обучение</span>
+              <span class="chip">SOC</span>
+              <div class="btn ghost">Период</div>
+              <div class="btn pr">Экспорт</div>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <span class="chip on">Все группы</span>
+            <span class="chip">Все программы</span>
+            <span class="chip">Все курсы</span>
+            <span class="note">фильтры сужают и статусы, и списки людей</span>
+          </div>
+
+          <!-- Объём -->
+          <div class="desk-panel">
+            <div class="pt">Объём программы</div>
+            <div class="scope-5">
+              <div class="metric">
+                <div class="ml">Пользователей в программе</div>
+                <div class="mv" style="font-size:18px;font-weight:700;margin-top:4px">1 184</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Активных за период</div>
+                <div class="mv" style="font-size:18px;font-weight:700;margin-top:4px">412</div>
+                <div class="note">открыли курс / прошли урок</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Групп</div>
+                <div class="mv" style="font-size:18px;font-weight:700;margin-top:4px">18</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Программ</div>
+                <div class="mv" style="font-size:18px;font-weight:700;margin-top:4px">3</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Курсов</div>
+                <div class="mv" style="font-size:18px;font-weight:700;margin-top:4px">12</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Эффективность -->
+          <div class="desk-panel">
+            <div class="pt">Эффективность обучения · назначения за период</div>
+            <div class="eff-4">
+              <div class="metric">
+                <div class="ml">Завершено</div>
+                <div class="mv">210</div>
+                <div class="ms">42%</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Провалено</div>
+                <div class="mv">58</div>
+                <div class="ms">12% · ниже порога балла</div>
+              </div>
+              <div class="metric">
+                <div class="ml">В процессе</div>
+                <div class="mv">126</div>
+                <div class="ms">25%</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Не начато</div>
+                <div class="mv">112</div>
+                <div class="ms">22%</div>
+              </div>
+            </div>
+            <div class="stack-bar" aria-hidden="true" title="доля статусов">
+              <i class="s1"></i><i class="s3"></i><i class="s2"></i><i class="s4"></i>
+            </div>
+            <div class="note">Статусы назначения: завершено · провалено · в процессе · не начато. Клик → список людей с этим статусом. «Провалено» ≠ «не начато»; просрок — отдельный фильтр во «внимании».</div>
+          </div>
+
+          <!-- Курсы: средний балл + время -->
+          <div class="desk-panel">
+            <div class="pt">Курсы · сравнение</div>
+            <div class="course-table">
+              <div class="crow head">
+                <span class="cc">Курс</span>
+                <span class="cn">Назначено</span>
+                <span class="cs">Ср. балл</span>
+                <span class="ct">Ср. время</span>
+              </div>
+              <div class="crow">
+                <div class="cc"><b>Фишинг базовый</b><br><span class="note">завершено 64% · 203 из 318</span></div>
+                <div class="cn">318</div>
+                <div class="cs">76</div>
+                <div class="ct">38 мин</div>
+              </div>
+              <div class="crow">
+                <div class="cc"><b>Вложения и macros</b><br><span class="note">завершено 41% · 80 из 194</span></div>
+                <div class="cn">194</div>
+                <div class="cs">69</div>
+                <div class="ct">52 мин</div>
+              </div>
+              <div class="crow">
+                <div class="cc"><b>Social engineering</b><br><span class="note">завершено 55% · 92 из 168</span></div>
+                <div class="cn">168</div>
+                <div class="cs">81</div>
+                <div class="ct">35 мин</div>
+              </div>
+            </div>
+            <div class="note">Строка курса → DB-TRAIN-COURSE-D (статистика курса). Сортировка по баллу / времени / завершённости [Should].</div>
+          </div>
+
+          <!-- Лидеры | Внимание -->
+          <div class="desk-row" style="flex:1">
+            <div class="desk-panel col-eq">
+              <div class="pt">Лидеры обучения</div>
+              <div class="person-list">
+                <div class="prow head">
+                  <span class="c-name">Сотрудник</span>
+                  <span class="c-meta">Группа · курсы</span>
+                  <span class="c-val">Завершено</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:24px;height:24px"></div>
+                  <div class="c-name"><b>Петрова А.С.</b></div>
+                  <div class="c-meta">Маркетинг · 4/4</div>
+                  <div class="c-val">100%</div>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:24px;height:24px"></div>
+                  <div class="c-name"><b>Ким В.Л.</b></div>
+                  <div class="c-meta">ИТ · 3/3</div>
+                  <div class="c-val">100%</div>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:24px;height:24px"></div>
+                  <div class="c-name"><b>Нурматов Р.</b></div>
+                  <div class="c-meta">Финансы · 3/4</div>
+                  <div class="c-val">75%</div>
+                </div>
+              </div>
+              <div class="note">Тап по ФИО → EXT-USERS. Без CTA «обучить» — уже лидеры.</div>
+            </div>
+
+            <div class="desk-panel col-eq">
+              <div class="pt">Требуют внимания</div>
+              <div class="seg-tabs" aria-label="Причина внимания">
+                <span class="on">Не начато</span>
+                <span>Провалено</span>
+                <span>Срок</span>
+              </div>
+              <div class="person-list">
+                <div class="prow head">
+                  <span class="c-name">Сотрудник</span>
+                  <span class="c-meta">Курс · причина</span>
+                  <span class="c-val"></span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:24px;height:24px"></div>
+                  <div class="c-name"><b>Иванов И.И.</b></div>
+                  <div class="c-meta">Вложения · не начал · 14 дн.</div>
+                  <span class="tgbtn">Обучить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:24px;height:24px"></div>
+                  <div class="c-name"><b>Сидорова М.В.</b></div>
+                  <div class="c-meta">Вложения · не начал · 9 дн.</div>
+                  <span class="tgbtn">Обучить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:24px;height:24px"></div>
+                  <div class="c-name"><b>Козлов П.А.</b></div>
+                  <div class="c-meta">SE · не начал · 7 дн.</div>
+                  <span class="tgbtn">Обучить</span>
+                </div>
+              </div>
+              <div class="note">Вкладки внимания: не начато | провалено (балл ниже порога) | срок (дедлайн прошёл, ещё не завершено). На «Провалено»: курс · балл · порог. На «Срок»: курс · просрок N дн. · статус в процессе/не начато. CTA → DASH-ASSIGN.</div>
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="btn ghost" style="flex:1">Открыть раздел Обучение</div>
+            <div class="btn ghost" style="flex:1">Назначить массово</div>
+          </div>
+
+          <div class="role-note">
+            <b>ИБ:</b> приходит с чипа «Обучение» после сводки атак — смотрит, кого доучить после фишинга.
+            <b>HR:</b> может открывать вкладку первой — смотрит объём, статусы и внимание без Risk/атак.
+            Один экран, без переключателя «режим ИБ / режим HR».
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-TRAIN-D. Вкладка Обучение · Desktop</div>
+        <div class="d">Объём → эффективность (4 статуса) → таблица курсов (ср. балл, ср. время) → лидеры | внимание. Клик по курсу → разворот курса.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COURSE DRILL ────────────────────────────────────────── -->
+<section>
+  <h2>2. Статистика конкретного курса</h2>
+  <p>Разворот с вкладки Обучение. Тот же период и фильтры групп. Не уходит сразу в shell «Обучение», пока смотрят цифры.</p>
+
+  <div class="row">
+    <div class="cell desk">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f2)">2</span>
+        </div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">Программа А</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="crumb">Обучение → <b>Фишинг базовый</b></div>
+              <div class="h-title">Курс · статистика</div>
+              <div class="note">Период: 1–30 сен 2026 · группа: все · программа: Awareness</div>
+            </div>
+            <div class="h-right">
+              <div class="btn ghost">← К курсам</div>
+              <div class="btn ghost">Период</div>
+              <div class="btn pr">Экспорт курса</div>
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="metric risk-big col-1" style="border:1px solid var(--line); border-radius:10px; padding:10px; background:#fff">
+              <div class="ml">Средний балл</div>
+              <div class="mv">76</div>
+              <div class="note" style="margin-top:4px">из 100 · по 203 завершившим</div>
+            </div>
+            <div class="metric risk-big col-1" style="border:1px solid var(--line); border-radius:10px; padding:10px; background:#fff">
+              <div class="ml">Среднее время</div>
+              <div class="mv" style="font-size:24px">38 мин</div>
+              <div class="note" style="margin-top:4px">старт → завершение</div>
+            </div>
+            <div class="desk-panel col-eq">
+              <div class="pt">Эффективность курса</div>
+              <div class="eff-4">
+                <div class="metric"><div class="ml">Завершено</div><div class="mv" style="font-size:16px">203</div></div>
+                <div class="metric"><div class="ml">Провалено</div><div class="mv" style="font-size:16px">22</div></div>
+                <div class="metric"><div class="ml">В процессе</div><div class="mv" style="font-size:16px">48</div></div>
+                <div class="metric"><div class="ml">Не начато</div><div class="mv" style="font-size:16px">45</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="desk-panel col-eq">
+              <div class="pt">Сравнение с другими курсами</div>
+              <div class="course-table">
+                <div class="crow head">
+                  <span class="cc">Курс</span>
+                  <span class="cs">Ср. балл</span>
+                  <span class="ct">Ср. время</span>
+                </div>
+                <div class="crow on">
+                  <div class="cc"><b>Фишинг базовый</b> · этот</div>
+                  <div class="cs">76</div>
+                  <div class="ct">38 мин</div>
+                </div>
+                <div class="crow">
+                  <div class="cc">Вложения и macros</div>
+                  <div class="cs">69</div>
+                  <div class="ct">52 мин</div>
+                </div>
+                <div class="crow">
+                  <div class="cc">Social engineering</div>
+                  <div class="cs">81</div>
+                  <div class="ct">35 мин</div>
+                </div>
+              </div>
+              <div class="note">Зачем рядом: понять, курс тяжёлый (долго) или слабый (низкий балл).</div>
+            </div>
+            <div class="desk-panel col-eq">
+              <div class="pt">По этому курсу · внимание</div>
+              <div class="person-list">
+                <div class="prow head">
+                  <span class="c-name">Сотрудник</span>
+                  <span class="c-meta">Статус</span>
+                  <span class="c-val"></span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:24px;height:24px"></div>
+                  <div class="c-name"><b>Орлов Д.А.</b></div>
+                  <div class="c-meta">не начал · 11 дн.</div>
+                  <span class="tgbtn">Обучить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:24px;height:24px"></div>
+                  <div class="c-name"><b>Жукова Е.Н.</b></div>
+                  <div class="c-meta">провалено · балл 41 · порог 60</div>
+                  <span class="tgbtn">Обучить</span>
+                </div>
+              </div>
+              <div class="note">Список уже отфильтрован этим курсом. CTA → DASH-ASSIGN с курсом в контексте.</div>
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="desk-panel col-eq">
+              <div class="pt">Лидеры курса</div>
+              <div class="conn">
+                <div class="avatar" style="width:28px;height:28px"></div>
+                <div style="flex:1; font-size:11px"><b>Петрова А.С.</b><br><span class="note">балл 96 · 28 мин</span></div>
+              </div>
+              <div class="conn">
+                <div class="avatar" style="width:28px;height:28px"></div>
+                <div style="flex:1; font-size:11px"><b>Ким В.Л.</b><br><span class="note">балл 94 · 31 мин</span></div>
+              </div>
+            </div>
+            <div class="desk-panel col-1" style="justify-content:center; gap:8px">
+              <div class="pt">Действия</div>
+              <div class="btn pr">Открыть в Обучении</div>
+              <div class="btn ghost">Назначить курс</div>
+              <div class="note">→ EXT-TRAINING · DASH-ASSIGN</div>
+            </div>
+          </div>
+
+          <div class="role-note">
+            <b>Средний балл</b> — по назначениям со статусом «завершено» (open Q: включать ли «провалено» в отдельный ср. балл неуспеха).
+            <b>Среднее время</b> — от первого открытия до «завершено»; проваленные и не начатые вне среднего.
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-TRAIN-COURSE-D. Курс · статистика</div>
+        <div class="d">Якоря: ср. балл + ср. время. Рядом статусы курса, сравнение с другими курсами, внимание и лидеры именно по этому курсу. Назад → таблица курсов на DB-TRAIN-D.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EMPTY / LOADING ─────────────────────────────────────── -->
+<section>
+  <h2>3. Состояния</h2>
+  <p>Пусто и загрузка — отдельные ячейки, не оговорка в подписи.</p>
+
+  <div class="row">
+
+    <div class="cell desk">
+      <div class="desk-frame" style="height:420px">
+        <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
+        <nav class="desk-nav">
+          <div class="brand">Программа А</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика · Обучение</div>
+              <div class="note">Нет назначений в периоде</div>
+            </div>
+            <div class="h-right">
+              <span class="chip">ИБ</span>
+              <span class="chip on">Обучение</span>
+              <span class="chip">SOC</span>
+            </div>
+          </div>
+          <div class="center" style="border:1px dashed var(--line); border-radius:12px; padding:28px; background:#fff">
+            <div class="bar" style="width:160px"></div>
+            <div class="note" style="max-width:280px; text-align:center">В выбранном периоде нет назначенных курсов. Назначьте обучение или смените период.</div>
+            <div class="btn pr" style="min-width:160px; padding:8px 14px">Открыть Обучение</div>
+            <div class="btn ghost" style="min-width:160px; padding:8px 14px">Сменить период</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-TRAIN-EMPTY-D</div><div class="d">Нули/пусто по назначениям. CTA в EXT-TRAINING или смена периода. Не показывать фейковые лидеры.</div></div>
+    </div>
+
+    <div class="cell desk">
+      <div class="desk-frame" style="height:420px">
+        <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
+        <nav class="desk-nav">
+          <div class="brand">Программа А</div>
+          <span class="on">Сводка</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика · Обучение</div>
+              <div class="note">Загрузка…</div>
+            </div>
+            <div class="h-right">
+              <span class="chip on">Обучение</span>
+            </div>
+          </div>
+          <div class="skel-line" style="width:100%"></div>
+          <div class="desk-row">
+            <div class="skel-block"></div>
+            <div class="skel-block"></div>
+            <div class="skel-block"></div>
+            <div class="skel-block"></div>
+            <div class="skel-block"></div>
+          </div>
+          <div class="skel-line" style="width:100%; height:14px; border-radius:7px"></div>
+          <div class="desk-row" style="flex:1">
+            <div class="skel-block"></div>
+            <div class="skel-block"></div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-TRAIN-LOAD-D</div><div class="d">Скелетон: 5 объёма → 4 статуса → 2 списка. Контент без интерактивов.</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── LOGIC ───────────────────────────────────────────────── -->
+<section>
+  <h2>4. Логика вне каркаса</h2>
+  <p>Правила, которые не видны в серых блоках, но держат вкладку.</p>
+  <div class="desk-panel" style="max-width:920px">
+    <ul class="note" style="margin:0 0 0 16px; line-height:1.55; color:var(--mut)">
+      <li><b>Четыре статуса назначения:</b> завершено · провалено · в процессе · не начато. Взаимоисключающие.</li>
+      <li><b>Провалено</b> — сдал / завершил попытку ниже порога балла. <b>Не начато</b> — ещё не открывал. Не смешивать.</li>
+      <li><b>В процессе</b> — открывал, ещё не завершил и не провалил; дедлайн может быть в будущем.</li>
+      <li><b>Срок</b> (внимание) — не статус, а фильтр: дедлайн прошёл, назначение ещё не в «завершено». Может пересечься с «не начато» или «в процессе»; при пересечении с «провалено» приоритет у провалено.</li>
+      <li><b>Активные за период</b> — открыли урок или сдали тест в окне периода; не все «в программе».</li>
+      <li><b>Таблица курсов</b> на сводке: ср. балл + ср. время по каждому курсу за период. Строка → разворот курса.</li>
+      <li><b>Средний балл курса</b> — по статусу «завершено» (и опц. по попыткам «провалено» — open Q). «Не начато» в знаменатель не класть.</li>
+      <li><b>Среднее время</b> — от первого открытия до «завершено». Проваленные / не начавшие — вне среднего времени успеха.</li>
+      <li><b>Лидеры</b> — по доле «завершено». На развороте курса — по баллу/времени.</li>
+      <li><b>Внимание</b> — сегменты: не начато | провалено | срок. На развороте курса — с фильтром курса.</li>
+      <li><b>ИБ vs HR:</b> один layout. ИБ не видит здесь Risk/атаки. HR не видит топ уязвимых по фишингу.</li>
+      <li><b>Shell «Обучение»</b> → EXT-TRAINING. Вкладка сводки — аналитика, не подмена раздела.</li>
+      <li><b>Не делать:</b> dual-mode; светофор «плохо»; смешивать лидеров обучения с топом уязвимых атак.</li>
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

@@ -355,7 +355,7 @@ describe("TC-E2E-03 Media proportions", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(mediaSection);
-    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 16);
+    assert.equal((mediaSection[0].match(/data-media="/g) || []).length, 17);
 
     for (const [key, box] of Object.entries(MEDIA_BOXES)) {
       const slotRe = new RegExp(

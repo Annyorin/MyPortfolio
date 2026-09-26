@@ -2,8 +2,8 @@
 type: manifest
 env: 02-design-system
 status: synced
-version: 0.1.9
-updated: 2026-09-14
+version: 0.1.12
+updated: 2026-09-26
 figma_fileKey: xboMnqU5JURL0xlzxN7edN
 ui_kit_node: "41:11520"
 portfolio_home_node: "41:1416"
@@ -17,7 +17,7 @@ portfolio_home_node: "41:1416"
 Версия поднимается при каждом изменении состава компонентов или токенов — по ней
 среда 4 определяет устаревание зеркала.
 
-**Источник Ui kit:** [Портфолио · Ui kit](https://www.figma.com/design/xboMnqU5JURL0xlzxN7edN/Портфолио?node-id=41-11520) · `fileKey` `xboMnqU5JURL0xlzxN7edN` · node `41:11520` · **v0.1.9** (Header 620×81 py16; Hint v0.1.8; Toolbar / Dragon/Phish/stickers/Macbook v0.1.6–0.1.7).
+**Источник Ui kit:** [Портфолио · Ui kit](https://www.figma.com/design/xboMnqU5JURL0xlzxN7edN/Портфолио?node-id=41-11520) · `fileKey` `xboMnqU5JURL0xlzxN7edN` · node `41:11520` · **v0.1.12** (Header py 16 · px 0, без pr 24; v0.1.11 About me geometry; Header size v0.1.9).
 
 **Сцена продукта:** [Портфолио · Главная](https://www.figma.com/design/xboMnqU5JURL0xlzxN7edN/Портфолио?node-id=41-1416) · node `41:1416` (composition reference, не витрина DS).
 
@@ -51,7 +51,7 @@ portfolio_home_node: "41:1416"
 | FloatingAction | circle **50×50** · arrow −90° · Black `#232323` · shadow 0 5 / 4.5 | default | synced | `169:13303` |
 | Card | default, hover · 310×310 · **Shadow на обоих** | default / hover | synced | `40:1209` (`40:1208`, `40:1207`) |
 | Sidebar (profile) | 310×561 | default | synced | `158:11468` |
-| Header | — · **620×81** · py 16 · Button Text + title Gray_text H2 (flex) | default | synced | `226:15768` |
+| Header | — · **620×81** · py 16 · px 0 · Button Text + title Gray_text H2 (flex) | default | synced | `226:15768` (+ desktop `401:23328`) |
 | Toolbar | — · **360×48** · «Назад» + BurgerMenu · mobile case | default | synced | `247:16546` |
 | SegmentsControl | long, short · Figma **Segmets_control** · **620×42** | Property 1 | synced | `226:15785` / `226:15784` |
 | TitleSidebar | default, hover · H2 Black / Gray_text | State | synced | `227:16230` (`227:16228`, `227:16229`) |
@@ -67,14 +67,16 @@ portfolio_home_node: "41:1416"
 | Comp | ~160×120 | default | synced | `41:11511` |
 | me | 254×254 | default | synced | `105:11564` |
 | Macbook | **388×283** · lid + stickers | default | synced | `248:17115` |
-| anime | стикер · **~100×91** | default | synced | `244:17347` |
-| books | стикер · **~84×73** | default | synced | `244:17349` |
-| create | стикер · **~62×62** | default | synced | `244:17346` |
-| question | стикер · **~59×69** | default | synced | `244:17348` |
+| **About me** | композит · **209.61×116.01** · me +12.596° / Macbook −10° / Stiker · home `391:22959` · **`.ds-about-me`** | default | synced | `391:22957` |
+| **MacbookPng** | плоский прелоад · **310×226** · `macbook-png.png` (keys `macbook` / `macbook.png`) | default | synced | `391:22958` |
+| anime | стикер · **~100×92** | default | synced | `248:17091` |
+| books | стикер · **~99×85** | default | synced | `248:17095` |
+| create | стикер · **~61×60** | default | synced | `248:17099` |
+| question | стикер · **~40×48** | default | synced | `248:17103` |
 | seal | стикер · **144×60** | default | synced | `244:17350` |
-| sport | стикер · **~102×87** | default | synced | `245:17642` |
+| sport | стикер · **~122×104** | default | synced | `248:17104` |
 
-Именованных единиц (манифест): **39+**. Карточек в `components/`: **26**.
+Именованных единиц (манифест): **41+**. Карточек в `components/`: **26**.
 
 ## Паттерны
 
@@ -85,20 +87,24 @@ portfolio_home_node: "41:1416"
 ## Handoff для портфолио / Storybook
 
 - **Ui kit root** `41:11520` (не `41:11646`).
+- **Refresh v0.1.12:** Header (`226:15768`, desktop `401:23328`) — padding **py 16 · px 0** (снят ошибочный **pr 24**); CSS `padding: 16px 0`.
+- **Refresh v0.1.11:** **About me** (`391:22957`, home `391:22959`) — frame **209.61×116.01**; local children: me **83.45² @ +12.596°**, Macbook **126×92 @ −10°**, Stiker **81×32 @ 0**; paint **me → Macbook → Stiker**; `.ds-about-me`. Dark Stiker: fill White `#FEFEFE`, text Primary `#2D97F7` (не surface `#232323`).
+- **MacbookPng everywhere:** `391:22958` · **310×226** · asset `macbook-png.png`; product keys **`macbook`** и **`macbook.png`**. Supersedes `macbook-248-17115.png` и старый About Macbook AABB **140.61×111.01**.
+- **Новые units v0.1.10:** About me + MacbookPng nodes зарегистрированы (геометрия уточнена в v0.1.11).
 - **Refresh v0.1.9:** Header (`226:15768`) — **620×81**, padding **py 16** (было 24 / 85); title flex slot (снят absolute-center).
 - **Новые units v0.1.8:** Hint (`251:21308`) — white tip · `.ds-hint` · Macbook sticker hover.
 - **Новые units v0.1.7:** Toolbar (`247:16546`) — mobile case chrome ≤480 вместо Header.
-- **Macbook refresh:** node → **`248:17115`** · **388×283** · layered `macbook-lid.png` + `stickers/*.png` на About; collapsed/showcase composite `macbook-248-17115.png`.
+- **Macbook layered:** node **`248:17115`** · **388×283** · `macbook-lid.png` + `stickers/*.png` (expanded About); collapsed flat = **MacbookPng** only.
 - **Новые units v0.1.6:** Dragon (`232:16826`), Phish (`232:16829`), stickers anime/books/create/question/seal/sport; Macbook был `247:16308`.
 - **Новые units v0.1.5:** MenuMobile (`245:17643`), `--shadow-mobile`; Figma Menu = SideBar TOC.
 - **Новые units v0.1.4:** Header, SegmentsControl (Segmets_control), TitleSidebar, SideBar (TOC), Button **Text**, icons **Burger_menu** + **arrow-left**; Card shadow на default.
 - **Новые units v0.1.3:** ProfileMobile, FloatingAction, SityBike (CityBike), Button, Tooltip, CursorFigma; media **me**, **Macbook**.
-- **Переименования / алиасы:** Avatar → **Avatar90**; Hover → Figma **CursorHover** (файл `hover.md`); SityBike = CityBike; Dragon = InnoDragon cover; Phish = InnoPhish cover; Segmets_control = **SegmentsControl**; **Menu** / **SideBar** TOC ≠ **Sidebar** profile; **MenuMobile** = burger panel.
-- **Ассеты:** `dragon.png` / `phish.png` (канон covers); зеркала `card-innodragon.png`↔`img-1.png`, `card-innophish.png`↔`img-2.png`; `macbook.png` @3× **1164×849** (`248:17115`); stickers SVG витрина + PNG для Macbook hover.
-- **Storybook units:** Chip, Link, Card, Sidebar, SideNav/Menu, MenuMobile, Header, Toolbar, SegmentsControl, TitleSidebar, Tapper, Stiker, Hover/CursorHover, Button (incl. Text), Tooltip, Hint (showcase), Avatar90, Profile, ProfileMobile, FloatingAction, CursorFigma, Icons (incl. Burger_menu, arrow-left), Media (`IMG_*`, `Comp`, `me`, `Macbook`, `SityBike`, `Dragon`, `Phish`, stickers).
+- **Переименования / алиасы:** Avatar → **Avatar90**; Hover → Figma **CursorHover** (файл `hover.md`); SityBike = CityBike; Dragon = InnoDragon cover; Phish = InnoPhish cover; Segmets_control = **SegmentsControl**; **Menu** / **SideBar** TOC ≠ **Sidebar** profile; **MenuMobile** = burger panel; `macbook`/`macbook.png` → **MacbookPng** asset.
+- **Ассеты:** `dragon.png` / `phish.png` (канон covers); зеркала `card-innodragon.png`↔`img-1.png`, `card-innophish.png`↔`img-2.png`; collapsed Macbook = `macbook-png.png`; stickers SVG витрина + PNG для Macbook hover.
+- **Storybook units:** Chip, Link, Card, Sidebar, SideNav/Menu, MenuMobile, Header, Toolbar, SegmentsControl, TitleSidebar, Tapper, Stiker, Hover/CursorHover, Button (incl. Text), Tooltip, Hint (showcase), Avatar90, Profile, ProfileMobile, FloatingAction, CursorFigma, Icons (incl. Burger_menu, arrow-left), Media (`IMG_*`, `Comp`, `me`, `Macbook`, **About me**, **MacbookPng**, `SityBike`, `Dragon`, `Phish`, stickers).
 - **Black product override:** `#232323` (не Variable Black `#000000`).
-- **Фикс. размеры:** Tapper **104×40**, CursorHover **114×40**, Card **310×310**, Sidebar **310×561**, SideBar **262×212**, MenuMobile **167×224**, Header **620×81**, Toolbar **360×48**, SegmentsControl **620×42**, ProfileMobile **240×48**, FloatingAction **50×50**, SityBike/Dragon/Phish **308×190**, Macbook **388×283**, Button filled **~103×36**, Button Text **~115×36** (Header «На главную»), Hint max-width **~252**.
-- **Comp / Stiker / Macbook на Главной:** сверять по **bbox сцены** `41:1416`, не только по atomic-размеру витрины (Macbook About child ≠ 388×283).
+- **Фикс. размеры:** Tapper **104×40**, CursorHover **114×40**, Card **310×310**, Sidebar **310×561**, SideBar **262×212**, MenuMobile **167×224**, Header **620×81**, Toolbar **360×48**, SegmentsControl **620×42**, ProfileMobile **240×48**, FloatingAction **50×50**, SityBike/Dragon/Phish **308×190**, Macbook **388×283**, About me **209.61×116.01**, MacbookPng **310×226**, Button filled **~103×36**, Button Text **~115×36** (Header «На главную»), Hint max-width **~252**.
+- **About me на Главной:** instance `391:22959` ↔ component `391:22957`; Macbook child **126×92 @ −10°**, не atomic **388×283**.
 
 ## Известные ограничения
 
@@ -108,5 +114,7 @@ portfolio_home_node: "41:1416"
 - GrayL только CSS, без свотча на витрине (если свотч отсутствует).
 - Text2 (14/18) зафиксирован на SegmentsControl; отдельного свотча в foundations может не быть.
 - Motion-токенов нет; hover — статические варианты.
-- Macbook: atomic Ui kit 388×283; сцена About на Главной держит свой bbox — не ломать composition ради паритета.
+- Macbook atomic Ui kit **388×283**; в About me child **126×92 @ −10°** — не подгонять atomic под composition.
+- About me Stiker в dark: fill остаётся White `#FEFEFE`, text Primary `#2D97F7` — не remap на surface.
+- MacbookPng ≠ layered Macbook `248:17115` и ≠ композит About me.
 - Продуктовый HTML/CSS / Storybook вне этой среды не генерируется (handoff витрины — исключение оркестратора).

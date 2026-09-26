@@ -446,12 +446,12 @@ describe("portfolio scene renderer", () => {
     );
     assert.ok(byId.me && byId.macbook && byId.stiker);
     assert.equal(parsePx(byId.me.style.left), 0);
-    assert.equal(parsePx(byId.me.style.top), 18.2);
-    assert.equal(byId.me.style.transform, "rotate(-12.6deg)");
+    assert.equal(parsePx(byId.me.style.top), 10.2);
+    assert.equal(byId.me.style.transform, "rotate(-12.596deg)");
     assert.equal(byId.me.style.transformOrigin, "0 0");
-    assert.equal(parsePx(byId.macbook.style.left), 85.23);
+    assert.equal(parsePx(byId.macbook.style.left), 84.98);
     assert.equal(parsePx(byId.macbook.style.top), 5);
-    assert.equal(byId.macbook.style.transform, "rotate(10.44deg)");
+    assert.equal(byId.macbook.style.transform, "rotate(10deg)");
     assert.ok(byId.macbook.querySelector(".scene-about__macbook-lid"));
     const stickers = byId.macbook.querySelectorAll(".scene-about__sticker");
     assert.equal(stickers.length, 6);
@@ -463,9 +463,9 @@ describe("portfolio scene renderer", () => {
       byId.macbook.querySelector(".scene-about__stickers")?.getAttribute("inert") !=
         null
     );
-    assert.equal(parsePx(byId.stiker.style.left), 24);
-    assert.equal(parsePx(byId.stiker.style.top), 83.49);
-    assert.equal(byId.stiker.style.transform, "rotate(-3.89deg)");
+    assert.equal(parsePx(byId.stiker.style.left), 29);
+    assert.equal(parsePx(byId.stiker.style.top), 78);
+    assert.ok(!byId.stiker.style.transform || byId.stiker.style.transform === "none");
   });
 
   it("TC-E2E-03: profile.role and card.a.title match contentMap", () => {

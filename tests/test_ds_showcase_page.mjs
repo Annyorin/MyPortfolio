@@ -118,7 +118,7 @@ describe("TC-E2E-01 viewport 1280+ no critical horizontal scroll", () => {
     assert.match(css, /overflow-x\s*:\s*hidden/);
     assert.match(css, /\.ds-showcase\s*\{[\s\S]*max-width\s*:\s*100%/);
     assert.match(css, /background-color\s*:\s*var\(\s*--page-bg\s*\)/);
-    assert.match(tokens, /--page-bg\s*:\s*var\(\s*--color-white\s*\)/);
+    assert.match(tokens, /--page-bg\s*:\s*#f5f5f5/i);
     assert.doesNotMatch(css, /prefers-color-scheme\s*:\s*dark/);
     assert.doesNotMatch(tokens, /prefers-color-scheme\s*:\s*dark/);
   });

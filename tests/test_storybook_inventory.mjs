@@ -40,6 +40,7 @@ const STORY_GROUPS = [
   "CursorFigma",
   "Icons",
   "Media",
+  "AboutMe",
 ];
 
 /** Groups that must import Content Map for demo strings. */
@@ -62,6 +63,7 @@ const CONTENT_STORY_GROUPS = [
   "TitleSidebar",
   "SideNav",
   "MenuMobile",
+  "AboutMe",
 ];
 
 /**
@@ -431,7 +433,7 @@ describe("storybook DS inventory", () => {
     assert.equal(typeof mediaMod.Default?.render, "function");
     const root = mediaMod.Default.render();
     const imgs = [...root.querySelectorAll("img")];
-    assert.equal(imgs.length, 16, "Media must render IMG_*…Comp + me + Macbook + covers + stickers");
+    assert.equal(imgs.length, 17, "Media must render IMG_*…Comp + me + Macbook + MacbookPng + covers + stickers");
 
     const mediaSrc = read("stories/Media.stories.js");
     assert.match(

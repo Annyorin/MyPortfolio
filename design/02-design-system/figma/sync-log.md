@@ -1,7 +1,7 @@
 ---
 type: log
 env: 02-design-system
-updated: 2026-09-14
+updated: 2026-09-26
 ---
 
 # Лог синхронизаций с Figma
@@ -10,6 +10,10 @@ updated: 2026-09-14
 
 | Дата | Направление | node-id | Что затронуто | Результат |
 |------|-------------|---------|---------------|-----------|
+| 2026-09-26 | read+write local | `226:15768` `401:23328` | Header padding py16 / no px (снят pr 24); header.md; registry; INDEX; NOTES; manifest **v0.1.12** | ok · docs only |
+| 2026-09-26 | write local | `391:22957` `391:22959` `391:22958` | About me Plugin geometry + MacbookPng keys everywhere; close AABB 140.61 drift; manifest **v0.1.11** | ok · docs only |
+| 2026-09-26 | read metadata | `391:22957` `391:22958` | About me + MacbookPng sizes | ok · ≈209.6×116 · 310×226 |
+| 2026-09-26 | write local | `391:22957` `391:22958` | +About me / MacbookPng в media.md, registry, manifest **v0.1.10** | ok · docs only |
 | 2026-09-14 | read design_context+screenshot+metadata | `226:15768` | Header parity | ok · 620×81 · py 16 |
 | 2026-09-14 | write local | `226:15768` | Header py16 / 620×81 / flex title; `.ds-header`; registry; manifest **v0.1.9** | ok |
 | 2026-09-14 | write local | `251:21308` | +Hint; components.css `.ds-hint`; INDEX; registry; manifest **v0.1.8** | ok |
@@ -52,5 +56,7 @@ updated: 2026-09-14
 | 2026-09-13 | Segmets_control | Figma-имя с опечаткой; продукт **SegmentsControl** | closed · documented в segments-control.md |
 | 2026-09-13 | SideBar vs Sidebar | `227:16241` TOC ≠ `158:11468` profile | closed · отдельные файлы side-bar.md / sidebar.md |
 | 2026-09-13 | Card Shadow | default тоже имеет Shadow (ранее в тексте только hover) | closed · card.md + elevation |
-| 2026-09-14 | Macbook scene | Ui kit atomic **388×283** (`248:17115`); на Главной About child **140.61×111.01** (aspect ≠ kit); expanded About **570×415.57** ≈ kit ratio — composition не меняли | open · documented |
+| 2026-09-14 | Macbook scene | Ui kit atomic **388×283** (`248:17115`); About child ранее **140.61×111.01** AABB — superseded: local Macbook **126×92 @ −10°** в About me **209.61×116.01**; collapsed = MacbookPng `391:22958` → `macbook-png.png` | closed · 2026-09-26 |
 | 2026-09-14 | Dragon/Phish vs IMG_* | Cover `232:16826`/`232:16829` (308×190) ≠ атомы IMG_1/IMG_2 (345×230); продукт `img-1`/`img-2` зеркалят covers | closed · documented в media/dragon/phish |
+| 2026-09-26 | read+export @3x | `248:17115` + stickers | Macbook refresh → `macbook-248-17115.png` / `macbook-lid.png` / `stickers/*.png|svg` | ok · asset sync |
+| 2026-09-26 | read+export @3x | `105:11564` | me → `me.png` | ok · asset sync |
