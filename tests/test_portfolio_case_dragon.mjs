@@ -190,6 +190,18 @@ describe("portfolio case-dragon page", () => {
       css,
       /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*body\.case-page\s+\.is-reveal[\s\S]*transition:\s*none/
     );
+    assert.match(
+      css,
+      /html\[data-theme="dark"\]\s+body\.case-page\s+\.ds-header\s+\.ds-icon\s*>\s*img/
+    );
+    assert.match(
+      css,
+      /invert\(1\)\s+hue-rotate\(180deg\)\s+!important/
+    );
+    assert.match(
+      css,
+      /html\[data-theme="dark"\]\s+body\.case-page\s+\.ds-fab\s+\.ds-icon\s*>\s*img/
+    );
     assert.doesNotMatch(css, /--color-primary\s*:/);
   });
 });
