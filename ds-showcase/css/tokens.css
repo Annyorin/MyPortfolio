@@ -75,19 +75,48 @@ html[data-theme="dark"] .ds-hover .ds-icon {
   color: var(--color-black);
 }
 
-/* Raster icons drawn in light-theme ink */
-html[data-theme="dark"] .ds-icon:has(> img) {
-  filter: invert(1) hue-rotate(180deg);
+/*
+ * Never invert the .ds-icon box. Masked chrome (burger, back, theme, buttons)
+ * paints via currentColor — parent invert turns those light glyphs black on
+ * iOS Safari under color-scheme: dark.
+ * Raster leftovers: invert the <img> only, and pin color-scheme so WebKit
+ * does not auto-revert the pixels.
+ */
+html[data-theme="dark"] .ds-icon {
+  color-scheme: only light;
 }
+
+html[data-theme="dark"] .ds-icon > img {
+  filter: invert(1) hue-rotate(180deg);
+  -webkit-filter: invert(1) hue-rotate(180deg);
+  color-scheme: only light;
+}
+
 html[data-theme="dark"] .ds-button .ds-icon,
 html[data-theme="dark"] .ds-fab .ds-icon,
 html[data-theme="dark"] .ds-hover .ds-icon,
-/* Toolbar back uses a CSS mask + currentColor (already light in dark) —
-   the hidden <img> would still match :has(> img) and invert it to dark. */
 html[data-theme="dark"] .ds-toolbar__back .ds-icon,
 html[data-theme="dark"] .ds-header__burger .ds-icon,
 html[data-theme="dark"] .ds-toolbar__burger .ds-icon,
-html[data-theme="dark"] .ds-button-round .ds-icon {
+html[data-theme="dark"] .ds-button-round .ds-icon,
+html[data-theme="dark"] .ds-button .ds-icon:has(> img),
+html[data-theme="dark"] .ds-fab .ds-icon:has(> img),
+html[data-theme="dark"] .ds-hover .ds-icon:has(> img),
+html[data-theme="dark"] .ds-toolbar__back .ds-icon:has(> img),
+html[data-theme="dark"] .ds-header__burger .ds-icon:has(> img),
+html[data-theme="dark"] .ds-toolbar__burger .ds-icon:has(> img),
+html[data-theme="dark"] .ds-button-round .ds-icon:has(> img) {
+  filter: none;
+  -webkit-filter: none;
+}
+
+html[data-theme="dark"] .ds-button .ds-icon > img,
+html[data-theme="dark"] .ds-fab .ds-icon > img,
+html[data-theme="dark"] .ds-hover .ds-icon > img,
+html[data-theme="dark"] .ds-toolbar__back .ds-icon > img,
+html[data-theme="dark"] .ds-header__burger .ds-icon > img,
+html[data-theme="dark"] .ds-toolbar__burger .ds-icon > img,
+html[data-theme="dark"] .ds-button-round .ds-icon > img {
   filter: none;
   -webkit-filter: none;
 }

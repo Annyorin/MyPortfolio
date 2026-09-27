@@ -84,7 +84,7 @@ const CSS = `
     background-color: ${DARK.raised};
   }
   /* Some icons are images drawn in dark ink on transparent: those get inverted
-     in tokens.css (html[data-theme="dark"] .ds-icon:has(> img)). */
+     in tokens.css (html[data-theme="dark"] .ds-icon > img). */
   /* Placement only — home floating = Outlined; case Header/Toolbar = Text (Figma 226:15768 / 247:16546). */
   .dots-theme-toggle {
     position: fixed;
