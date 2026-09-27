@@ -116,5 +116,7 @@ describe("portfolio pageTransition", () => {
     assert.match(interactions, /prefetchCardIfInternal/);
     assert.match(mobile, /prefetchCardIfInternal/);
     assert.doesNotMatch(config, /main-crossfade/);
+    assert.match(config, /redirectRootToPortfolio/);
+    assert.match(config, /portfolio\/main\.html/);
   });
 });

@@ -85,8 +85,11 @@ html[data-theme="dark"] .ds-hover .ds-icon,
 /* Toolbar back uses a CSS mask + currentColor (already light in dark) —
    the hidden <img> would still match :has(> img) and invert it to dark. */
 html[data-theme="dark"] .ds-toolbar__back .ds-icon,
+html[data-theme="dark"] .ds-header__burger .ds-icon,
+html[data-theme="dark"] .ds-toolbar__burger .ds-icon,
 html[data-theme="dark"] .ds-button-round .ds-icon {
   filter: none;
+  -webkit-filter: none;
 }
 
 html[data-theme="dark"] .ds-button-round {

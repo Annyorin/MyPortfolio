@@ -14,6 +14,10 @@
   flex-shrink: 0;
   overflow: hidden;
   color: var(--color-black);
+  /* Dark-stroke SVGs as mask-image: luminance treats #121214 as transparent
+     (inverted silhouette). Alpha uses paint coverage so currentColor shows. */
+  -webkit-mask-source-type: alpha;
+  mask-mode: alpha;
 }
 
 .ds-icon > img {
@@ -883,6 +887,12 @@
   color: var(--color-black);
   cursor: pointer;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.ds-button-round:active {
+  outline: none;
 }
 
 /* Text Pressed — page-bg fill (demo class + touch :active below). Outlined unchanged. */
@@ -1047,6 +1057,12 @@
   background: transparent;
   color: var(--color-black);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.ds-header__burger:active {
+  outline: none;
 }
 
 .ds-header__burger:focus-visible {
@@ -1057,12 +1073,20 @@
 .ds-header__burger .ds-icon {
   width: 24px;
   height: 24px;
+  color: inherit;
+  background-color: currentColor;
+  -webkit-mask-image: url("../assets/icons/burger-menu.svg");
+  mask-image: url("../assets/icons/burger-menu.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .ds-header__burger .ds-icon > img {
-  display: block;
-  width: 24px;
-  height: 24px;
+  display: none;
 }
 
 /* ≥1366: Header without BurgerMenu (Figma 401:23328 showBurgerMenu=false) */
@@ -1108,6 +1132,12 @@
   color: var(--color-black);
   text-decoration: none;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.ds-toolbar__back:active {
+  outline: none;
 }
 
 .ds-toolbar__back:focus-visible {
@@ -1172,6 +1202,12 @@
   background: transparent;
   color: var(--color-black);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.ds-toolbar__burger:active {
+  outline: none;
 }
 
 .ds-toolbar__burger:focus-visible {
@@ -1182,12 +1218,20 @@
 .ds-toolbar__burger .ds-icon {
   width: 24px;
   height: 24px;
+  color: inherit;
+  background-color: currentColor;
+  -webkit-mask-image: url("../assets/icons/burger-menu.svg");
+  mask-image: url("../assets/icons/burger-menu.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .ds-toolbar__burger .ds-icon > img {
-  display: block;
-  width: 24px;
-  height: 24px;
+  display: none;
 }
 
 /* —— SegmentsControl (Figma Segmets_control 226:15785 / 226:15784) —— */

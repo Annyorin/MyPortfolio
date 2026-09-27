@@ -30,6 +30,7 @@ const STORY_GROUPS = [
   "Profile",
   "ProfileMobile",
   "Button",
+  "ButtonRound",
   "Header",
   "Toolbar",
   "Segments",

@@ -290,6 +290,7 @@ describe("theme toggle placement", () => {
         children: [],
         style: {},
         attrs: {},
+        dataset: {},
         classes: new Set(),
         textContent: "",
         classList: {
@@ -325,8 +326,24 @@ describe("theme toggle placement", () => {
           return i >= 0 ? parent.children[i + 1] || null : null;
         },
         querySelector: () => null,
-        setAttribute(k, v) { node.attrs[k] = v; },
-        removeAttribute(k) { delete node.attrs[k]; },
+        setAttribute(k, v) {
+          node.attrs[k] = v;
+          if (String(k).startsWith("data-")) {
+            const key = String(k)
+              .slice(5)
+              .replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+            node.dataset[key] = String(v);
+          }
+        },
+        removeAttribute(k) {
+          delete node.attrs[k];
+          if (String(k).startsWith("data-")) {
+            const key = String(k)
+              .slice(5)
+              .replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+            delete node.dataset[key];
+          }
+        },
         replaceChildren(...kids) {
           node.children = [];
           for (const kid of kids) node.append(kid);
@@ -369,6 +386,10 @@ describe("theme toggle placement", () => {
         "тема стоит перед разворотом меню"
       );
       assert.ok(button.classes.has("dots-theme-toggle--inline"), "в меню кнопка идёт вне потока");
+      assert.ok(button.classes.has("ds-button-round"), "theme toggle uses DS ButtonRound");
+      const icon = button.children.find((c) => c.classes.has("ds-icon"));
+      assert.ok(icon, "DS theme icon span required");
+      assert.equal(icon.dataset.icon, "moon", "light theme → moon icon");
     } finally {
       Object.assign(globalThis, { document: saved.document, window: saved.window, requestAnimationFrame: saved.raf });
     }

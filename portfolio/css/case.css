@@ -532,6 +532,13 @@ body.is-page-crossfading .case-page__fab {
     display: block;
   }
 
+  /* Lock page scroll under MenuMobile on tablet too (not only ≤480). */
+  html.is-drawer-open,
+  body.is-drawer-open {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   .case-page__sidebar {
     display: block;
     position: fixed;
@@ -770,6 +777,18 @@ body.case-page .dots-theme-toggle--inline.ds-button-round.ds-button-round--hover
   background-color: currentColor;
 }
 
+/* Toolbar back: same Text ButtonRound — desktop muted hover; touch pressed page-bg. */
+body.case-page .ds-toolbar__back.ds-button-round:hover,
+body.case-page .ds-toolbar__back.ds-button-round.ds-button-round--hover {
+  color: var(--color-gray-text);
+}
+
+body.case-page .ds-toolbar__back.ds-button-round:hover .ds-icon,
+body.case-page .ds-toolbar__back.ds-button-round.ds-button-round--hover .ds-icon {
+  color: var(--color-gray-text);
+  background-color: currentColor;
+}
+
 @media (hover: none) {
   body.case-page .dots-theme-toggle--inline.ds-button-round:hover {
     color: var(--color-black);
@@ -778,6 +797,34 @@ body.case-page .dots-theme-toggle--inline.ds-button-round.ds-button-round--hover
   body.case-page .dots-theme-toggle--inline.ds-button-round:hover .ds-icon {
     color: var(--color-black);
   }
+
+  body.case-page .ds-toolbar__back.ds-button-round:hover {
+    color: var(--color-black);
+    background-color: transparent;
+  }
+
+  body.case-page .ds-toolbar__back.ds-button-round:hover .ds-icon {
+    color: var(--color-black);
+  }
+
+  body.case-page .ds-toolbar__back.ds-button-round:active,
+  body.case-page .ds-toolbar__back.ds-button-round.ds-button-round--pressed {
+    background-color: var(--page-bg);
+    color: var(--color-black);
+  }
+
+  body.case-page .ds-toolbar__back.ds-button-round:active .ds-icon,
+  body.case-page .ds-toolbar__back.ds-button-round.ds-button-round--pressed .ds-icon {
+    color: var(--color-black);
+  }
+
+  html[data-theme="dark"] body.case-page .ds-toolbar__back.ds-button-round:active {
+    background-color: var(--color-white);
+  }
+}
+
+html[data-theme="dark"] body.case-page .ds-toolbar__back.ds-button-round.ds-button-round--pressed {
+  background-color: var(--color-white);
 }
 
 /* Tooltips only on home — case chrome uses aria-label alone. */

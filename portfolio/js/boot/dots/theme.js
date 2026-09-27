@@ -92,10 +92,13 @@ const CSS = `
     top: 20px;
     z-index: 99999;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     transition-property: transform, background, border-color, opacity, color;
     transition-duration: .2s;
     transition-timing-function: cubic-bezier(.22,.82,.18,1);
   }
+  .dots-theme-toggle:active { outline: none; }
   /* Fallback floating chrome when not yet DS ButtonRound. */
   .dots-theme-toggle:not(.ds-button-round) {
     width: 44px;

@@ -565,6 +565,7 @@ function bindDrawer({ burgers, backdrop, nav }) {
    * @param {boolean} open
    */
   function setOpen(open) {
+    document.documentElement.classList.toggle("is-drawer-open", open);
     document.body.classList.toggle("is-drawer-open", open);
     for (const burger of burgers) {
       burger.setAttribute("aria-expanded", open ? "true" : "false");
@@ -635,6 +636,7 @@ function bindDrawer({ burgers, backdrop, nav }) {
     backdrop.removeEventListener("click", onBackdrop);
     nav.removeEventListener("click", onNavClick);
     document.removeEventListener("keydown", onKeydown);
+    document.documentElement.classList.remove("is-drawer-open");
     document.body.classList.remove("is-drawer-open");
   };
 }

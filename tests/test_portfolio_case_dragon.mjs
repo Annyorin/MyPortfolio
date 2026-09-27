@@ -124,6 +124,7 @@ describe("portfolio case-dragon page", () => {
     assert.match(src, /browserHasNativeScrollTopButton/);
     assert.match(src, /bindDrawer/);
     assert.match(src, /is-drawer-open/);
+    assert.match(src, /documentElement\.classList\.toggle\("is-drawer-open"/);
     assert.match(src, /dataset\.caseId|caseKeyPrefix/);
     assert.match(src, /data-case-long-only|applyCaseLengthMode/);
     assert.match(src, /bindNextCaseLink|case-page__next/);
@@ -139,6 +140,10 @@ describe("portfolio case-dragon page", () => {
     assert.match(css, /position:\s*sticky/);
     assert.match(css, /@media\s*\(min-width:\s*1920px\)/);
     assert.match(css, /@media\s*\(max-width:\s*1365px\)/);
+    assert.match(
+      css,
+      /@media\s*\(max-width:\s*1365px\)[\s\S]*body\.is-drawer-open[\s\S]*overflow:\s*hidden/
+    );
     assert.match(css, /@media\s*\(max-width:\s*768px\)/);
     assert.match(css, /@media\s*\(max-width:\s*480px\)/);
     assert.match(css, /\.case-page__toolbar\.ds-toolbar[\s\S]*display:\s*flex/);
