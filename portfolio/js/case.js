@@ -17,10 +17,59 @@ import {
 import { resolveAsset } from "./resolveAsset.js";
 import { setupTheme } from "./boot/dots/theme.js";
 
+/** Macbook layers to keep warm while the user reads a case (case→home). */
+const MACBOOK_PREFETCH_KEYS = Object.freeze([
+  "macbook.png",
+  "macbook.lid",
+  "macbook.sticker.create",
+  "macbook.sticker.question",
+  "macbook.sticker.sport",
+  "macbook.sticker.anime",
+  "macbook.sticker.seal",
+  "macbook.sticker.books",
+]);
+
+/**
+ * Keep home Macbook bitmaps in HTTP/memory cache while on a case page.
+ *
+ * @returns {void}
+ */
+function prefetchMacbookAssets() {
+  if (typeof Image === "undefined") return;
+  for (const key of MACBOOK_PREFETCH_KEYS) {
+    try {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = resolveAsset(key);
+    } catch {
+      /* harness */
+    }
+  }
+}
+
 /** Min scroll Y (px) before FAB may appear; always hidden near top. */
 export const CASE_FAB_SHOW_SCROLL_Y = 48;
 /** Ignore scroll deltas smaller than this (px) to avoid flicker. */
 export const CASE_FAB_DIR_SLOP_PX = 4;
+
+/**
+ * Browsers that already ship a floating «scroll to top» control.
+ * Our FAB would duplicate theirs — skip mounting there.
+ *
+ * @param {string} [ua]
+ * @returns {boolean}
+ */
+export function browserHasNativeScrollTopButton(ua) {
+  const value =
+    typeof ua === "string"
+      ? ua
+      : typeof navigator !== "undefined"
+        ? String(navigator.userAgent || "")
+        : "";
+  // Samsung Internet: floating scroll-to-top chip while scrolling.
+  if (/SamsungBrowser/i.test(value)) return true;
+  return false;
+}
 
 /** Block units that fade-up once when scrolled into view (not on first paint). */
 const CASE_REVEAL_SELECTORS = [
@@ -393,11 +442,22 @@ function fillContent(content, caseId) {
 
 /**
  * FAB → top: visible only while the user scrolls up (hidden on scroll down / near top).
+ * No-op when the browser already provides a native scroll-to-top control.
  *
  * @param {HTMLElement} fab
  * @returns {() => void}
  */
 function bindFab(fab) {
+  if (browserHasNativeScrollTopButton()) {
+    fab.hidden = true;
+    fab.setAttribute("hidden", "");
+    fab.classList.remove("is-visible");
+    return () => {};
+  }
+
+  fab.hidden = false;
+  fab.removeAttribute("hidden");
+
   /**
    * @returns {number}
    */
@@ -842,6 +902,8 @@ export function initCasePage() {
   } catch {
     prefetchInternalPage("main.html");
   }
+  // Home Macbook layers: warm HTTP/memory cache so back does not PNG→layers flash.
+  prefetchMacbookAssets();
 
   const caseId = readCaseId();
   fillContent(contentMap, caseId);

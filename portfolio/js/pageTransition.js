@@ -10,6 +10,45 @@ export const PAGE_CROSSFADE_NAVIGATE_AFTER_MS = 180;
 
 export const ENTER_MOTION_KEY = "portfolio-page-enter";
 export const HOME_HREF_KEY = "portfolio-home-href";
+/** Session flag: home Macbook was shown — case→home may skip PNG→layers flash. */
+export const MACBOOK_WARM_KEY = "portfolio-macbook-warm";
+
+/**
+ * Soft return / same-session revisit: prefer Macbook warm mount.
+ *
+ * @returns {boolean}
+ */
+export function isMacbookWarmVisit() {
+  try {
+    if (
+      typeof document !== "undefined" &&
+      document.documentElement?.classList?.contains?.("is-page-enter-crossfade")
+    ) {
+      return true;
+    }
+    return (
+      typeof sessionStorage !== "undefined" &&
+      sessionStorage.getItem(MACBOOK_WARM_KEY) === "1"
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Remember that home Macbook reached a ready state this session.
+ *
+ * @returns {void}
+ */
+export function markMacbookWarm() {
+  try {
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem(MACBOOK_WARM_KEY, "1");
+    }
+  } catch {
+    /* private mode */
+  }
+}
 
 /** @type {boolean} */
 let transitionBusy = false;
@@ -208,6 +247,8 @@ function rememberNavigation() {
     const file = String(window.location.pathname.split("/").pop() || "main.html");
     if (/^main[\w.-]*\.html$/.test(file)) {
       sessionStorage.setItem(HOME_HREF_KEY, file);
+      // Leaving home for a case: next back should treat Macbook as warm.
+      sessionStorage.setItem(MACBOOK_WARM_KEY, "1");
     }
   } catch {
     /* private mode */

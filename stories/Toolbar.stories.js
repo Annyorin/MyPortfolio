@@ -1,5 +1,5 @@
 /**
- * Toolbar inventory story (Figma 247:16546).
+ * Toolbar inventory story (Figma 247:16546 — back ButtonRound + label + theme Text + burger).
  */
 import { contentMap } from "../shared/content.js";
 import { resolveAsset } from "../portfolio/js/resolveAsset.js";
@@ -18,7 +18,7 @@ export const Default = {
     bar.setAttribute("aria-label", "Toolbar");
 
     const back = document.createElement("a");
-    back.className = "ds-toolbar__back";
+    back.className = "ds-toolbar__back ds-button-round";
     back.href = "#";
     back.setAttribute("aria-label", contentMap["toolbar.back"]);
     const backIcon = document.createElement("span");
@@ -28,14 +28,30 @@ export const Default = {
     const backImg = document.createElement("img");
     backImg.src = resolveAsset("icons.arrow-left");
     backImg.alt = "";
-    backImg.width = 20;
-    backImg.height = 20;
+    backImg.width = 24;
+    backImg.height = 24;
     backIcon.appendChild(backImg);
     back.appendChild(backIcon);
 
     const label = document.createElement("p");
     label.className = "ds-toolbar__label";
     label.textContent = contentMap["toolbar.back"];
+
+    const theme = document.createElement("button");
+    theme.type = "button";
+    theme.className = "ds-button-round";
+    theme.setAttribute("aria-label", "Включить тёмную");
+    const themeIcon = document.createElement("span");
+    themeIcon.className = "ds-icon";
+    themeIcon.setAttribute("aria-hidden", "true");
+    themeIcon.dataset.icon = "moon";
+    const themeImg = document.createElement("img");
+    themeImg.src = resolveAsset("icons.moon");
+    themeImg.alt = "";
+    themeImg.width = 24;
+    themeImg.height = 24;
+    themeIcon.appendChild(themeImg);
+    theme.appendChild(themeIcon);
 
     const burger = document.createElement("button");
     burger.type = "button";
@@ -53,7 +69,7 @@ export const Default = {
     burgerIcon.appendChild(burgerImg);
     burger.appendChild(burgerIcon);
 
-    bar.append(back, label, burger);
+    bar.append(back, label, theme, burger);
     return bar;
   },
 };

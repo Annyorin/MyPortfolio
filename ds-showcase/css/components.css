@@ -862,6 +862,137 @@
   white-space: nowrap;
 }
 
+/* —— ButtonRound (Figma 416:17567) · 48×48 · p 12 · Style Text/Outlined · State Filled/Hover/default/Pressed —— */
+.ds-button-round {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 12px;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: none;
+  color: var(--color-black);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* Text Pressed — page-bg fill (demo class + touch :active below). Outlined unchanged. */
+.ds-button-round:not(.ds-button-round--outlined).ds-button-round--pressed {
+  background-color: var(--page-bg);
+  color: var(--color-black);
+}
+
+/* Style Outlined · State Filled — White + border page-bg + Shadow (#bbbbbd40 light) */
+.ds-button-round--outlined {
+  background-color: var(--color-white);
+  border: 1px solid var(--page-bg);
+  box-shadow: var(--shadow);
+}
+
+/*
+ * Hover — Figma Outlined Hover Lignt 417:17882 / Text Hover 443:17980.
+ * Fill/border/shadow unchanged vs Filled; icon → Gray_text (#888 light / #b4b4bd dark).
+ * :hover by default (Electron may not match (hover: hover)).
+ */
+.ds-button-round:hover,
+.ds-button-round--outlined:hover,
+.ds-button-round.ds-button-round--hover,
+.ds-button-round--outlined.ds-button-round--hover {
+  color: var(--color-gray-text);
+}
+
+.ds-button-round:hover .ds-icon,
+.ds-button-round--outlined:hover .ds-icon,
+.ds-button-round.ds-button-round--hover .ds-icon,
+.ds-button-round--outlined.ds-button-round--hover .ds-icon {
+  color: var(--color-gray-text);
+  background-color: currentColor;
+}
+
+/* Touch only — kill sticky :hover; Text Pressed via :active / --pressed (JS).
+   Outlined pressed = muted only (no fill). Do not use (pointer: coarse): hybrid
+   Windows/Electron can report coarse and wipe desktop hover. */
+@media (hover: none) {
+  .ds-button-round:hover,
+  .ds-button-round--outlined:hover {
+    color: var(--color-black);
+  }
+
+  .ds-button-round:hover .ds-icon,
+  .ds-button-round--outlined:hover .ds-icon {
+    color: var(--color-black);
+  }
+
+  .ds-button-round:not(.ds-button-round--outlined):active {
+    background-color: var(--page-bg);
+    color: var(--color-black);
+  }
+
+  .ds-button-round--outlined:active,
+  .ds-button-round--outlined.ds-button-round--pressed {
+    color: var(--color-gray-text);
+  }
+
+  .ds-button-round--outlined:active .ds-icon,
+  .ds-button-round--outlined.ds-button-round--pressed .ds-icon {
+    color: var(--color-gray-text);
+  }
+}
+
+.ds-button-round:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.ds-button-round .ds-icon {
+  width: 24px;
+  height: 24px;
+  color: inherit;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.ds-button-round .ds-icon[data-icon="moon"] {
+  -webkit-mask-image: url("../assets/icons/moon.svg");
+  mask-image: url("../assets/icons/moon.svg");
+}
+
+.ds-button-round .ds-icon[data-icon="sun"] {
+  -webkit-mask-image: url("../assets/icons/sun.svg");
+  mask-image: url("../assets/icons/sun.svg");
+}
+
+.ds-button-round .ds-icon[data-icon="vuesax/linear/arrow-left"],
+.ds-button-round .ds-icon[data-icon="arrow-left"] {
+  -webkit-mask-image: url("../assets/icons/arrow-left.svg");
+  mask-image: url("../assets/icons/arrow-left.svg");
+}
+
+.ds-button-round .ds-icon > img {
+  display: none;
+}
+
+.ds-button-round-samples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
 /* —— Header (Figma Ui kit 226:15768 / desktop 401:23328) · 620×81 · py 16 · no px —— */
 .ds-header {
   box-sizing: border-box;
@@ -888,6 +1019,17 @@
   font-weight: var(--type-h2-weight);
   color: var(--color-gray-text);
   white-space: nowrap;
+}
+
+/* Figma buttons 401:23083 — ButtonRound + BurgerMenu · 96×48.
+   flex-end: when theme is absolute (portfolio dock), burger sits on the right edge. */
+.ds-header__buttons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  width: 96px;
+  height: 48px;
 }
 
 /* Figma BurgerMenu Item 01 — 48×48 hit · icon 24 */
@@ -990,6 +1132,12 @@
 
 .ds-toolbar__back .ds-icon > img {
   display: none;
+}
+
+/* Toolbar back as ButtonRound (Figma 417:17810) — icon 24×24 */
+.ds-toolbar__back.ds-button-round .ds-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .ds-toolbar__label {

@@ -231,30 +231,23 @@ body.is-page-crossfading .case-page__fab {
     pointer-events: none;
   }
 
+  /* Burger hidden — buttons frame collapses to one 48 hit for theme. */
+  .case-page__main-inner .ds-header__buttons {
+    width: 48px;
+  }
+
   /* Theme sits on the burger hit (48×48), not to its left — matches Figma moon. */
-  body.case-page .case-page__main-inner .ds-header .dots-theme-toggle--inline {
+  body.case-page .case-page__main-inner .ds-header .dots-theme-toggle--inline.ds-button-round {
     position: absolute;
     right: 0;
     top: 50%;
     left: auto;
     transform: translateY(-50%);
-    margin-right: 0;
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
-    padding: 12px;
-    box-sizing: border-box;
-    place-items: center;
+    margin: 0;
   }
 
-  body.case-page .case-page__main-inner .ds-header .dots-theme-toggle--inline:hover {
+  body.case-page .case-page__main-inner .ds-header .dots-theme-toggle--inline.ds-button-round:hover {
     transform: translateY(-50%);
-  }
-
-  body.case-page .case-page__main-inner .ds-header .dots-theme-toggle--inline svg {
-    width: 24px;
-    height: 24px;
   }
 }
 
@@ -607,6 +600,12 @@ body.is-page-crossfading .case-page__fab {
     padding: 0 24px;
   }
 
+  /* Theme docks absolute left of burger — only burger is in-flow; collapse
+     96→48 so burger sits on the right edge (no empty half of the buttons frame). */
+  .case-page__main-inner .ds-header__buttons {
+    width: 48px;
+  }
+
   .case-page__main-inner {
     max-width: none;
     width: 100%;
@@ -755,10 +754,30 @@ body.is-page-crossfading .case-page__fab {
   overflow: visible;
 }
 
-/* Inline theme on case chrome: match icon size, keep hit target. */
-body.case-page .dots-theme-toggle--inline {
-  display: grid;
+/* Inline theme on case chrome: ButtonRound Text; muted :hover must beat this color. */
+body.case-page .dots-theme-toggle--inline.ds-button-round {
   color: var(--color-black);
+}
+
+body.case-page .dots-theme-toggle--inline.ds-button-round:hover,
+body.case-page .dots-theme-toggle--inline.ds-button-round.ds-button-round--hover {
+  color: var(--color-gray-text);
+}
+
+body.case-page .dots-theme-toggle--inline.ds-button-round:hover .ds-icon,
+body.case-page .dots-theme-toggle--inline.ds-button-round.ds-button-round--hover .ds-icon {
+  color: var(--color-gray-text);
+  background-color: currentColor;
+}
+
+@media (hover: none) {
+  body.case-page .dots-theme-toggle--inline.ds-button-round:hover {
+    color: var(--color-black);
+  }
+
+  body.case-page .dots-theme-toggle--inline.ds-button-round:hover .ds-icon {
+    color: var(--color-black);
+  }
 }
 
 /* Tooltips only on home — case chrome uses aria-label alone. */

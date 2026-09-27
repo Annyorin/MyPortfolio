@@ -1,5 +1,5 @@
 /**
- * Header inventory story (ds-showcase Composite).
+ * Header inventory story (Figma 226:15768 — Button Text «На главную» + title + buttons Theme Text + Burger).
  */
 import { contentMap } from "../shared/content.js";
 import { resolveAsset } from "../portfolio/js/resolveAsset.js";
@@ -35,6 +35,25 @@ export const Default = {
     title.className = "ds-header__title";
     title.textContent = contentMap["header.title"];
 
+    const buttons = document.createElement("div");
+    buttons.className = "ds-header__buttons";
+
+    const theme = document.createElement("button");
+    theme.type = "button";
+    theme.className = "ds-button-round";
+    theme.setAttribute("aria-label", "Включить тёмную");
+    const themeIcon = document.createElement("span");
+    themeIcon.className = "ds-icon";
+    themeIcon.setAttribute("aria-hidden", "true");
+    themeIcon.dataset.icon = "moon";
+    const themeImg = document.createElement("img");
+    themeImg.src = resolveAsset("icons.moon");
+    themeImg.alt = "";
+    themeImg.width = 24;
+    themeImg.height = 24;
+    themeIcon.appendChild(themeImg);
+    theme.appendChild(themeIcon);
+
     const burger = document.createElement("button");
     burger.type = "button";
     burger.className = "ds-header__burger";
@@ -51,7 +70,8 @@ export const Default = {
     burgerIcon.appendChild(burgerImg);
     burger.appendChild(burgerIcon);
 
-    header.append(back, title, burger);
+    buttons.append(theme, burger);
+    header.append(back, title, buttons);
     return header;
   },
 };

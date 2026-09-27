@@ -121,6 +121,7 @@ describe("portfolio case-dragon page", () => {
     assert.match(src, /CASE_FAB_SHOW_SCROLL_Y/);
     assert.match(src, /CASE_FAB_DIR_SLOP_PX/);
     assert.match(src, /delta\s*<\s*-CASE_FAB_DIR_SLOP_PX/);
+    assert.match(src, /browserHasNativeScrollTopButton/);
     assert.match(src, /bindDrawer/);
     assert.match(src, /is-drawer-open/);
     assert.match(src, /dataset\.caseId|caseKeyPrefix/);

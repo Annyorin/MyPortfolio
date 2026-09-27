@@ -342,6 +342,10 @@ export const contentMap = {
 
     "icons.burger-menu": { pathFromDsRoot: "icons/burger-menu.svg" },
 
+    "icons.moon": { pathFromDsRoot: "icons/moon.svg" },
+
+    "icons.sun": { pathFromDsRoot: "icons/sun.svg" },
+
     "icons.telegram": { pathFromDsRoot: "icons/telegram.svg" },
 
     "icons.cv": { pathFromDsRoot: "icons/cv.svg" },

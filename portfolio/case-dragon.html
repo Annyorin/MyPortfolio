@@ -59,9 +59,9 @@
 <body class="case-page" data-case-id="dragon">
   <noscript><div><img src="https://mc.yandex.ru/watch/98871536" style="position:absolute;left:-9999px" alt=""></div></noscript>
   <header class="ds-toolbar case-page__toolbar" data-case="toolbar">
-    <a class="ds-toolbar__back" href="main.html" aria-label="Назад">
+    <a class="ds-toolbar__back ds-button-round" href="main.html" aria-label="Назад">
       <span class="ds-icon" aria-hidden="true" data-icon="vuesax/linear/arrow-left">
-        <img data-case="toolbar-back-icon" src="../ds-showcase/assets/icons/arrow-left.svg" alt="" width="20" height="20">
+        <img data-case="toolbar-back-icon" src="../ds-showcase/assets/icons/arrow-left.svg" alt="" width="24" height="24">
       </span>
     </a>
     <p class="ds-toolbar__label" data-case="toolbar-back-label">Назад</p>
@@ -102,18 +102,20 @@
             <span data-case="home-label">На главную</span>
           </a>
           <p class="ds-header__title" data-case="header-brand">Аня Ясинская · Портфолио</p>
-          <button
-            type="button"
-            class="ds-header__burger"
-            data-case="header-burger"
-            aria-label="Открыть меню"
-            aria-expanded="false"
-            aria-controls="case-side-nav"
-          >
-            <span class="ds-icon" aria-hidden="true" data-icon="burger-menu">
-              <img data-case="header-burger-icon" src="../ds-showcase/assets/icons/burger-menu.svg" alt="" width="24" height="24">
-            </span>
-          </button>
+          <div class="ds-header__buttons">
+            <button
+              type="button"
+              class="ds-header__burger"
+              data-case="header-burger"
+              aria-label="Открыть меню"
+              aria-expanded="false"
+              aria-controls="case-side-nav"
+            >
+              <span class="ds-icon" aria-hidden="true" data-icon="burger-menu">
+                <img data-case="header-burger-icon" src="../ds-showcase/assets/icons/burger-menu.svg" alt="" width="24" height="24">
+              </span>
+            </button>
+          </div>
         </header>
 
         <div class="case-page__intro">

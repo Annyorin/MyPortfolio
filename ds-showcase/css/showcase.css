@@ -223,6 +223,7 @@ body {
 .ds-section[aria-labelledby="section-atomic"] > .ds-profile,
 .ds-section[aria-labelledby="section-atomic"] > .ds-chip-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-button-samples,
+.ds-section[aria-labelledby="section-atomic"] > .ds-button-round-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-link-samples,
 .ds-section[aria-labelledby="section-atomic"] > .ds-tapper,
 .ds-section[aria-labelledby="section-atomic"] > .ds-tooltip-samples,

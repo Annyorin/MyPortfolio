@@ -84,8 +84,69 @@ html[data-theme="dark"] .ds-fab .ds-icon,
 html[data-theme="dark"] .ds-hover .ds-icon,
 /* Toolbar back uses a CSS mask + currentColor (already light in dark) —
    the hidden <img> would still match :has(> img) and invert it to dark. */
-html[data-theme="dark"] .ds-toolbar__back .ds-icon {
+html[data-theme="dark"] .ds-toolbar__back .ds-icon,
+html[data-theme="dark"] .ds-button-round .ds-icon {
   filter: none;
+}
+
+html[data-theme="dark"] .ds-button-round {
+  color: var(--color-black);
+}
+
+/* ButtonRound Outlined Dark (417:17909) — border Secondary; Shadow tint rgba(47,47,53,0.25) */
+html[data-theme="dark"] .ds-button-round--outlined {
+  border-color: var(--color-secondary);
+  box-shadow: 0 5px 9px #2f2f3540;
+}
+
+/*
+ * Outlined Hover Dark 417:17917 + Text Hover Dark 452:18064 —
+ * same fill/border/shadow as Filled; icon Gray_text #b4b4bd.
+ * Specificity must beat html[data-theme] .ds-button-round above.
+ */
+html[data-theme="dark"] .ds-button-round:hover,
+html[data-theme="dark"] .ds-button-round--outlined:hover,
+html[data-theme="dark"] .ds-button-round.ds-button-round--hover,
+html[data-theme="dark"] .ds-button-round--outlined.ds-button-round--hover {
+  color: var(--color-gray-text);
+}
+
+html[data-theme="dark"] .ds-button-round:hover .ds-icon,
+html[data-theme="dark"] .ds-button-round--outlined:hover .ds-icon,
+html[data-theme="dark"] .ds-button-round.ds-button-round--hover .ds-icon,
+html[data-theme="dark"] .ds-button-round--outlined.ds-button-round--hover .ds-icon {
+  color: var(--color-gray-text);
+  background-color: currentColor;
+}
+
+html[data-theme="dark"] .ds-button-round:not(.ds-button-round--outlined).ds-button-round--pressed {
+  background-color: var(--color-white);
+}
+
+@media (hover: none) {
+  html[data-theme="dark"] .ds-button-round:hover,
+  html[data-theme="dark"] .ds-button-round--outlined:hover {
+    color: var(--color-black);
+  }
+
+  html[data-theme="dark"] .ds-button-round:hover .ds-icon,
+  html[data-theme="dark"] .ds-button-round--outlined:hover .ds-icon {
+    color: var(--color-black);
+  }
+
+  html[data-theme="dark"] .ds-button-round:not(.ds-button-round--outlined):active {
+    background-color: var(--color-white);
+  }
+
+  html[data-theme="dark"] .ds-button-round--outlined:active,
+  html[data-theme="dark"] .ds-button-round--outlined.ds-button-round--pressed {
+    color: var(--color-gray-text);
+  }
+
+  html[data-theme="dark"] .ds-button-round--outlined:active .ds-icon,
+  html[data-theme="dark"] .ds-button-round--outlined.ds-button-round--pressed .ds-icon {
+    color: var(--color-gray-text);
+  }
 }
 
 /* Stiker pill stays Figma White (#FEFEFE) on dark (About me 386:20585 / cards) */

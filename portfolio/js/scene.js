@@ -5,6 +5,7 @@
 
 import { computeContentAABB, FIXED_CHROME_KINDS } from "../../shared/layout.js";
 import { fixHangingPrepositions } from "../../shared/typography.js";
+import { isMacbookWarmVisit, markMacbookWarm } from "./pageTransition.js";
 
 /** Sidebar action buttons (Figma Ui kit Sidebar 158:11468). */
 const CONTACT_ACTIONS = [
@@ -409,7 +410,7 @@ const MACBOOK_STICKERS = [
 /**
  * Layered Macbook: bare lid + absolute sticker hit buttons with `.ds-hint`.
  * First paint uses flat MacbookPng (Figma 391:22958), then crossfades to layers.
- * Warm return (HTTP cache / revisit): skip the swap — layers already decoded.
+ * Warm return (case→home / session flag / HTTP memory hit): skip the fade.
  *
  * @param {object} content
  * @param {(key: string) => string} resolveAsset
@@ -423,15 +424,25 @@ function buildMacbook(content, resolveAsset, size) {
   const live = document.createElement("div");
   live.className = "scene-about__macbook-live";
 
+  const layerUrls = [
+    resolveAsset("macbook.lid"),
+    ...MACBOOK_STICKERS.map((id) => resolveAsset(`macbook.sticker.${id}`)),
+  ];
+  // Prime decoder/cache before DOM imgs — memory hits then report complete sync.
+  const cacheWarm = layerUrls.every(macbookUrlWarm);
+  const visitWarm = isMacbookWarmVisit();
+  const preferInstant = cacheWarm || visitWarm;
+
   const lid = document.createElement("img");
   lid.className = "scene-about__macbook-lid";
-  lid.src = resolveAsset("macbook.lid");
+  lid.src = layerUrls[0];
   lid.alt = "";
   lid.width = Math.round(size.width);
   lid.height = Math.round(size.height);
   lid.setAttribute("data-media-slot", "macbook.lid");
-  lid.decoding = "async";
+  lid.decoding = preferInstant ? "sync" : "async";
   lid.draggable = false;
+  if (preferInstant) lid.fetchPriority = "high";
 
   const stickers = document.createElement("div");
   stickers.className = "scene-about__stickers";
@@ -440,7 +451,8 @@ function buildMacbook(content, resolveAsset, size) {
   /** @type {HTMLImageElement[]} */
   const layerImgs = [lid];
 
-  for (const id of MACBOOK_STICKERS) {
+  for (let i = 0; i < MACBOOK_STICKERS.length; i++) {
+    const id = MACBOOK_STICKERS[i];
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "scene-about__sticker";
@@ -448,9 +460,9 @@ function buildMacbook(content, resolveAsset, size) {
     btn.setAttribute("aria-label", id);
 
     const img = document.createElement("img");
-    img.src = resolveAsset(`macbook.sticker.${id}`);
+    img.src = layerUrls[i + 1];
     img.alt = "";
-    img.decoding = "async";
+    img.decoding = preferInstant ? "sync" : "async";
     img.draggable = false;
     layerImgs.push(img);
 
@@ -468,30 +480,53 @@ function buildMacbook(content, resolveAsset, size) {
 
   live.append(lid, stickers);
 
+  const pngUrl = resolveAsset("macbook.png");
+  if (preferInstant) macbookUrlWarm(pngUrl);
+
   const png = document.createElement("img");
   png.className = "scene-about__macbook-png";
-  png.src = resolveAsset("macbook.png");
+  png.src = pngUrl;
   png.alt = "";
   png.width = Math.round(size.width);
   png.height = Math.round(size.height);
   png.setAttribute("data-media-slot", "macbook.png");
-  png.decoding = "async";
+  png.decoding = preferInstant ? "sync" : "async";
   png.draggable = false;
   png.fetchPriority = "high";
 
-  // Cached revisit (e.g. back from case): lid+stickers already decoded — mount
-  // as ready so PNG→layers crossfade does not flash again.
-  const warm = macbookLayersWarm(layerImgs);
-  if (warm) {
+  // Layers sync-ready OR case→home / same-session warm: skip PNG↔layers fade.
+  // visitWarm alone may still need PNG for one frame until disk cache lands —
+  // mark instant so that swap has no 520ms transition.
+  const layersReady = cacheWarm || macbookLayersWarm(layerImgs);
+  if (layersReady) {
     wrap.className = "scene-about__macbook is-macbook-ready is-macbook-instant";
+    markMacbookWarm();
+  } else if (visitWarm) {
+    wrap.className = "scene-about__macbook is-macbook-preload is-macbook-instant";
+    live.setAttribute("aria-hidden", "true");
   } else {
     wrap.className = "scene-about__macbook is-macbook-preload";
     live.setAttribute("aria-hidden", "true");
   }
 
   wrap.append(live, png);
-  if (!warm) scheduleMacbookLayerReveal(wrap, layerImgs);
+  if (!layersReady) scheduleMacbookLayerReveal(wrap, layerImgs);
   return wrap;
+}
+
+/**
+ * @param {string} url
+ * @returns {boolean}
+ */
+function macbookUrlWarm(url) {
+  if (typeof Image === "undefined" || !url) return false;
+  try {
+    const probe = new Image();
+    probe.src = url;
+    return Boolean(probe.complete && Number(probe.naturalWidth) > 0);
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -514,9 +549,13 @@ function scheduleMacbookLayerReveal(wrap, layerImgs) {
   const reveal = () => {
     if (!wrap.isConnected || wrap.classList.contains("is-macbook-ready")) return;
     wrap.classList.remove("is-macbook-preload");
-    // If layers finished from cache before the delayed reveal, skip the fade.
-    if (macbookLayersWarm(layerImgs)) {
+    // Warm revisit / cache hit: no PNG↔layers opacity transition.
+    if (
+      macbookLayersWarm(layerImgs) ||
+      wrap.classList.contains("is-macbook-instant")
+    ) {
       wrap.classList.add("is-macbook-instant");
+      markMacbookWarm();
     }
     wrap.classList.add("is-macbook-ready");
     const live = wrap.querySelector(".scene-about__macbook-live");
@@ -542,7 +581,10 @@ function scheduleMacbookLayerReveal(wrap, layerImgs) {
 
   Promise.all(waiters).then(() => {
     // Warm path: reveal in the same turn — no 120ms beat that re-flashes PNG.
-    if (macbookLayersWarm(layerImgs)) {
+    if (
+      macbookLayersWarm(layerImgs) ||
+      wrap.classList.contains("is-macbook-instant")
+    ) {
       reveal();
       return;
     }

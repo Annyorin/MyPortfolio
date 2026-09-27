@@ -7,10 +7,13 @@
  * the boot loader.
  */
 import { INFINITE_BG } from "../../infiniteBg.js";
+import { resolveAsset } from "../../resolveAsset.js";
 
 const STORAGE_KEY = "portfolio-theme";
 const INLINE_CLASS = "dots-theme-toggle--inline";
 const SLOT_CLASS = "dots-theme-slot";
+const DS_ROUND = "ds-button-round";
+const DS_OUTLINED = "ds-button-round--outlined";
 
 /**
  * Dark palette (Figma DarkColors 383:15362 fills + home 386:20585).
@@ -82,11 +85,19 @@ const CSS = `
   }
   /* Some icons are images drawn in dark ink on transparent: those get inverted
      in tokens.css (html[data-theme="dark"] .ds-icon:has(> img)). */
+  /* Placement only — home floating = Outlined; case Header/Toolbar = Text (Figma 226:15768 / 247:16546). */
   .dots-theme-toggle {
     position: fixed;
     right: 20px;
     top: 20px;
     z-index: 99999;
+    cursor: pointer;
+    transition-property: transform, background, border-color, opacity, color;
+    transition-duration: .2s;
+    transition-timing-function: cubic-bezier(.22,.82,.18,1);
+  }
+  /* Fallback floating chrome when not yet DS ButtonRound. */
+  .dots-theme-toggle:not(.ds-button-round) {
     width: 44px;
     height: 44px;
     display: grid;
@@ -95,14 +106,29 @@ const CSS = `
     border-radius: 50%;
     background: var(--color-white, #fefefe);
     color: var(--color-black, #121214);
-    cursor: pointer;
     padding: 0;
     box-shadow: var(--shadow, 0 5px 9px #bbbbbd40);
-    transition-property: transform, background, border-color, opacity;
-    transition-duration: .2s;
-    transition-timing-function: cubic-bezier(.22,.82,.18,1);
   }
-  .dots-theme-toggle:hover { transform: translateY(-2px); }
+  /* Home Outlined: Figma 417:17882 / 417:17917 — muted Gray_text + lift.
+     :hover by default — Electron may not match (hover: hover). */
+  .dots-theme-toggle:not(.dots-theme-toggle--inline).ds-button-round--outlined:hover {
+    color: var(--color-gray-text, #888888);
+    transform: translateY(-2px);
+  }
+  .dots-theme-toggle:not(.dots-theme-toggle--inline).ds-button-round--outlined:hover .ds-icon {
+    color: var(--color-gray-text, #888888);
+    background-color: currentColor;
+  }
+  /* Touch only — no sticky lift / muted (do not use pointer: coarse). */
+  @media (hover: none) {
+    .dots-theme-toggle:not(.dots-theme-toggle--inline).ds-button-round--outlined:hover {
+      color: var(--color-black, #121214);
+      transform: none;
+    }
+    .dots-theme-toggle:not(.dots-theme-toggle--inline).ds-button-round--outlined:hover .ds-icon {
+      color: var(--color-black, #121214);
+    }
+  }
 
   /* Figma Tooltip 92:11490 — home ≥1024 only (cases / narrow: aria-label) */
   .dots-theme-toggle .ds-tooltip {
@@ -125,36 +151,86 @@ const CSS = `
     }
   }
 
-  /* Inside the menu the button is just another icon: no fill, no border, no fixing.
-     It sits out of flow — otherwise its width shifts the header layout and the title
-     stops being centred. */
-  .dots-theme-toggle--inline {
+  /* Case / Header·Toolbar Text: dock left of burger; size/padding from .ds-button-round.
+     Absolute so the 48px hit does not shift the centred title. Hover/pressed = DS CSS. */
+  .dots-theme-toggle--inline.ds-button-round {
     position: absolute;
     right: 100%;
     top: 50%;
+    left: auto;
     transform: translateY(-50%);
-    margin-right: 4px;
-    width: 40px;
-    height: 40px;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
+    margin: 0;
+    z-index: 1;
   }
-  .dots-theme-toggle--inline:hover { transform: translateY(-50%); opacity: .7; }
   .dots-theme-slot { position: relative; display: inline-flex; align-items: center; }
   .dots-theme-toggle:focus-visible { outline: 2px solid var(--color-primary, #64b3f9); outline-offset: 2px; }
-  .dots-theme-toggle svg { width: 20px; height: 20px; display: block; }
   /* While booting the toggle must not hover over the loader. */
   html.is-booting .dots-theme-toggle { opacity: 0; pointer-events: none; }
+  /* Leave crossfade: floating sits above the veil (z-index 99999 > 10000) — hide it. */
+  body.is-page-crossfading .dots-theme-toggle:not(.dots-theme-toggle--inline) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  /* Case: only docked --inline in Header/Toolbar; never show orphan floating. */
+  body.case-page .dots-theme-toggle:not(.dots-theme-toggle--inline) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
 `;
 
-const SUN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-  stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/>
-  <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>`;
+const DS_PRESSED = "ds-button-round--pressed";
 
-const MOON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <path d="M20.5 14.3A8.6 8.6 0 1 1 9.7 3.5a6.9 6.9 0 0 0 10.8 10.8z"/></svg>`;
+/**
+ * DS theme icon (mask via .ds-button-round .ds-icon[data-icon]).
+ * light → moon, dark → sun.
+ * @param {HTMLElement} button
+ * @param {"light"|"dark"} theme
+ */
+function appendDsThemeIcon(button, theme) {
+  const name = theme === "dark" ? "sun" : "moon";
+  const icon = document.createElement("span");
+  icon.className = "ds-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.dataset.icon = name;
+  const img = document.createElement("img");
+  img.src = resolveAsset(theme === "dark" ? "icons.sun" : "icons.moon");
+  img.alt = "";
+  img.width = 24;
+  img.height = 24;
+  icon.appendChild(img);
+  button.appendChild(icon);
+}
+
+/** True when primary input has no hover — use pressed, not sticky :hover. */
+function prefersTouchPress() {
+  try {
+    return Boolean(
+      typeof window !== "undefined" &&
+        window.matchMedia?.("(hover: none)").matches,
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Bind --pressed only when (hover: none) so desktop keeps hover Outlined.
+ * @param {HTMLElement} button
+ */
+function bindTouchPressed(button) {
+  if (!prefersTouchPress()) return;
+  const clear = () => button.classList.remove(DS_PRESSED);
+  button.addEventListener("pointerdown", (ev) => {
+    if (ev.pointerType === "mouse") return;
+    button.classList.add(DS_PRESSED);
+  });
+  button.addEventListener("pointerup", clear);
+  button.addEventListener("pointercancel", clear);
+  button.addEventListener("pointerleave", clear);
+  button.addEventListener("lostpointercapture", clear);
+}
 
 /** Inert handle for environments without a DOM. */
 function noopTheme() {
@@ -165,6 +241,15 @@ function noopTheme() {
     toggle() { return "light"; },
     syncPlacement() {},
   };
+}
+
+/** Case pages dock the control in Header/Toolbar — never float on body. */
+function isCasePage() {
+  try {
+    return Boolean(document.body?.classList?.contains("case-page"));
+  } catch {
+    return false;
+  }
 }
 
 /** Things the button must not sit on top of when it floats on its own. */
@@ -264,6 +349,18 @@ function place(button) {
     return;
   }
 
+  // Case: wait for chrome (resize / MutationObserver / syncPlacement) — never
+  // mount a home-style floating control on body for even one frame.
+  if (isCasePage()) {
+    if (button.parentNode === document.body) {
+      button.classList.remove(INLINE_CLASS);
+      button.style.right = '';
+      button.style.top = '';
+      if (typeof button.remove === "function") button.remove();
+    }
+    return;
+  }
+
   // No menu — the button floats, so look for a free corner.
   button.classList.remove(INLINE_CLASS);
   if (button.parentNode !== document.body) document.body.append(button);
@@ -356,22 +453,21 @@ export function setupTheme({ mount = true } = {}) {
     return theme === "dark" ? "Включить светлую" : "Включить тёмную";
   }
 
-  function isCasePage() {
-    try {
-      return Boolean(document.body?.classList?.contains("case-page"));
-    } catch {
-      return false;
-    }
-  }
-
   function syncButton() {
     if (!button) return;
     const label = themeLabel();
     button.setAttribute("aria-label", label);
     button.removeAttribute("title");
 
+    // Home floating → Outlined (Figma 417:17856); case Header/Toolbar → Text.
+    const useOutlined = !button.classList.contains(INLINE_CLASS) && !isCasePage();
+    button.classList.add(DS_ROUND);
+    if (useOutlined) button.classList.add(DS_OUTLINED);
+    else button.classList.remove(DS_OUTLINED);
+
     button.replaceChildren();
-    button.insertAdjacentHTML("afterbegin", theme === "dark" ? SUN : MOON);
+    // light → moon, dark → sun (DS mask assets) for both Text and Outlined.
+    appendDsThemeIcon(button, theme);
 
     // Tooltip DOM only on home; visibility ≥1024 is CSS. Cases — aria-label only.
     if (isCasePage()) {
@@ -406,20 +502,26 @@ export function setupTheme({ mount = true } = {}) {
       apply(theme === "dark" ? "light" : "dark");
       writeStored(theme);
     });
+    bindTouchPressed(button);
 
     // Case pages: mount straight into the header/toolbar slot so the control
     // never appears as the home floating button, even for one frame.
+    // If chrome is not ready yet, stay detached — place()/syncPlacement docks later.
     const burger = findDockBurger();
     if (burger) {
       button.classList.add(INLINE_CLASS);
       dockNextTo(burger, button);
-    } else {
+    } else if (!isCasePage()) {
       document.body.append(button);
     }
     apply(theme);
 
     const reposition = () => {
-      if (button) place(button);
+      if (!button) return;
+      const before = button.classList.contains(INLINE_CLASS);
+      place(button);
+      const after = button.classList.contains(INLINE_CLASS);
+      if (before !== after) syncButton();
     };
     // Re-dock if chrome swaps (Header ↔ Toolbar) after layout / resize.
     reposition();
