@@ -6,26 +6,88 @@
 <title>Программа А — сводный дашборд — desktop вайрфреймы</title>
 <link rel="stylesheet" href="board.css">
 <link rel="stylesheet" href="board-desktop.css">
+<style>
+  /* tall frames: primary + chart / tip need height beyond 680 */
+  .desk-frame.tall{height:auto; min-height:900px}
+  .chart-box{
+    border:1px solid var(--line); border-radius:8px;
+    padding:8px 10px; background:#fff;
+  }
+  .plot{
+    display:grid; grid-template-columns:32px 1fr; gap:0 6px;
+  }
+  .y-axis{
+    display:flex; flex-direction:column; justify-content:space-between;
+    align-items:flex-end; height:110px; font-size:9px; color:var(--mut); padding:2px 0;
+  }
+  .plot-area{
+    height:110px; border:1px solid var(--line); border-radius:6px;
+    background:repeating-linear-gradient(to top, transparent 0, transparent 21px, var(--block) 21px, var(--block) 22px);
+    position:relative; overflow:hidden;
+  }
+  .plot-area svg{position:absolute; inset:0; width:100%; height:100%}
+  .x-axis{
+    display:flex; justify-content:space-between;
+    margin-top:4px; font-size:9px; color:var(--mut); padding-left:38px;
+  }
+  .legend-inline{
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; font-size:10px; color:var(--mut);
+    align-items:center;
+  }
+  .legend-inline .sw{
+    display:inline-block; width:14px; height:0; border-top:2px solid var(--ink);
+    vertical-align:middle; margin-right:3px;
+  }
+  .legend-inline .sw.train{
+    border-top-style:dashed; border-top-color:var(--mut);
+  }
+  .legend-inline .lg-chip{
+    display:inline-flex; align-items:center; gap:4px;
+    border:1px solid var(--ink); border-radius:999px;
+    padding:2px 8px; font-size:10px; color:var(--ink); background:#fff;
+  }
+  .legend-inline .lg-chip.off{
+    border-style:dashed; color:var(--mut); border-color:var(--line);
+  }
+  .tip-float{
+    position:absolute; top:18%; left:48%; width:220px;
+    background:#fff; border:1.5px solid var(--ink); border-radius:10px;
+    padding:8px 10px; font-size:11px; z-index:3;
+    box-shadow:0 2px 8px rgba(31,29,26,.08);
+  }
+  .tip-float .th{font-weight:700; font-size:11px; margin-bottom:4px}
+  .tip-float .trow{
+    display:flex; justify-content:space-between; gap:8px;
+    padding:5px 0; border-bottom:1px solid var(--line);
+  }
+  .tip-float .trow:last-child{border-bottom:none}
+  .tip-float .trow .nm{font-weight:600}
+  .tip-float .trow .mt{color:var(--mut); font-size:10px}
+  .link-note{
+    margin:8px 0 0; font-size:11px; color:var(--mut);
+    border-left:3px solid var(--line); padding-left:8px;
+  }
+</style>
 </head>
 <body>
 
 <h1>Программа А — сводный дашборд — desktop вайрфреймы</h1>
-<p class="sub">Desktop lo-fi каркасы сводной аналитики (обучение + атаки): shell-навигация разделов, многоколоночный layout primary ИБ, срезы HR/SOC, empty/loading, modal назначения и drill в Атаки. Паттерны: Risk + attack metrics в ряд, обучение | топ ФИО, подразделения без traffic-light. Mobile-доска: <a href="dashboard-wireframes.html">dashboard-wireframes.html</a>. Это структура, не визуальный стиль.</p>
+<p class="sub">Desktop lo-fi каркасы сводной аналитики InnoPhish / программа «А»: shell, primary ИБ с графиком индекса (реш. 2026-09-30), срезы HR/SOC, empty/loading, modal назначения, TIP-VERT (список атак на вертикали). Паттерны: Risk + атаки + обучение | топ ФИО, подразделения без traffic-light. Детали графика: <a href="risk-index-chart-wireframe.html">risk-index-chart</a> · <a href="chart-hover-rules-wireframe.html">hover rules</a> · home: <a href="dashboard-ib-home-wireframe.html">dashboard-ib-home</a>. Mobile: <a href="dashboard-wireframes.html">dashboard-wireframes.html</a>. Это структура, не визуальный стиль.</p>
 
 <div class="princ">
   <span>Первый экран = последняя кампания / актуальный срез</span>
   <span>Нет dual-mode ИБ/руководство</span>
   <span>Дашборд ≠ Отчёты</span>
   <span>HR = обучение · SOC = уязвимые + инциденты</span>
-  <span>ФИО топа на сводке · без порога «плохо»</span>
-  <span>Desktop: shell слева · контент в колонках</span>
+  <span>График: индекс + серия обучения · вертикаль → TIP-VERT</span>
+  <span>Нет TIP-A / когорты в tooltip</span>
 </div>
 
 <div class="legend">
   <div><span class="dot" style="background:var(--f1)">1</span> Сводка ИБ → доклад / экспорт</div>
   <div><span class="dot" style="background:var(--f2)">2</span> Назначить обучение с топа</div>
   <div><span class="dot" style="background:var(--f3)">3</span> Срезы HR / SOC</div>
-  <div><span class="dot" style="background:var(--f4)">4</span> Drill во внешние разделы</div>
+  <div><span class="dot" style="background:var(--f4)">4</span> Drill / TIP-VERT → внешние</div>
 </div>
 
 <div class="map">
@@ -42,16 +104,17 @@
 <!-- ── ПОТОК 1: PRIMARY ──────────────────────────────────────── -->
 <section>
   <h2>1. Дашборд ИБ (primary) и состояния — Desktop</h2>
-  <p>Многоколоночный layout внутри desktop frame (~1040×680). Нет переключателя 3–6–12. Empty и loading — отдельные ячейки.</p>
+  <p>Многоколоночный layout. Нет 3–6–12. График: линия индекса + серия обучения (легенда) + вертикали → TIP-VERT. Empty и loading — отдельные ячейки.</p>
 
   <div class="row">
 
-    <!-- DB-IB-D -->
+    <!-- DB-IB-D · DASH-IB -->
     <div class="cell desk">
-      <div class="desk-frame">
+      <div class="desk-frame tall">
         <div class="flows">
           <span class="dot" style="background:var(--f1)">1</span>
           <span class="dot" style="background:var(--f2)">2</span>
+          <span class="dot" style="background:var(--f4)">4</span>
         </div>
         <nav class="desk-nav" aria-label="Разделы">
           <div class="brand">Программа А</div>
@@ -92,7 +155,44 @@
             </div>
           </div>
 
-          <div class="note">Атаки (последняя кампания) · клик по метрике → детали атаки (внешний)</div>
+          <!-- Chart · decision 2026-09-30 -->
+          <div class="desk-panel">
+            <div class="pt">Индекс защищённости · динамика</div>
+            <div class="note">Линия индекса + серия обучения · │ = старт атак → hover TIP-VERT · без TIP-A/когорты</div>
+            <div class="chart-box">
+              <div class="plot">
+                <div class="y-axis" aria-hidden="true">
+                  <span>40%</span><span>20%</span><span>0</span>
+                </div>
+                <div class="plot-area" aria-label="График индекса + обучение">
+                  <!-- вертикали стартов атак -->
+                  <div style="position:absolute; left:26%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35" title="вертикаль · hover → TIP-VERT"></div>
+                  <div style="position:absolute; left:50%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.55" title="вертикаль · hover → TIP-VERT"></div>
+                  <div style="position:absolute; left:74%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35" title="вертикаль · hover → TIP-VERT"></div>
+                  <div style="position:absolute; left:96%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35" title="вертикаль · hover → TIP-VERT"></div>
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <!-- индекс -->
+                    <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
+                      points="2,22 14,28 26,33 38,40 50,62 62,70 74,52 86,60 98,77"/>
+                    <!-- серия обучения (completion% / активность — метрика TBD) -->
+                    <polyline fill="none" stroke="#8a857c" stroke-width="1.4" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"
+                      points="2,85 14,82 26,78 38,55 50,42 62,38 74,48 86,35 98,30"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="x-axis" aria-hidden="true">
+                <span>янв</span><span>мар</span><span>май</span><span>июл</span><span>сен</span>
+              </div>
+              <div class="legend-inline">
+                <span class="lg-chip"><i class="sw"></i> индекс</span>
+                <span class="lg-chip"><i class="sw train"></i> обучение · вкл (скрыть)</span>
+                <span>│ вертикаль → TIP-VERT</span>
+              </div>
+            </div>
+            <div class="link-note">Чип HR → DB-HR-D · чип SOC → DB-SOC-D · hover │ → DB-TIP-D · легенда «обучение» toggle (остаёмся)</div>
+          </div>
+
+          <div class="note">Атаки (последняя кампания) · клик по метрике → EXT-ATTACKS</div>
           <div class="metrics-line">
             <div class="metric"><div class="ml">Open</div><div class="mv">42%</div></div>
             <div class="metric"><div class="ml">Click</div><div class="mv">18%</div></div>
@@ -123,7 +223,7 @@
                 <div style="flex:1; font-size:11px"><b>Петрова А.С.</b><br><span class="note">attachment</span></div>
                 <span class="tgbtn">Обучить</span>
               </div>
-              <div class="note">ФИО → EXT-USERS · CTA → DB-ASSIGN</div>
+              <div class="note">ФИО → EXT-USERS · CTA → DB-ASSIGN-D</div>
             </div>
           </div>
 
@@ -152,10 +252,13 @@
           </div>
         </div>
       </div>
-      <div class="cap"><div class="t">DB-IB-D. Дашборд ИБ (primary) · Desktop</div><div class="d">Shell слева (Сводка on). Header + Risk|распределение + 5 метрик в линию + обучение|топ ФИО + таблица подразделений. Чипы HR/SOC — срезы, не dual-mode.</div></div>
+      <div class="cap">
+        <div class="t">DB-IB-D · DASH-IB · primary Desktop</div>
+        <div class="d">Shell + Risk|распределение + график (индекс + обучение + │) + метрики атак + обучение|топ + подразделения. Чипы HR/SOC — срезы. Переходы: HR→DB-HR-D · SOC→DB-SOC-D · │→DB-TIP-D · Обучить→DB-ASSIGN-D · метрики→EXT-ATTACKS · экспорт.</div>
+      </div>
     </div>
 
-    <!-- DB-EMPTY-D -->
+    <!-- DB-EMPTY-D · DASH-EMPTY -->
     <div class="cell desk">
       <div class="desk-frame">
         <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
@@ -187,12 +290,13 @@
               <div class="btn ghost" style="min-width:140px; padding:9px 16px">К шаблонам</div>
             </div>
           </div>
+          <div class="link-note">CTA → EXT-ATTACKS / EXT-TEMPLATES · после данных → DB-IB-D</div>
         </div>
       </div>
-      <div class="cap"><div class="t">DB-EMPTY-D. Пусто (нет кампаний) · Desktop</div><div class="d">Широкий empty в main. CTA → EXT-ATTACKS / EXT-TEMPLATES. Экспорт disabled (ghost).</div></div>
+      <div class="cap"><div class="t">DB-EMPTY-D · DASH-EMPTY</div><div class="d">Пусто: нет кампаний. Экспорт disabled. CTA во внешние Атаки / Шаблоны.</div></div>
     </div>
 
-    <!-- DB-LOAD-D -->
+    <!-- DB-LOAD-D · DASH-LOADING -->
     <div class="cell desk">
       <div class="desk-frame">
         <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
@@ -229,6 +333,11 @@
               <div class="txt" style="width:50%"></div>
             </div>
           </div>
+          <div class="skel-block" style="min-height:90px">
+            <div class="txt" style="width:35%"></div>
+            <div class="skel-line" style="width:100%; height:56px; margin-top:10px"></div>
+            <div class="note" style="margin-top:6px">скелетон графика</div>
+          </div>
           <div class="metrics-line">
             <div class="skel-block"><div class="txt"></div><div class="skel-line" style="width:50%; margin-top:10px"></div></div>
             <div class="skel-block"><div class="txt"></div><div class="skel-line" style="width:50%; margin-top:10px"></div></div>
@@ -247,10 +356,10 @@
               <div class="conn"><div class="avatar" style="width:28px;height:28px"></div><div style="flex:1"><div class="txt"></div></div></div>
             </div>
           </div>
-          <div class="note">Загрузка… · shell кликабелен · контент без интерактивов</div>
+          <div class="note">Загрузка… · shell кликабелен · контент без интерактивов → DB-IB-D</div>
         </div>
       </div>
-      <div class="cap"><div class="t">DB-LOAD-D. Loading · Desktop</div><div class="d">Скелетон тех же колонок (Risk, метрики, обучение|топ). Интерактивов на контенте нет.</div></div>
+      <div class="cap"><div class="t">DB-LOAD-D · DASH-LOADING</div><div class="d">Скелетон Risk, графика, метрик, обучения|топа. Интерактивов на контенте нет.</div></div>
     </div>
 
   </div>
@@ -259,11 +368,11 @@
 <!-- ── ПОТОК 3: СРЕЗЫ ───────────────────────────────────────── -->
 <section>
   <h2>2. Срезы HR и SOC — Desktop</h2>
-  <p>Широкие представления: HR — только обучение; SOC — уязвимые + частые инциденты в две колонки.</p>
+  <p>HR — только обучение; SOC — уязвимые + частые инциденты. Возврат «К сводке ИБ» → DB-IB-D.</p>
 
   <div class="row">
 
-    <!-- DB-HR-D -->
+    <!-- DB-HR-D · DASH-HR -->
     <div class="cell desk">
       <div class="desk-frame">
         <div class="flows"><span class="dot" style="background:var(--f3)">3</span></div>
@@ -313,15 +422,16 @@
               <div class="pt">Действия</div>
               <div class="btn pr">Открыть Обучение</div>
               <div class="btn ghost">Назначить (массово)</div>
-              <div class="note">→ EXT-TRAINING · опц. DB-ASSIGN</div>
+              <div class="note">→ EXT-TRAINING · опц. DB-ASSIGN-D</div>
             </div>
           </div>
+          <div class="link-note">«К сводке ИБ» / чип ИБ → DB-IB-D · чип SOC → DB-SOC-D</div>
         </div>
       </div>
-      <div class="cap"><div class="t">DB-HR-D. Срез HR (обучение) · Desktop</div><div class="d">Широкий ряд из 3 статусов + список курсов | CTA. Без полного ИБ-стека и топа атак.</div></div>
+      <div class="cap"><div class="t">DB-HR-D · DASH-HR</div><div class="d">Только обучение: 3 статуса + курсы | CTA. Без Risk Score как якоря и без графика атак.</div></div>
     </div>
 
-    <!-- DB-SOC-D -->
+    <!-- DB-SOC-D · DASH-SOC -->
     <div class="cell desk">
       <div class="desk-frame">
         <div class="flows">
@@ -369,7 +479,7 @@
                 <div style="flex:1; font-size:11px"><b>Орлов Д.А.</b><br><span class="note">2 инцидента</span></div>
                 <span class="tgbtn">Обучить</span>
               </div>
-              <div class="note">ФИО → EXT-USERS · CTA → DB-ASSIGN</div>
+              <div class="note">ФИО → EXT-USERS · CTA → DB-ASSIGN-D</div>
             </div>
             <div class="desk-panel col-eq">
               <div class="pt">Частые инциденты</div>
@@ -385,22 +495,128 @@
               <div class="note">тип → EXT-ATTACKS (фильтр)</div>
             </div>
           </div>
+          <div class="link-note">«К сводке ИБ» → DB-IB-D · Обучить → DB-ASSIGN-D</div>
         </div>
       </div>
-      <div class="cap"><div class="t">DB-SOC-D. Срез SOC · Desktop</div><div class="d">Две колонки: уязвимые ФИО + частые инциденты. Drill в Пользователи / Атаки.</div></div>
+      <div class="cap"><div class="t">DB-SOC-D · DASH-SOC</div><div class="d">Две колонки: уязвимые ФИО + частые инциденты. Drill в Пользователи / Атаки / ASSIGN.</div></div>
     </div>
 
   </div>
 </section>
 
-<!-- ── ПОТОК 2 + 4: DRILL ────────────────────────────────────── -->
+<!-- ── TIP-VERT + ASSIGN + DRILL ─────────────────────────────── -->
 <section>
-  <h2>3. Drill: назначение обучения и детали атаки — Desktop</h2>
-  <p>Modal поверх desktop frame; атака — split-view hint (сводка | внешний раздел Атаки).</p>
+  <h2>3. TIP-VERT, назначение и drill — Desktop</h2>
+  <p>Hover на вертикаль графика → список начавшихся атак (не TIP-A). Modal назначения поверх primary. Drill в Атаки — внешний узел.</p>
 
   <div class="row">
 
-    <!-- DB-ASSIGN-D -->
+    <!-- DB-TIP-D · TIP-VERT -->
+    <div class="cell desk">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">Программа А</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика</div>
+              <div class="note">Последняя кампания · 12 сен 2026</div>
+            </div>
+            <div class="h-right">
+              <span class="chip on">ИБ</span>
+              <span class="chip">HR</span>
+              <span class="chip">SOC</span>
+              <div class="btn pr">Экспорт</div>
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="metric risk-big col-1">
+              <div class="ml">Risk Score</div>
+              <div class="mv">72</div>
+            </div>
+            <div class="desk-panel col-2">
+              <div class="pt">Распределение</div>
+              <div class="txt" style="width:80%"></div>
+            </div>
+          </div>
+
+          <div class="desk-panel" style="position:relative">
+            <div class="pt">Индекс защищённости · hover на вертикаль</div>
+            <div class="chart-box" style="position:relative">
+              <div class="plot">
+                <div class="y-axis" aria-hidden="true">
+                  <span>40%</span><span>20%</span><span>0</span>
+                </div>
+                <div class="plot-area">
+                  <div style="position:absolute; left:26%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.3"></div>
+                  <div style="position:absolute; left:50%; width:3px; top:0; bottom:0; background:var(--ink); opacity:.75" title="активная вертикаль"></div>
+                  <div style="position:absolute; left:74%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.3"></div>
+                  <div style="position:absolute; left:96%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.3"></div>
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
+                      points="2,22 14,28 26,33 38,40 50,62 62,70 74,52 86,60 98,77"/>
+                    <polyline fill="none" stroke="#8a857c" stroke-width="1.4" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"
+                      points="2,85 14,82 26,78 38,55 50,42 62,38 74,48 86,35 98,30"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="x-axis"><span>янв</span><span>мар</span><span>май</span><span>июл</span><span>сен</span></div>
+              <div class="legend-inline">
+                <span class="lg-chip"><i class="sw"></i> индекс</span>
+                <span class="lg-chip"><i class="sw train"></i> обучение</span>
+                <span>│ май · hover</span>
+              </div>
+
+              <!-- TIP-VERT overlay -->
+              <div class="tip-float" aria-label="TIP-VERT">
+                <div class="th">Начались · 12 мая 2026</div>
+                <div class="note" style="margin-bottom:4px">Список атак на вертикали · без когорт и волн обучения</div>
+                <div class="trow">
+                  <div>
+                    <div class="nm">Кликфикс SSO Битрикс</div>
+                    <div class="mt">credential · доставлено 1 098</div>
+                  </div>
+                  <div class="mt">→</div>
+                </div>
+                <div class="trow">
+                  <div>
+                    <div class="nm">Счёт за услуги</div>
+                    <div class="mt">invoice · 980</div>
+                  </div>
+                  <div class="mt">→</div>
+                </div>
+                <div class="note" style="margin-top:6px">строка → EXT-ATTACKS · увод → закрыть</div>
+              </div>
+            </div>
+            <div class="link-note">Источник: DB-IB-D · клик строки → EXT-ATTACKS (DB-ATTACK-D stub) · отказ от TIP-A</div>
+          </div>
+
+          <div class="metrics-line" style="opacity:.45">
+            <div class="metric"><div class="ml">Open</div><div class="mv">42%</div></div>
+            <div class="metric"><div class="ml">Click</div><div class="mv">18%</div></div>
+            <div class="metric"><div class="ml">Submit</div><div class="mv">7%</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-TIP-D · TIP-VERT</div>
+        <div class="d">Состояние графика: hover на вертикаль → tooltip со списком атак, которые начались. Без волн обучения и когорты «с курсом / без». Клик → EXT-ATTACKS.</div>
+      </div>
+    </div>
+
+    <!-- DB-ASSIGN-D · DASH-ASSIGN -->
     <div class="cell desk">
       <div class="desk-frame nopad">
         <div class="flows"><span class="dot" style="background:var(--f2)">2</span></div>
@@ -449,26 +665,22 @@
           </div>
         </div>
       </div>
-      <div class="cap"><div class="t">DB-ASSIGN-D. Modal назначения · Desktop</div><div class="d">Центральный modal поверх primary. Подтверждение → закрытие на сводку. «В Обучении» → EXT-TRAINING.</div></div>
+      <div class="cap"><div class="t">DB-ASSIGN-D · DASH-ASSIGN</div><div class="d">Modal поверх primary (вход с DB-IB-D / DB-SOC-D / опц. DB-HR-D). Подтверждение → закрытие + тост на сводку. «В Обучении» → EXT-TRAINING. Отмена → закрыть.</div></div>
     </div>
 
-    <!-- DB-ATTACK-D -->
+    <!-- DB-ATTACK-D · DRILL-ATTACK / EXT-ATTACKS -->
     <div class="cell desk">
       <div class="desk-frame nopad">
         <div class="flows"><span class="dot" style="background:var(--f4)">4</span></div>
         <div class="split-hint" style="width:100%">
           <div class="pane" style="opacity:.5">
-            <div class="hint-label">Сводка (уходим)</div>
+            <div class="hint-label">Сводка / TIP-VERT (уходим)</div>
             <div class="shell" style="margin:0">
               <span>Польз.</span><span>Атаки</span><span>Шабл.</span><span>Обуч.</span>
               <span class="on">Сводка</span><span>Отчёты</span>
             </div>
             <div style="font-weight:700; font-size:13px">Сводная аналитика</div>
-            <div class="metrics-line">
-              <div class="metric"><div class="ml">Open</div><div class="mv">42%</div></div>
-              <div class="metric"><div class="ml">Click</div><div class="mv">18%</div></div>
-            </div>
-            <div class="note">клик по метрике атаки</div>
+            <div class="note">клик по метрике атаки или строке TIP-VERT</div>
           </div>
           <div class="pane">
             <div class="hint-label">Внешний узел · Атаки</div>
@@ -482,15 +694,73 @@
             </div>
             <div class="txt"></div>
             <div class="txt" style="width:75%"></div>
-            <div class="txt" style="width:55%"></div>
             <div class="btn ghost" style="margin-top:auto; max-width:200px">← Назад к сводке</div>
-            <div class="note">Вход с DB-IB-D / DB-SOC-D</div>
+            <div class="note">Вход с DB-IB-D / DB-TIP-D / DB-SOC-D</div>
           </div>
         </div>
       </div>
-      <div class="cap"><div class="t">DB-ATTACK-D. Drill → Атаки · Desktop</div><div class="d">Split-view hint: слева сводка (источник), справа маркер EXT-ATTACKS. Отдельного экрана внутри дашборда нет.</div></div>
+      <div class="cap"><div class="t">DB-ATTACK-D · DRILL-ATTACK → EXT-ATTACKS</div><div class="d">Split-hint: сводка / TIP-VERT слева, маркер внешнего раздела справа. Отдельного экрана внутри дашборда нет.</div></div>
     </div>
 
+  </div>
+</section>
+
+<!-- ── ЛЕГЕНДА: legend train off (состояние графика) ─────────── -->
+<section>
+  <h2>4. Состояние графика — серия обучения скрыта</h2>
+  <p>То же DASH-IB: в легенде выключили «обучение» — чистая линия для доклада (UF-1). Вертикали и TIP-VERT остаются.</p>
+
+  <div class="row">
+    <div class="cell desk">
+      <div class="desk-frame" style="height:auto; min-height:420px">
+        <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">Программа А</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика</div>
+              <div class="note">Доклад CISO · серия обучения скрыта</div>
+            </div>
+            <div class="h-right">
+              <span class="chip on">ИБ</span>
+              <div class="btn pr">Экспорт</div>
+            </div>
+          </div>
+          <div class="desk-panel">
+            <div class="pt">Индекс · legend train off</div>
+            <div class="chart-box">
+              <div class="plot">
+                <div class="y-axis"><span>40%</span><span>20%</span><span>0</span></div>
+                <div class="plot-area">
+                  <div style="position:absolute; left:50%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.4"></div>
+                  <div style="position:absolute; left:74%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.4"></div>
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
+                      points="2,22 14,28 26,33 38,40 50,62 62,70 74,52 86,60 98,77"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="x-axis"><span>янв</span><span>мар</span><span>май</span><span>июл</span><span>сен</span></div>
+              <div class="legend-inline">
+                <span class="lg-chip"><i class="sw"></i> индекс</span>
+                <span class="lg-chip off"><i class="sw train"></i> обучение · выкл</span>
+                <span>│ остаются</span>
+              </div>
+            </div>
+            <div class="link-note">Состояние на DB-IB-D · не отдельный узел IA · toggle легенды</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><div class="t">DB-IB-D · legend train off</div><div class="d">Вариант primary: серия обучения скрыта. Вертикали и TIP-VERT доступны. Не dual-mode.</div></div>
+    </div>
   </div>
 </section>
 
@@ -498,14 +768,16 @@
 <section>
   <h2>Логика, которую не видно на каркасах</h2>
   <p>
-    <b>Desktop vs mobile:</b> та же IA; на desktop — боковой shell и колонки вместо вертикального стека.
-    <b>Данные первого экрана:</b> последняя кампания и/или org-актуальный срез — без UI тренда 3–6–12.
-    <b>Подразделения:</b> таблица болевых точек и типов; запрещены traffic-light и единый порог «плохо».
-    <b>PII:</b> ФИО топа только ролям с доступом; иначе маскирование / агрегат (A2).
-    <b>Экспорт:</b> one-shot актуального среза в header; schedule/архив — через Отчёты.
-    <b>Срезы:</b> HR не тащит Risk/атаки; SOC не заменяет SIEM.
-    <b>ASSIGN:</b> на desktop — modal по центру (не bottom sheet).
-    <b>Кабинет учащегося:</b> в shell дашборда не показываем как цель.
+    <b>Desktop vs mobile:</b> та же IA; на desktop — боковой shell и колонки.
+    <b>Данные первого экрана:</b> последняя кампания / org-срез — без UI 3–6–12.
+    <b>График (2026-09-30):</b> индекс + серия обучения (toggle легенды); вертикаль → TIP-VERT (список начавшихся атак); TIP-A/когорта — отказ.
+    <b>Метрика серии «обучение»:</b> completion% / активные волны — уточнить с техспециалистами (дыра IA §6.7).
+    <b>Подразделения:</b> без traffic-light и порога «плохо».
+    <b>PII:</b> ФИО топа по ролям; иначе маскирование (A2).
+    <b>Экспорт:</b> one-shot среза; архив — Отчёты.
+    <b>Срезы:</b> HR без Risk/атак; SOC ≠ SIEM.
+    <b>ASSIGN:</b> desktop modal (не bottom sheet).
+    <b>Кабинет учащегося:</b> вне графа дашборда.
   </p>
 </section>
 

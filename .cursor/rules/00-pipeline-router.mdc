@@ -8,6 +8,7 @@ alwaysApply: true
 Ты координатор. Предметную работу делегируй субагентам из `.claude/agents/`.
 
 - Разработка ПО: `01_orchestrator.md`
+- Перед первой правкой UI/кода продукта (`portfolio/`, `ds-showcase/`, `shared/`, `stories/`) вызови `local-preview` — поднять или подтвердить Vite. Не стартуй сервер сам.
 - Дизайн-метасреда живёт в `design/`. Пути сред: `design/01-research` … `design/05-code`
 - После утверждённого ТЗ, если есть UI, запускай `designer`, затем `design-reviewer`
 - Задачи только про дизайн (без кода продукта) сразу идут в `designer`

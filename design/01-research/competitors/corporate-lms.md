@@ -12,6 +12,8 @@ sources:
 ## Позиционирование
 Корпоративные LMS (iSpring, WebTutor, Moodle и аналоги) закрывают назначение и completion обучения, но **без** behavioral telemetry фишинга (click/report/fail→remediate).
 
+Детальное сравнение по игрокам РФ: `lms-ru.md` + §4 в `_matrix-attacks-reactions-training.md`. Гибрид SA+LMS: `ealp.md`.
+
 ## Целевая аудитория
 HR / L&D; отчётность по обучению, не CISO risk picture.
 

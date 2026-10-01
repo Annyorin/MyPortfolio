@@ -2,10 +2,11 @@
 type: insight
 env: 01-research
 status: draft
-updated: 2026-09-15
+updated: 2026-09-30
 sources:
   - sources/interview-ib-specialists.md
   - sources/competitors-sat-dashboard-raw.md
+  - sources/decision-chart-index-2026-09-30.md
   - briefs/01-product-brief.md
   - competitors/_matrix.md
 ---
@@ -26,3 +27,4 @@ sources:
 10. **НЕ подменять дашборд разделом «Отчёты»** — отдельная страница сводки. → `00-product-a-input.md`
 11. **Actionable summary** (назначить обучение со сводки) — сильный паттерн Антифишинг и JTBD соц. инженера. *(гипотеза приоритета UX)*
 12. **Динамика 3–6–12 на первом экране не нужна** — рынок (KnowBe4 ~6 мес.) остаётся референсом для отчётов/drill-down, не must первого экрана «А». → **решение**
+13. **График индекса (2026-09-30):** обучение — доп. серия на графике со скрытием в легенде; hover на вертикаль — список начавшихся атак; TIP-A/когорта в tooltip — **отказ** (UX + техспециалисты). → `sources/decision-chart-index-2026-09-30.md`

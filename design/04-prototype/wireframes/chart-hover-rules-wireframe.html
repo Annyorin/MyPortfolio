@@ -74,14 +74,44 @@
 <body>
 
 <h1>График индекса — правила ховера</h1>
-<p class="sub">Визуальные правила подсказки на CHART-LITE: что показывается при наведении на точку учебной атаки и на старт волны обучения. Связь с когортой F (с курсом / без). Это структура, не визуальный стиль. Рядом: <a href="risk-index-chart-wireframe.html">risk-index-chart-wireframe.html</a>.</p>
+<p class="sub"><b>Канон v1 (реш. 2026-09-30):</b> сложный TIP-A / TIP-A2 / когорта в tooltip — <b>отказ</b> (согласовано с техспециалистами). Вместо этого: доп. серия обучения на графике (скрыть в легенде); hover на <b>вертикальную линию</b> → список атак, которые начались. Ниже — архив старых правил TIP-A для истории. Рядом: <a href="risk-index-chart-wireframe.html">risk-index-chart-wireframe.html</a> · решение: <code>01-research/sources/decision-chart-index-2026-09-30.md</code>.</p>
+
+<div class="princ" style="border-color:var(--ink); background:var(--block)">
+  <span><b>v1:</b> легенда ↔ серия обучения</span>
+  <span><b>v1:</b> вертикаль → список атак</span>
+  <span><s>TIP-A + волны + когорта</s> отказ</span>
+  <span>Без Ганта в tooltip</span>
+</div>
+
+<section>
+  <h2>0. Канон v1 — что рисуем</h2>
+  <div class="rule-grid">
+    <div class="rule-card">
+      <span class="badge">INDEX · серия</span>
+      <div class="rh">Доп. график обучения</div>
+      <p style="font-size:12px; margin:8px 0 0">На том же поле, что индекс защищённости. Отдельная серия (линия / иной mark). В <b>легенде</b> — показать / скрыть. Для доклада руководству обучение выключают без отдельного чипа «метки».</p>
+      <div class="cap"><div class="t">SERIES-TRAIN</div><div class="d">Toggle в легенде.</div></div>
+    </div>
+    <div class="rule-card">
+      <span class="badge">│ · вертикаль</span>
+      <div class="rh">Hover → список атак</div>
+      <p style="font-size:12px; margin:8px 0 0">Наведение на вертикальную линию: список <b>атак, которые начались</b> в этой точке (дата / волна). Клик по строке — в карточку / список атак. Без волн обучения и без когорты «с курсом / без» в этой карточке.</p>
+      <div class="cap"><div class="t">TIP-VERT</div><div class="d">Только список начавшихся атак.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Архив — старые правила TIP-A (не для разработки v1)</h2>
+  <p style="font-size:12px; color:var(--mut)">Сохранено как история гипотезы. Не брать в реализацию.</p>
+</section>
 
 <div class="princ">
-  <span>● атака ≠ │ волна</span>
-  <span>≤2 волны в ховере</span>
-  <span>Одна когорта = ≥1 релевантный курс</span>
+  <span>● атака ≠ │ волна <i>(архив)</i></span>
+  <span>≤2 волны в ховере <i>(архив)</i></span>
+  <span>Одна когорта = ≥1 релевантный курс <i>(архив)</i></span>
   <span>Без Ганта в tooltip</span>
-  <span>Тач = sheet снизу</span>
+  <span>Тач = sheet снизу <i>(архив)</i></span>
 </div>
 
 <div class="legend">

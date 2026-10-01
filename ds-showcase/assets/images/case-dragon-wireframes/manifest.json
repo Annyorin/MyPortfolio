@@ -1,0 +1,20 @@
+{
+  "generated": "2026-09-29",
+  "source": "design/04-prototype/wireframes/innodragon-notifications-wireframes.html",
+  "exportScript": "scripts/export-innodragon-wireframes.mjs",
+  "frames": [
+    { "id": "NTF-1", "file": "01-ntf-1-feed.png", "title": "Лента уведомлений" },
+    { "id": "NTF-2", "file": "02-ntf-2-matrix.png", "title": "Матрица событие × канал" },
+    { "id": "NTF-3", "file": "03-ntf-3-tg-disconnected.png", "title": "Колонка TG — не подключён" },
+    { "id": "NTF-4", "file": "04-ntf-4-connect-telegram.png", "title": "Connect Telegram" },
+    { "id": "NTF-5", "file": "05-ntf-5-indeterminate.png", "title": "Indeterminate в ячейке группы×канал" },
+    { "id": "NTF-6", "file": "06-ntf-6-undo-toast.png", "title": "Toast Undo после массового выкл" },
+    { "id": "NTF-7", "file": "07-ntf-7-empty.png", "title": "Пустая матрица" },
+    { "id": "NTF-8", "file": "08-ntf-8-network-error.png", "title": "Ошибка сети" },
+    { "id": "NTF-9", "file": "09-ntf-9-align-column.png", "title": "Выровнять по колонке" }
+  ],
+  "also": [
+    "wireframes-board-full.png",
+    "section-*.png"
+  ]
+}

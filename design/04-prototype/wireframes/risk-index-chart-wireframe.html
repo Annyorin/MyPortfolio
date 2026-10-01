@@ -192,7 +192,7 @@
 <body>
 
 <h1>Индекс защищённости — линейный график + Гант обучения</h1>
-<p class="sub">Lo-fi каркас виджета сводки InnoPhish / программы «А»: линия индекса или click%, точки атак, лёгкие метки обучения (CHART-LITE). Полный Гант — backlog. Правила ховера нарисованы отдельно: <a href="chart-hover-rules-wireframe.html">chart-hover-rules-wireframe.html</a>. Это структура, не визуальный стиль.</p>
+<p class="sub">Lo-fi каркас виджета сводки InnoPhish / программы «А». <b>Канон v1 (реш. 2026-09-30 с техспециалистами):</b> линия индекса + <b>доп. серия обучения</b> (скрыть/показать в легенде) + <b>вертикали</b> с hover → список атак, которые начались. Сложный TIP-A/когорта в tooltip — <b>отказ</b>. Полный Гант — backlog. Старые варианты CHART-LITE/│-волны ниже — архив гипотез. Правила: <a href="chart-hover-rules-wireframe.html">chart-hover-rules-wireframe.html</a>. Это структура, не визуальный стиль.</p>
 
 <div class="princ">
   <span>Одна ось времени на оба слоя</span>
@@ -327,23 +327,22 @@
 </section>
 
 <section>
-  <h2>1b. Рекомендация v1 — линия + лёгкие метки обучения (без Ганта)</h2>
+  <h2>1b. Канон v1 — линия индекса + серия обучения + вертикали (реш. 2026-09-30)</h2>
   <p>
-    Руководство: убрать обучение с графика (дорого). ИБ: нужны периоды обучения.
-    Компромисс: <b>одна серия данных</b> (индекс или click%) + <b>метки волн</b> (даты начала/конца, не прогресс курсов).
-    Не тянем completion, «назначен/идёт», несколько курсов на треках.
+    Согласовано с техспециалистами: <b>две серии</b> на одном поле (индекс + обучение, toggle в легенде);
+    <b>вертикали</b> = старт атак → hover TIP-VERT (список начавшихся). Без Ганта на сводке. Без TIP-A/когорты в tooltip.
   </p>
 
   <div class="chart-frame">
     <div class="chart-head">
       <div>
-        <div class="h-title">Индекс защищённости · упрощённо</div>
-        <div class="meta">Одна линия · точки = учебные атаки · пунктир = старт волны обучения (не Гант)</div>
+        <div class="h-title">Индекс защищённости · канон v1</div>
+        <div class="meta">Линия индекса + серия обучения · │ = начались атаки → TIP-VERT</div>
       </div>
       <div class="chart-tools">
-        <span class="chip on">% click</span>
-        <span class="chip">Индекс</span>
-        <span class="chip">метки обучения: вкл</span>
+        <span class="chip on">Индекс</span>
+        <span class="chip on">Обучение · вкл</span>
+        <span class="chip">% click</span>
       </div>
     </div>
 
@@ -351,20 +350,16 @@
       <div class="y-axis" aria-hidden="true">
         <span>40%</span><span>20%</span><span>0</span>
       </div>
-      <div class="plot-area" style="height:160px" aria-label="Упрощённый график">
-        <!-- светлые зоны волн: только 2 прямоугольника, без рядов курсов -->
-        <div style="position:absolute; left:33%; width:4px; top:0; bottom:0; background:var(--ink); opacity:.25" title="старт волны 1"></div>
-        <div style="position:absolute; left:72%; width:4px; top:0; bottom:0; background:var(--ink); opacity:.25" title="старт волны 2"></div>
+      <div class="plot-area" style="height:160px" aria-label="Канон: индекс + обучение + вертикали">
+        <div style="position:absolute; left:26%; width:3px; top:0; bottom:0; background:var(--ink); opacity:.35" title="│ → TIP-VERT"></div>
+        <div style="position:absolute; left:50%; width:3px; top:0; bottom:0; background:var(--ink); opacity:.55" title="│ → TIP-VERT"></div>
+        <div style="position:absolute; left:74%; width:3px; top:0; bottom:0; background:var(--ink); opacity:.35" title="│ → TIP-VERT"></div>
+        <div style="position:absolute; left:96%; width:3px; top:0; bottom:0; background:var(--ink); opacity:.35" title="│ → TIP-VERT"></div>
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
             points="2,22 14,28 26,33 38,40 50,62 62,70 74,52 86,60 98,77"/>
-          <g fill="#1f1d1a">
-            <circle cx="2" cy="22" r="1.4"/>
-            <circle cx="26" cy="33" r="1.4"/>
-            <circle cx="50" cy="62" r="1.4"/>
-            <circle cx="74" cy="52" r="1.4"/>
-            <circle cx="98" cy="77" r="1.4"/>
-          </g>
+          <polyline fill="none" stroke="#8a857c" stroke-width="1.4" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"
+            points="2,85 14,82 26,78 38,55 50,42 62,38 74,48 86,35 98,30"/>
         </svg>
       </div>
       <div class="x-axis" aria-hidden="true" style="grid-column:2">
@@ -372,37 +367,29 @@
       </div>
     </div>
 
-    <!-- текстовая лента вместо Ганта — дёшево в API и в UI -->
-    <div style="margin-top:10px; border:1px dashed var(--line); border-radius:8px; padding:8px 10px; background:var(--block); font-size:11px">
-      <b>Периоды обучения</b> (не прогресс курсов):
-      <span style="color:var(--mut)"> · апр–май — волна «Фишинг базовый»</span>
-      <span style="color:var(--mut)"> · авг–сен — волна 2 / доучивание</span>
-      <span style="color:var(--mut)"> · «Вложения» — с авг (идёт)</span>
-    </div>
-
     <div class="legend-inline">
-      <div class="item"><span class="swatch-line"></span> % click / индекс</div>
-      <div class="item"><span class="note">● учебная атака</span></div>
-      <div class="item"><span class="note">│ старт волны обучения</span></div>
+      <div class="item"><span class="swatch-line"></span> индекс / click%</div>
+      <div class="item"><span class="swatch-line" style="border-top-style:dashed; border-top-color:var(--mut)"></span> серия обучения (скрыть в легенде)</div>
+      <div class="item"><span class="note">│ вертикаль → TIP-VERT (список атак)</span></div>
     </div>
 
     <div class="callouts">
-      <div class="callout"><b>Почему дешевле:</b> бэкенд отдаёт точки индекса/click + массив из 2–5 событий `{date, type: attack|train_start, label}`. Без join назначений, % завершения, статусов «назначен/идёт».</div>
-      <div class="callout"><b>Почему ИБ не теряет смысл:</b> видно «после черты волны линия пошла вниз» — тот же сюжет, что у Ганта, без календаря HR.</div>
-      <div class="callout"><b>Руководству:</b> чип «метки обучения: выкл» → чистая линия (их запрос). ИБ включает метки по умолчанию.</div>
-      <div class="callout"><b>Позже (v2):</b> полный Гант или зоны курсов — когда будет API волн/completion.</div>
+      <div class="callout"><b>Серия обучения:</b> отдельный график на том же поле; в легенде показать/скрыть. Метрика (completion% / волны) — уточнить с техспециалистами.</div>
+      <div class="callout"><b>Вертикаль:</b> hover → список атак, которые начались; клик строки → EXT-ATTACKS. Без волн обучения и когорт в tooltip.</div>
+      <div class="callout"><b>Руководству:</b> скрыть «обучение» в легенде → чистая линия индекса (UF-1). Не dual-mode на странице.</div>
+      <div class="callout"><b>Отказ:</b> TIP-A / TIP-A2 / когорта «с курсом / без» в tooltip. Полный Гант — backlog, не на сводке v1.</div>
     </div>
   </div>
 
   <div class="cap" style="max-width:960px; margin-top:12px">
-    <div class="t">CHART-LITE. Рекомендация для разработки</div>
-    <div class="d">Линия + точки атак + вертикали старта волн + текстовая лента периодов. Гант и статусы курсов — не в v1 на сводке.</div>
+    <div class="t">CHART-INDEX v1 · решение 2026-09-30</div>
+    <div class="d">Линия индекса + серия обучения (toggle в легенде) + вертикаль → TIP-VERT. Без TIP-A/когорты. Гант — не на сводке. Доска сводки: dashboard-wireframes-desktop.html · DB-IB-D / DB-TIP-D.</div>
   </div>
 </section>
 
 <section class="alt-row">
   <h2>2. Альтернативы структуры (рядом)</h2>
-  <p>Не финальный UI — развилки. Для v1 берите <b>CHART-LITE</b>; полный Гант (CHART-1) и варианты ниже — backlog.</p>
+  <p>Архив развилок. Для v1 берите <b>CHART-INDEX</b> (реш. с техспециалистами); полный Гант (CHART-1) и старый CHART-LITE с │-волнами — backlog / архив.</p>
 
   <div class="mini-pair">
     <div class="mini">

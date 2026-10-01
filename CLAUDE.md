@@ -22,7 +22,7 @@
 2. Дизайн (если есть UI/UX): `designer` → его субагенты → `design-reviewer` (до 2 циклов)
 3. Архитектура: `architect` → `architecture-reviewer`
 4. План: `planner` → `plan-reviewer`
-5. Разработка по задачам: `developer` → `code-reviewer`
+5. Перед кодом продукта: `local-preview` (Vite). Затем разработка: `developer` → `code-reviewer`
 6. Rescuer только для environment/evidence/stale-artifact
 
 Если UI нет — запиши пропуск дизайна в `status.md` и иди к архитектуре.

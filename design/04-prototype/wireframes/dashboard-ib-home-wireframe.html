@@ -229,46 +229,40 @@
             </div>
           </div>
 
-          <!-- Chart lite: index + attack dots + train markers + text strip (no Gantt) -->
+          <!-- Chart · decision 2026-09-30: index + train series + verticals → TIP-VERT -->
           <div class="desk-panel">
-            <div class="pt">Динамика индекса · атаки и периоды обучения</div>
+            <div class="pt">Динамика индекса · серия обучения · вертикали атак</div>
             <div class="note" style="margin-bottom:6px">
-              v1 упрощённо: одна линия + точки атак + вертикали старта волн. Без Ганта курсов (дорого). Полный Гант — backlog / CHART-1.
+              Канон v1 (2026-09-30): линия индекса + доп. серия обучения (скрыть в легенде) + │ вертикали → TIP-VERT. Без Ганта и без TIP-A/когорты.
             </div>
             <div class="chart-box">
               <div class="plot">
                 <div class="y-axis" aria-hidden="true">
                   <span>40%</span><span>20%</span><span>0</span>
                 </div>
-                <div class="plot-area" aria-label="Динамика click%">
-                  <div style="position:absolute; left:33%; width:3px; top:0; bottom:0; background:var(--ink); opacity:.22" title="волна 1"></div>
-                  <div style="position:absolute; left:72%; width:3px; top:0; bottom:0; background:var(--ink); opacity:.22" title="волна 2"></div>
+                <div class="plot-area" aria-label="Динамика индекса + обучение">
+                  <div style="position:absolute; left:26%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35" title="│ → TIP-VERT"></div>
+                  <div style="position:absolute; left:50%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.55" title="│ → TIP-VERT"></div>
+                  <div style="position:absolute; left:74%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35" title="│ → TIP-VERT"></div>
+                  <div style="position:absolute; left:96%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35" title="│ → TIP-VERT"></div>
                   <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                     <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
                       points="2,22 14,28 26,33 38,40 50,62 62,70 74,52 86,60 98,77"/>
-                    <g fill="#1f1d1a">
-                      <circle cx="2" cy="22" r="1.4"/>
-                      <circle cx="26" cy="33" r="1.4"/>
-                      <circle cx="50" cy="62" r="1.4"/>
-                      <circle cx="74" cy="52" r="1.4"/>
-                      <circle cx="98" cy="77" r="1.4"/>
-                    </g>
+                    <polyline fill="none" stroke="#8a857c" stroke-width="1.4" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"
+                      points="2,85 14,82 26,78 38,55 50,42 62,38 74,48 86,35 98,30"/>
                   </svg>
                 </div>
               </div>
               <div class="x-axis" aria-hidden="true">
                 <span>янв</span><span>мар</span><span>май</span><span>июл</span><span>сен</span>
               </div>
-              <div style="margin-top:8px; border:1px dashed var(--line); border-radius:6px; padding:6px 8px; background:var(--block); font-size:10px; color:var(--mut)">
-                <b style="color:var(--ink)">Обучение:</b> апр–май волна «Фишинг» · авг–сен волна 2 · «Вложения» с авг
-              </div>
               <div class="legend-inline">
-                <span><i class="sw"></i> % click</span>
-                <span>● учебная атака</span>
-                <span>│ старт волны обучения</span>
+                <span><i class="sw"></i> индекс защищённости</span>
+                <span><i class="sw" style="border-top-style:dashed; border-top-color:var(--mut)"></i> обучение (серия · скрыть)</span>
+                <span>│ вертикаль → TIP-VERT (список начавшихся атак)</span>
               </div>
             </div>
-            <div class="note" style="margin-top:6px">Чип «метки обучения» можно выключить для доклада руководству. Детали курсов → вкладка Обучение.</div>
+            <div class="note" style="margin-top:6px">Реш. 2026-09-30: toggle серии в легенде; hover │ → TIP-VERT. TIP-A/когорта — отказ. Детали курсов → вкладка Обучение / EXT-TRAINING.</div>
           </div>
 
           <!-- Reactions -->

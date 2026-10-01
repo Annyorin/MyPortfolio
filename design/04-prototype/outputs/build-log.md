@@ -2,7 +2,7 @@
 type: log
 env: 04-prototype
 status: active
-updated: 2026-09-15
+updated: 2026-10-01
 ---
 
 # Build log
@@ -11,6 +11,9 @@ updated: 2026-09-15
 
 | Дата | Экран | node-id | Версия зеркала | Примечание |
 |------|-------|---------|----------------|------------|
+| 2026-10-01 | **InnoPhish · 3 вкладки сводки** desktop wireframes + PNG | pending | — (до DS/Figma) | `wireframes/innophish-dashboard-wireframes.html` · кадры IP-ATT-1 / IP-REA-1 / IP-TRN-1 / IP-PDF-1. PNG: `outputs/innophish-wireframes/01-tab-attacks.png` … `03-tab-training.png` (+ опц. `04-pdf-ciso.png`, full board). Figma не собирался. |
+| 2026-10-01 | **InnoPhish · IA v2 + User Flow** (FigJam) | `69:289` (IA), `69:414` (UF v2), `71:416` (as-is), `71:464` (Почему v2) | — (IA/flow, не UI) | UF-Portfolio `apRL892T8oK9XfD7YvbCRe`. Меню + 3 вкладки Сводки; UF v2; as-is EvilGo; блок 2 vs 3 вкладки. |
+| 2026-09-30 | **Desktop wireframe board** · сводка «А» + график v1 | pending | — (до DS/Figma) | Обновлён `wireframes/dashboard-wireframes-desktop.html`: DB-IB-D с графиком (индекс + серия обучения + │), DB-TIP-D (TIP-VERT), legend train off, связки переходов. Синхрон: `dashboard-ib-home-wireframe.html`, `risk-index-chart-wireframe.html` §1b, IA §7 + `DB-TIP-D`. Figma не собирался. |
 | 2026-09-15 | **Desktop wireframe board** · сводный дашборд «А» | pending | — (до DS/Figma) | `wireframes/dashboard-wireframes-desktop.html` + `board-desktop.css` (поверх `board.css`). Frame ~1040×680, shell слева, многоколоночный layout. Экраны: DB-IB-D, DB-HR-D, DB-SOC-D, DB-EMPTY-D, DB-LOAD-D, DB-ASSIGN-D, DB-ATTACK-D. Mobile board не тронут. Figma не собирался. |
 | 2026-09-15 | **IA + wireframe board** · сводный дашборд «А» | pending | — (до DS/Figma) | `flows/dashboard-ia.md` (ia-first); `wireframes/dashboard-wireframes.html` + `wireframes/board.css`. Экраны: DB-IB, DB-HR, DB-SOC, DB-EMPTY, DB-LOAD, DB-ASSIGN, DB-ATTACK. Вход: `01-research/outputs/prd.md`. Figma не собирался. |
 | 2026-09-06 | Портфолио.Главная | `41:1416` | 0.1.2 | Эталон frame **1024×609**. Layout: Sidebar (24,24) 310×561; Card×3 (358,28)/(690,169)/(358,362) 310×310; Comp ~bbox (830,28); Stiker «Обо мне» bbox сцены; Tapper (896,537) 104×40; BG плитка. Comp/Stiker — по bbox сцены, не atomic витрины. Три Card = один демо InnoDragon. Canvas-спека (zoom/pan/hover/contacts/focus-visible) в `screens/portfolio-home.md`. **`use_figma` не вызывался.** |
@@ -58,7 +61,9 @@ updated: 2026-09-15
 | Flow Showcase | `flows/ds-showcase-flow.md` |
 | IA дашборд «А» | `flows/dashboard-ia.md` |
 | Wireframe board дашборд (mobile) | `wireframes/dashboard-wireframes.html` (+ `board.css`) |
-| Wireframe board дашборд (desktop) | `wireframes/dashboard-wireframes-desktop.html` (+ `board-desktop.css`) |
+| Wireframe board дашборд (desktop) | `wireframes/dashboard-wireframes-desktop.html` (+ `board-desktop.css`) · 2026-09-30: +TIP-VERT, график v1 |
+| Chart index / hover rules | `wireframes/risk-index-chart-wireframe.html` · `wireframes/chart-hover-rules-wireframe.html` |
+| IB home detail | `wireframes/dashboard-ib-home-wireframe.html` |
 
 ## Заблокировано контрактами
 | Контракт | Чего ждём |

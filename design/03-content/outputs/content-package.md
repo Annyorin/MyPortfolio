@@ -43,13 +43,13 @@ scope: storybook-demo+portfolio-home+case-phish+case-dragon
 | card.description | Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени. | — | Описание Card (демо ×3 / канон макета InnoDragon) | figma:xboMnqU5JURL0xlzxN7edN/41:1416; tz:technical_specification.md§1/§4 |
 | case.dragon.role_value | UX/UI дизайнер: исследование и макеты. Код и бэклог — не мои. | — | Мета: роль | канон портфолио; owner 2026-09-16 |
 | case.dragon.team_value | 4 фронта, 4 бэка + дизайнер | — | Мета: команда | owner 2026-09-16, как InnoPhish |
-| case.dragon.intro_body | InnoDragon — настройки уведомлений. Цель / аудитория / критерии. Макет в прод. Среднее время на записи, секунды в кейс не вынесены. | — | Вводные | owner + digest-innodragon + SLA 3→30 |
-| case.dragon.context_body | Модалка с вкладками-каналами; дерево копируется; нет чекбокса группы; одно сохранение. Не конструктор Qualys. | — | Контекст (длинная) | owner 2026-09-16 |
+| case.dragon.intro_body | Цель: политика за один заход + сигнал о подтверждённом инциденте. Аудитория SOC/VM/админ/руководство. Критерии: группа, каналы рядом, одно Save, прод; секунды не сняты. | — | Вводные | digest + interview SOC + SLA 3→30 |
+| case.dragon.context_body | Модалка-вкладки; тройной проклик; шум → пропуск critical. Не конструктор Qualys. | — | Контекст (длинная) | owner + interview |
 | case.dragon.analysis_title | Исследование | — | Заголовок секции (длинная) | шаблон |
-| case.dragon.analysis_body | Сжатые выводы: бенчмарки, Weeek, n=10, запись экрана (путь + среднее время). Полный канон — copy/innodragon.md. | — | Секция «Исследование», длинная | digest-innodragon + owner |
-| case.dragon.hypotheses_body | Чекбокс на вкладках недостаточен. Матрица. Запись: первый клик, путь, среднее время. Не конструктор Qualys. | — | Гипотезы, короткая | owner + рынок |
-| case.dragon.hypotheses_body_long | Каналы подключаются отдельно. Не «скопировать с вкладки Почта». | — | Гипотезы, длинная добавка | digest-innodragon |
-| case.dragon.conclusions_body | Макет в прод. Целилась во время закрытия задачи. Секунды с записи не вынесены. Провал — чекбокс при вкладках. | — | Выводы | owner |
+| case.dragon.analysis_body | SOC/NIST (Detect→Respond→Recover, alert≠инцидент); бенчмарки; IA/flow/вайрфреймы; n=10 + интервью; антипаттерны. | — | Исследование, длинная | digest + interview + wireframes |
+| case.dragon.hypotheses_body | Чекбокс на вкладках недостаточен → матрица событие×канал; Connect отдельно; n=10; не Qualys. | — | Гипотезы, короткая | owner + рынок |
+| case.dragon.hypotheses_body_long | Компромисс вкладок в проде; target wireframes; приоритет подтверждения инцидента; не «скопировать с Почты». | — | Гипотезы, длинная | UI 09-28 + interview |
+| case.dragon.conclusions_body | Прод; секунды не сняты; провал — чекбокс при вкладках; дальше — роли и подтверждение инцидента, не пресет Critical→TG для всех. | — | Выводы | owner + interview |
 | case.dragon.source_file | design/03-content/copy/case-dragon.md | — | Полный текст кейса (A + B) | — |
 | card.b.title | InnoPhish | — | Заголовок Card кейса (дашборд) | owner 2026-09-15; research-digest |
 | card.b.meta | · 2024–2026 | — | Мета Card кейса | owner 2026-09-15 (как card.b / период) |

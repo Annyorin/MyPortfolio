@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InnoPhish — сводный дашборд · 3 вкладки — desktop вайрфреймы</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  .desk-frame.tall{height:auto; min-height:860px}
+  .chart-box{
+    border:1px solid var(--line); border-radius:8px;
+    padding:8px 10px; background:#fff;
+  }
+  .plot{
+    display:grid; grid-template-columns:32px 1fr; gap:0 6px;
+  }
+  .y-axis{
+    display:flex; flex-direction:column; justify-content:space-between;
+    align-items:flex-end; height:96px; font-size:9px; color:var(--mut); padding:2px 0;
+  }
+  .plot-area{
+    height:96px; border:1px solid var(--line); border-radius:6px;
+    background:repeating-linear-gradient(to top, transparent 0, transparent 18px, var(--block) 18px, var(--block) 19px);
+    position:relative; overflow:hidden;
+  }
+  .plot-area svg{position:absolute; inset:0; width:100%; height:100%}
+  .x-axis{
+    display:flex; justify-content:space-between;
+    margin-top:4px; font-size:9px; color:var(--mut); padding-left:38px;
+  }
+  .legend-inline{
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; font-size:10px; color:var(--mut);
+    align-items:center;
+  }
+  .legend-inline .sw{
+    display:inline-block; width:14px; height:0; border-top:2px solid var(--ink);
+    vertical-align:middle; margin-right:3px;
+  }
+  .legend-inline .sw.train{
+    border-top-style:dashed; border-top-color:var(--mut);
+  }
+  .legend-inline .lg-chip{
+    display:inline-flex; align-items:center; gap:4px;
+    border:1px solid var(--ink); border-radius:999px;
+    padding:2px 8px; font-size:10px; color:var(--ink); background:#fff;
+  }
+  .link-note{
+    margin:4px 0 0; font-size:11px; color:var(--mut);
+    border-left:3px solid var(--line); padding-left:8px;
+  }
+  .scope-row{display:flex; gap:8px; flex-wrap:wrap}
+  .scope-row .metric{
+    flex:1; min-width:100px;
+    border:1px solid var(--line); border-radius:10px;
+    padding:8px 10px; background:#fff;
+  }
+  .scope-row .ml{font-size:10px; color:var(--mut)}
+  .scope-row .mv{font-size:18px; font-weight:700; margin-top:4px}
+  .scope-row .metric .note{font-size:9px; margin-top:2px}
+  .person-list{
+    display:flex; flex-direction:column; gap:0;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff;
+  }
+  .person-list .prow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .person-list .prow:last-child{border-bottom:none}
+  .person-list .prow.head{
+    background:var(--block); color:var(--mut); font-weight:600; font-size:10px;
+  }
+  .person-list .c-name{flex:2; min-width:0}
+  .person-list .c-meta{flex:2; color:var(--mut); font-size:10px}
+  .person-list .c-val{flex:1; text-align:right; font-weight:700}
+  .person-list .c-act{flex:none}
+  .rank{width:18px; text-align:center; font-weight:700; color:var(--mut); font-size:10px; flex:none}
+  .placeholder-block{
+    border:1.5px dashed var(--line); border-radius:10px;
+    padding:14px 12px; background:var(--block);
+    min-height:72px; display:flex; flex-direction:column; gap:6px; justify-content:center;
+  }
+  .placeholder-block .pt{font-size:11px; font-weight:600; color:var(--mut)}
+  .stack-bar{
+    display:flex; height:14px; border-radius:7px; overflow:hidden;
+    border:1px solid var(--line); margin-top:4px;
+  }
+  .stack-bar i{display:block; height:100%}
+  .stack-bar .s1{background:var(--ink); flex:42}
+  .stack-bar .s2{background:var(--block2); flex:25}
+  .stack-bar .s3{background:var(--work); flex:22}
+  .stack-bar .s4{background:var(--block); flex:11; border-left:1px dashed var(--line)}
+  .pdf-sheet{
+    border:1.5px solid var(--ink); border-radius:8px; background:#fff;
+    padding:16px 18px; display:flex; flex-direction:column; gap:10px;
+    max-width:520px; margin:0 auto; min-height:520px;
+  }
+  .pdf-sheet .pdf-head{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    border-bottom:1px solid var(--line); padding-bottom:10px;
+  }
+  .pdf-sheet .pdf-title{font-size:14px; font-weight:700}
+  .pdf-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .pdf-kpi{
+    border:1px solid var(--line); border-radius:8px; padding:8px;
+    background:var(--block);
+  }
+  .pdf-kpi .ml{font-size:10px; color:var(--mut)}
+  .pdf-kpi .mv{font-size:16px; font-weight:700; margin-top:2px}
+  .pdf-foot{
+    margin-top:auto; padding-top:10px; border-top:1px dashed var(--line);
+    font-size:10px; color:var(--mut); display:flex; justify-content:space-between;
+  }
+  /* Gantt · атаки + обучение */
+  .gantt{
+    border:1px solid var(--line); border-radius:8px; background:#fff; padding:8px 10px;
+  }
+  .gantt-head{
+    display:grid; grid-template-columns:110px 1fr; gap:6px; margin-bottom:6px;
+    font-size:9px; color:var(--mut);
+  }
+  .gantt-months{
+    display:grid; grid-template-columns:repeat(9, 1fr); text-align:center;
+  }
+  .gantt-row{
+    display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;
+    margin-bottom:5px;
+  }
+  .gantt-row .glabel{
+    font-size:10px; color:var(--ink); line-height:1.25;
+  }
+  .gantt-row .glabel .sub{display:block; font-size:9px; color:var(--mut)}
+  .gantt-track{
+    position:relative; height:22px; border:1px solid var(--line); border-radius:5px;
+    background:repeating-linear-gradient(to right, transparent 0, transparent calc(100%/9 - 1px), var(--block) calc(100%/9 - 1px), var(--block) calc(100%/9));
+  }
+  .gantt-bar{
+    position:absolute; top:3px; height:14px; border-radius:3px; border:1px solid var(--ink);
+    font-size:8px; color:#fff; display:flex; align-items:center; padding:0 5px;
+    white-space:nowrap; overflow:hidden;
+  }
+  .gantt-bar.attack{background:var(--ink)}
+  .gantt-bar.train{
+    background:#fff; color:var(--ink); border-style:dashed;
+  }
+  .gantt-bar.train-fill{
+    background:var(--block2); color:var(--ink); border-style:solid; border-color:var(--mut);
+  }
+  .gantt-now{
+    position:absolute; top:0; bottom:0; width:2px; background:var(--f3); z-index:2;
+  }
+  .gantt-legend{
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; font-size:10px; color:var(--mut);
+    align-items:center;
+  }
+  .gantt-legend .gb{
+    display:inline-block; width:16px; height:8px; border-radius:2px; border:1px solid var(--ink);
+    vertical-align:middle; margin-right:4px;
+  }
+  .gantt-legend .gb.attack{background:var(--ink)}
+  .gantt-legend .gb.train{background:#fff; border-style:dashed}
+  .gantt-legend .gb.train-fill{background:var(--block2); border-color:var(--mut)}
+  .meta-chips{display:flex; flex-wrap:wrap; gap:8px}
+  .meta-chip{
+    border:1px solid var(--line); border-radius:10px; background:#fff;
+    padding:8px 12px; min-width:140px;
+  }
+  .meta-chip .ml{font-size:10px; color:var(--mut)}
+  .meta-chip .mv{font-size:16px; font-weight:700; margin-top:2px}
+  .meta-chip .ms{font-size:10px; color:var(--mut); margin-top:2px}
+  .risk-levels{display:flex; gap:8px}
+  .risk-levels .metric{
+    flex:1; border:1px solid var(--line); border-radius:10px;
+    padding:10px; background:#fff; text-align:center;
+  }
+  .risk-levels .ml{font-size:10px; color:var(--mut)}
+  .risk-levels .mv{font-size:20px; font-weight:700; margin-top:4px}
+  .risk-levels .ms{font-size:10px; color:var(--mut); margin-top:2px}
+  .dist-bar{
+    display:flex; height:12px; border-radius:6px; overflow:hidden;
+    border:1px solid var(--line); margin-top:8px;
+  }
+  .dist-bar i{display:block; height:100%}
+  .dist-bar .hi{background:var(--ink); flex:38}
+  .dist-bar .mid{background:var(--work); flex:214}
+  .dist-bar .lo{background:var(--block); flex:932}
+  .delta{font-size:10px; font-weight:600; margin-top:2px; color:var(--mut)}
+  .y-axis{height:130px}
+  .plot-area{height:130px; background:repeating-linear-gradient(to top, transparent 0, transparent 25px, var(--block) 25px, var(--block) 26px)}
+  .attack-list, .speed-row{
+    display:flex; flex-direction:column; gap:0;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff;
+  }
+  .attack-list .arow, .speed-row .srow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .attack-list .arow:last-child, .speed-row .srow:last-child{border-bottom:none}
+  .attack-list .arow.head, .speed-row .srow.head{
+    background:var(--block); color:var(--mut); font-weight:600; font-size:10px;
+  }
+  .attack-list .c-name, .speed-row .c-name{flex:2; min-width:0}
+  .attack-list .c-meta, .speed-row .c-meta{flex:1; color:var(--mut); font-size:10px}
+  .attack-list .c-val, .speed-row .c-val{flex:none; min-width:52px; text-align:right; font-weight:700}
+  .metrics-line-5{display:flex; gap:8px; flex-wrap:wrap}
+  .metrics-line-5 .metric{
+    flex:1; min-width:90px;
+    border:1px solid var(--line); border-radius:10px;
+    padding:8px 10px; background:#fff;
+  }
+  .metrics-line-5 .ml{font-size:10px; color:var(--mut)}
+  .metrics-line-5 .mv{font-size:18px; font-weight:700; margin-top:2px}
+  .metrics-line-5 .ms{font-size:10px; color:var(--mut); margin-top:2px; font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+
+<h1>InnoPhish — сводный дашборд · 3 вкладки — desktop вайрфреймы</h1>
+<p class="sub">Каркасы отдельной страницы «Сводка» с вкладками <b>Атаки · Реакции · Обучение</b>. Desktop lo-fi, ноль бренда. Связь с IA (меню + 3 вкладки). Детали блоков: <a href="dashboard-wireframes-desktop.html">baseline desktop</a> · <a href="reactions-tab-wireframe.html">Реакции</a> · <a href="training-tab-wireframe.html">Обучение</a>. Это структура, не визуальный стиль.</p>
+
+<div class="princ">
+  <span>Сводка = отдельная страница, не Отчёты</span>
+  <span>3 вкладки: Атаки · Реакции · Обучение</span>
+  <span>Атаки: индекс-график + волны вне графика + риск + реакции + скорость + последние</span>
+  <span>Реакции: плейсхолдеры блоков</span>
+  <span>Обучение: статусы + путь «назначить курс»</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Сводка · Атаки</div>
+  <div><span class="dot" style="background:var(--f2)">2</span> Сводка · Реакции</div>
+  <div><span class="dot" style="background:var(--f3)">3</span> Сводка · Обучение</div>
+  <div><span class="dot" style="background:var(--f4)">4</span> PDF для CISO</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>Вход</b>: shell → Сводка</span>
+  <span class="arr">→</span>
+  <span class="node"><b>Сводная аналитика</b></span>
+  <span class="tabs">
+    <span class="tab">Атаки</span>
+    <span class="tab">Реакции</span>
+    <span class="tab">Обучение</span>
+  </span>
+  <span class="arr">→</span>
+  <span class="node"><b>Выход</b>: курс · Атаки · Пользователи · PDF</span>
+</div>
+
+<!-- ── 1. АТАКИ ─────────────────────────────────────────────── -->
+<section>
+  <h2>1. Сводка · вкладка «Атаки»</h2>
+  <p>Канон-график индекса + серия обучения; вне графика — волны и дата последней; индекс риска; люди по уровню риска; реакции; самые быстрые реакции; последние атаки.</p>
+
+  <div class="row">
+
+    <div class="cell desk" data-export="01-tab-attacks">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+        </div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">InnoPhish</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика</div>
+              <div class="note">Вкладка Атаки · org 1 184 · актуальный срез</div>
+            </div>
+            <div class="h-right">
+              <span class="chip on">Атаки</span>
+              <span class="chip">Реакции</span>
+              <span class="chip">Обучение</span>
+              <div class="btn ghost">Период</div>
+              <div class="btn pr">Экспорт</div>
+            </div>
+          </div>
+
+          <div class="meta-chips">
+            <div class="meta-chip">
+              <div class="ml">Волн обучения за период</div>
+              <div class="mv">4</div>
+              <div class="ms">янв–сен 2026 · org</div>
+            </div>
+            <div class="meta-chip">
+              <div class="ml">Дата последней волны</div>
+              <div class="mv">12 сен</div>
+              <div class="ms">«Фишинг базовый» · после кампании</div>
+            </div>
+            <div class="meta-chip">
+              <div class="ml">Последняя атака</div>
+              <div class="mv">12 сен</div>
+              <div class="ms">«Счёт за услуги» · доставлено 1 142</div>
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="metric risk-big col-1">
+              <div class="ml">Индекс защищённости · org</div>
+              <div class="mv">71</div>
+              <div class="note" style="margin-top:4px">выше = лучше · янв 54</div>
+              <div class="delta">▲ +6 к предыдущему месяцу</div>
+            </div>
+            <div class="desk-panel col-2">
+              <div class="pt">Пользователи по уровню риска</div>
+              <div class="risk-levels" style="margin-top:6px">
+                <div class="metric">
+                  <div class="ml">Высокий</div>
+                  <div class="mv">38</div>
+                  <div class="ms">3%</div>
+                </div>
+                <div class="metric">
+                  <div class="ml">Средний</div>
+                  <div class="mv">214</div>
+                  <div class="ms">18%</div>
+                </div>
+                <div class="metric">
+                  <div class="ml">Низкий</div>
+                  <div class="mv">932</div>
+                  <div class="ms">79%</div>
+                </div>
+              </div>
+              <div class="dist-bar" aria-hidden="true"><i class="hi"></i><i class="mid"></i><i class="lo"></i></div>
+              <div class="note" style="margin-top:6px">Сумма 1 184. Клик по уровню → список людей.</div>
+            </div>
+          </div>
+
+          <div class="desk-panel">
+            <div class="pt">Индекс защищённости · динамика + обучение</div>
+            <div class="note" style="margin-bottom:6px">Канон v1: линия индекса + серия обучения (скрыть в легенде) + │ вертикали стартов атак. Без Ганта на сводке.</div>
+            <div class="chart-box">
+              <div class="plot">
+                <div class="y-axis" aria-hidden="true">
+                  <span>40%</span><span>20%</span><span>0</span>
+                </div>
+                <div class="plot-area" aria-label="Индекс + обучение">
+                  <div style="position:absolute; left:26%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35"></div>
+                  <div style="position:absolute; left:50%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.55"></div>
+                  <div style="position:absolute; left:74%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35"></div>
+                  <div style="position:absolute; left:96%; width:2px; top:0; bottom:0; background:var(--ink); opacity:.35"></div>
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <polyline fill="none" stroke="#1f1d1a" stroke-width="1.8" vector-effect="non-scaling-stroke"
+                      points="2,22 14,28 26,33 38,40 50,62 62,70 74,52 86,60 98,77"/>
+                    <polyline fill="none" stroke="#8a857c" stroke-width="1.4" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"
+                      points="2,85 14,82 26,78 38,55 50,42 62,38 74,48 86,35 98,30"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="x-axis" aria-hidden="true">
+                <span>янв</span><span>мар</span><span>май</span><span>июл</span><span>сен</span>
+              </div>
+              <div class="legend-inline">
+                <span class="lg-chip"><i class="sw"></i> индекс</span>
+                <span class="lg-chip"><i class="sw train"></i> обучение · вкл (скрыть)</span>
+                <span>│ старт атак → список</span>
+              </div>
+            </div>
+            <div class="link-note">Число волн и дата последней — в чипах над графиком, не на оси. Детали курсов → вкладка Обучение.</div>
+          </div>
+
+          <div class="desk-panel">
+            <div class="pt">Реакции пользователей · кампания «Счёт за услуги» · от 1 142 доставленных</div>
+            <div class="metrics-line-5" style="margin-top:6px">
+              <div class="metric">
+                <div class="ml">Открыли</div>
+                <div class="mv">48%</div>
+                <div class="ms">548</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Переходы</div>
+                <div class="mv">9%</div>
+                <div class="ms">103</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Вложения</div>
+                <div class="mv">3%</div>
+                <div class="ms">34</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Данные</div>
+                <div class="mv">2%</div>
+                <div class="ms">23</div>
+              </div>
+              <div class="metric">
+                <div class="ml">Фидбэк</div>
+                <div class="mv">18%</div>
+                <div class="ms">206 · репорт</div>
+              </div>
+            </div>
+            <div class="note" style="margin-top:8px">% от доставленных. Уязвимых уникальных: <b>94</b> (8%). Клик по метрике → раздел Атаки · ещё → вкладка Реакции.</div>
+          </div>
+
+          <div class="desk-row">
+            <div class="desk-panel col-eq">
+              <div class="pt">Самые быстрые реакции на атаки</div>
+              <div class="speed-row" style="margin-top:6px">
+                <div class="srow head">
+                  <span class="c-name">Событие</span>
+                  <span class="c-meta">Кто / тип</span>
+                  <span class="c-val">Время</span>
+                </div>
+                <div class="srow">
+                  <div class="c-name"><b>Фидбэк</b><br><span class="note">репорт «это фишинг»</span></div>
+                  <div class="c-meta">Петрова А. · продажи</div>
+                  <div class="c-val">1:42</div>
+                </div>
+                <div class="srow">
+                  <div class="c-name"><b>Фидбэк</b><br><span class="note">репорт</span></div>
+                  <div class="c-meta">Ким С. · IT</div>
+                  <div class="c-val">2:05</div>
+                </div>
+                <div class="srow">
+                  <div class="c-name"><b>Клик</b><br><span class="note">риск · автопилот</span></div>
+                  <div class="c-meta">Иванов И. · продажи</div>
+                  <div class="c-val">0:48</div>
+                </div>
+                <div class="srow">
+                  <div class="c-name"><b>Клик</b><br><span class="note">риск</span></div>
+                  <div class="c-meta">Сидорова М. · бухг.</div>
+                  <div class="c-val">1:12</div>
+                </div>
+              </div>
+              <div class="note" style="margin-top:6px">Быстрый фидбэк — хорошо. Быстрый клик — сигнал риска. Медиана репорта 18 мин · клика 6 мин.</div>
+            </div>
+            <div class="desk-panel col-eq">
+              <div class="pt">Последние атаки (учебные)</div>
+              <div class="attack-list" style="margin-top:6px">
+                <div class="arow head">
+                  <span class="c-name">Кампания</span>
+                  <span class="c-meta">Дата</span>
+                  <span class="c-val">Click</span>
+                </div>
+                <div class="arow">
+                  <div class="c-name"><b>Счёт за услуги</b><br><span class="note">clickfix · 1 142</span></div>
+                  <div class="c-meta">12 сен</div>
+                  <div class="c-val">9%</div>
+                </div>
+                <div class="arow">
+                  <div class="c-name"><b>SSO Битрикс</b><br><span class="note">credential · 1 098</span></div>
+                  <div class="c-meta">28 авг</div>
+                  <div class="c-val">16%</div>
+                </div>
+                <div class="arow">
+                  <div class="c-name"><b>ОС логин</b><br><span class="note">os credential · 1 120</span></div>
+                  <div class="c-meta">14 июл</div>
+                  <div class="c-val">19%</div>
+                </div>
+                <div class="arow">
+                  <div class="c-name"><b>HR-опрос</b><br><span class="note">survey · 980</span></div>
+                  <div class="c-meta">22 мая</div>
+                  <div class="c-val">22%</div>
+                </div>
+              </div>
+              <div class="note" style="margin-top:6px">Строка → раздел Атаки. Учебные, не SIEM.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">IP-ATT-1 · Сводка · Атаки</div>
+        <div class="d">Волны + дата вне графика · индекс + люди по риску · канон-график · реакции · быстрые реакции · последние атаки.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 2. РЕАКЦИИ ───────────────────────────────────────────── -->
+<section>
+  <h2>2. Сводка · вкладка «Реакции»</h2>
+  <p>Плейсхолдеры блоков реакций на учебные атаки. Детальная нарезка — в отдельной доске reactions-tab; здесь — каркас вкладки на сводке.</p>
+
+  <div class="row">
+
+    <div class="cell desk" data-export="02-tab-reactions">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f2)">2</span>
+        </div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">InnoPhish</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика</div>
+              <div class="note">Реакции на учебные атаки · кампания «Счёт за услуги» · 12 сен 2026</div>
+            </div>
+            <div class="h-right">
+              <span class="chip">Атаки</span>
+              <span class="chip on">Реакции</span>
+              <span class="chip">Обучение</span>
+              <div class="btn ghost">Кампания</div>
+              <div class="btn pr">Экспорт</div>
+            </div>
+          </div>
+
+          <div class="scope-row">
+            <div class="metric"><div class="ml">Уязвимых</div><div class="mv">94</div><div class="note">8% от 1 184</div></div>
+            <div class="metric"><div class="ml">Переходы</div><div class="mv">103</div><div class="note">события</div></div>
+            <div class="metric"><div class="ml">Вложения</div><div class="mv">34</div></div>
+            <div class="metric"><div class="ml">Данные</div><div class="mv">23</div></div>
+            <div class="metric"><div class="ml">Фидбэк</div><div class="mv">125</div></div>
+          </div>
+
+          <div class="desk-row">
+            <div class="placeholder-block col-eq">
+              <div class="pt">Блок · уязвимые подразделения</div>
+              <div class="txt" style="width:90%"></div>
+              <div class="txt" style="width:70%"></div>
+              <div class="bar" style="width:100%; margin-top:4px"></div>
+              <div class="note">таблица / доли · без порога «плохо»</div>
+            </div>
+            <div class="placeholder-block col-eq">
+              <div class="pt">Блок · тип реакции</div>
+              <div class="txt" style="width:80%"></div>
+              <div class="txt" style="width:55%"></div>
+              <div class="note">сегменты: ссылка · вложение · данные</div>
+            </div>
+          </div>
+
+          <div class="desk-row">
+            <div class="placeholder-block col-eq">
+              <div class="pt">Блок · топ устойчивости</div>
+              <div class="txt" style="width:85%"></div>
+              <div class="txt" style="width:60%"></div>
+              <div class="note">ФИО · индекс · репорты</div>
+            </div>
+            <div class="placeholder-block col-eq">
+              <div class="pt">Блок · частые инциденты / риск</div>
+              <div class="txt" style="width:75%"></div>
+              <div class="txt" style="width:50%"></div>
+              <div class="note">люди по риску · CTA назначить</div>
+            </div>
+          </div>
+
+          <div class="placeholder-block">
+            <div class="pt">Блок · скорость / динамика реакций (опц.)</div>
+            <div class="txt" style="width:40%"></div>
+            <div class="bar" style="width:100%; height:36px; margin-top:4px"></div>
+          </div>
+
+          <div class="link-note">Плейсхолдеры = зоны контента вкладки. Полная нарезка → reactions-tab-wireframe.html. Drill → Пользователи / Атаки · CTA → назначение курса.</div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">IP-REA-1 · Сводка · Реакции</div>
+        <div class="d">Чип «Реакции» активен. KPI-ряд + плейсхолдеры блоков (отделы, тип реакции, устойчивость, риск, динамика).</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 3. ОБУЧЕНИЕ ──────────────────────────────────────────── -->
+<section>
+  <h2>3. Сводка · вкладка «Обучение»</h2>
+  <p>Статусы обучения (проходит / не закончили / завершили), путь «назначить курс». Без Risk/атак как якоря экрана.</p>
+
+  <div class="row">
+
+    <div class="cell desk" data-export="03-tab-training">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f3)">3</span>
+        </div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">InnoPhish</div>
+          <span>Пользователи</span>
+          <span>Атаки</span>
+          <span>Шаблоны</span>
+          <span>Обучение</span>
+          <span class="on">Сводка</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Сводная аналитика</div>
+              <div class="note">Период: 1–30 сен 2026 · org-срез · статусы назначений</div>
+            </div>
+            <div class="h-right">
+              <span class="chip">Атаки</span>
+              <span class="chip">Реакции</span>
+              <span class="chip on">Обучение</span>
+              <div class="btn ghost">Период</div>
+              <div class="btn pr">Назначить курс</div>
+            </div>
+          </div>
+
+          <div class="desk-panel">
+            <div class="pt">Статусы обучения</div>
+            <div class="train-3">
+              <div class="metric"><div class="ml">Проходит</div><div class="mv">126</div><div class="note">25%</div></div>
+              <div class="metric"><div class="ml">Не закончили</div><div class="mv">112</div><div class="note">не начато / бросили</div></div>
+              <div class="metric"><div class="ml">Завершили</div><div class="mv">210</div><div class="note">42%</div></div>
+            </div>
+            <div class="stack-bar" aria-hidden="true">
+              <i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i>
+            </div>
+            <div class="note">Клик по статусу → список людей. Shell «Обучение» = раздел; вкладка = аналитика сводки.</div>
+          </div>
+
+          <div class="desk-row">
+            <div class="desk-panel col-eq">
+              <div class="pt">Требуют внимания</div>
+              <div class="person-list">
+                <div class="prow head">
+                  <span class="c-name">Сотрудник</span>
+                  <span class="c-meta">Статус</span>
+                  <span class="c-act">Действие</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Иванов И.И.</b></div>
+                  <div class="c-meta">не закончил · просрок</div>
+                  <span class="tgbtn">Назначить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Сидорова М.В.</b></div>
+                  <div class="c-meta">не начато</div>
+                  <span class="tgbtn">Назначить</span>
+                </div>
+                <div class="prow">
+                  <div class="avatar" style="width:22px;height:22px"></div>
+                  <div class="c-name"><b>Козлов П.А.</b></div>
+                  <div class="c-meta">проходит · 40%</div>
+                  <span class="tgbtn">Открыть</span>
+                </div>
+              </div>
+            </div>
+            <div class="desk-panel col-eq">
+              <div class="pt">Путь · назначить курс</div>
+              <div class="conn">
+                <div style="flex:1; font-size:11px">
+                  <b>1. Выбрать людей</b><br>
+                  <span class="note">из «внимания» / топа атак / фильтра</span>
+                </div>
+              </div>
+              <div class="conn">
+                <div style="flex:1; font-size:11px">
+                  <b>2. Выбрать курс / программу</b><br>
+                  <span class="note">список курсов · срок</span>
+                </div>
+              </div>
+              <div class="conn">
+                <div style="flex:1; font-size:11px">
+                  <b>3. Подтвердить</b><br>
+                  <span class="note">modal → тост · остаёмся на сводке</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; margin-top:4px">
+                <div class="btn pr" style="flex:1; padding:8px 0">Назначить курс</div>
+                <div class="btn ghost" style="flex:1; padding:8px 0">В раздел Обучение →</div>
+              </div>
+              <div class="link-note">CTA header / строки → modal назначения. «В раздел» → EXT-TRAINING (shell).</div>
+            </div>
+          </div>
+
+          <div class="desk-panel">
+            <div class="pt">Курсы · краткое сравнение (опц.)</div>
+            <div class="dept-table">
+              <div class="drow head">
+                <div class="c1">Курс</div>
+                <div class="c2">Назначено</div>
+                <div class="c3">Завершено</div>
+              </div>
+              <div class="drow">
+                <div class="c1">Фишинг базовый</div>
+                <div class="c2">318</div>
+                <div class="c3">64%</div>
+              </div>
+              <div class="drow">
+                <div class="c1">Вложения и macros</div>
+                <div class="c2">194</div>
+                <div class="c3">41%</div>
+              </div>
+              <div class="drow">
+                <div class="c1">Social engineering</div>
+                <div class="c2">168</div>
+                <div class="c3">55%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">IP-TRN-1 · Сводка · Обучение</div>
+        <div class="d">Статусы проходит / не закончили / завершили, список внимания, путь назначения курса, сравнение курсов.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 4. PDF CISO (опционально) ─────────────────────────────── -->
+<section>
+  <h2>4. Акцент · PDF для CISO (опционально)</h2>
+  <p>Тот же срез сводки, упакованный в одностраничный PDF: метрики атаки, риск, топ ФИО — без интерактива вкладок.</p>
+
+  <div class="row">
+
+    <div class="cell desk" data-export="04-pdf-ciso">
+      <div class="desk-frame tall">
+        <div class="flows">
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <div class="desk-main" style="background:var(--block)">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Экспорт · PDF для доклада</div>
+              <div class="note">Выход с вкладки «Атаки» · кнопка «Экспорт» · CISO one-pager</div>
+            </div>
+            <div class="h-right">
+              <div class="btn ghost">Отмена</div>
+              <div class="btn pr">Скачать PDF</div>
+            </div>
+          </div>
+
+          <div class="pdf-sheet">
+            <div class="pdf-head">
+              <div>
+                <div class="pdf-title">InnoPhish · сводка для CISO</div>
+                <div class="note">Кампания «Счёт за услуги» · 12 сен 2026</div>
+              </div>
+              <div class="note">стр. 1 / 1</div>
+            </div>
+
+            <div class="desk-row">
+              <div class="pdf-kpi" style="flex:1">
+                <div class="ml">Risk Score</div>
+                <div class="mv">72</div>
+              </div>
+              <div class="pdf-kpi" style="flex:2">
+                <div class="ml">Индекс · тренд</div>
+                <div class="bar" style="width:100%; height:28px; margin-top:6px"></div>
+              </div>
+            </div>
+
+            <div class="pdf-grid">
+              <div class="pdf-kpi"><div class="ml">Открыли</div><div class="mv">42%</div></div>
+              <div class="pdf-kpi"><div class="ml">Переходы</div><div class="mv">18%</div></div>
+              <div class="pdf-kpi"><div class="ml">Вложения</div><div class="mv">5%</div></div>
+              <div class="pdf-kpi"><div class="ml">Данные</div><div class="mv">7%</div></div>
+              <div class="pdf-kpi"><div class="ml">Фидбэк</div><div class="mv">11%</div></div>
+              <div class="pdf-kpi"><div class="ml">Уязвимых</div><div class="mv">94</div></div>
+            </div>
+
+            <div>
+              <div class="pt" style="font-size:11px; font-weight:600; color:var(--mut); margin-bottom:6px">Топ уязвимых</div>
+              <div class="dept-table">
+                <div class="drow head"><div class="c1">ФИО</div><div class="c2">Подразделение</div><div class="c3">Реакция</div></div>
+                <div class="drow"><div class="c1">Иванов И.И.</div><div class="c2">Продажи</div><div class="c3">данные</div></div>
+                <div class="drow"><div class="c1">Сидорова М.В.</div><div class="c2">Бухгалтерия</div><div class="c3">вложение</div></div>
+                <div class="drow"><div class="c1">Козлов П.А.</div><div class="c2">Поддержка</div><div class="c3">переход</div></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="pt" style="font-size:11px; font-weight:600; color:var(--mut); margin-bottom:6px">Обучение · кратко</div>
+              <div class="train-3">
+                <div class="metric"><div class="ml">Проходит</div><div class="mv">126</div></div>
+                <div class="metric"><div class="ml">Не закончили</div><div class="mv">112</div></div>
+                <div class="metric"><div class="ml">Завершили</div><div class="mv">210</div></div>
+              </div>
+            </div>
+
+            <div class="pdf-foot">
+              <span>Не отчёт · one-pager сводки</span>
+              <span>сгенерировано из Сводки · Атаки</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">IP-PDF-1 · PDF для CISO (опц.)</div>
+        <div class="d">Превью one-pager: risk, метрики атаки, топ ФИО, статусы обучения. Без вкладок — статичный срез для доклада.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>

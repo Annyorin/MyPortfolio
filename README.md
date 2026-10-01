@@ -18,6 +18,7 @@
 | `01_orchestrator.md` | алгоритм координатора |
 | `02_*.md` … `10_*.md` | исходные роли разработки |
 | `11_designer_prompt.md`, `12_design_reviewer_prompt.md` | дизайн-слой |
+| `13_agent_local_preview.md` | локальный Vite до правок UI/кода |
 | `.claude/agents/` | субагенты Claude Code / Agent SDK |
 | `design/` | метасреда TemplateDesign |
 | `.cursor/skills/` | процедуры дизайна (по вызову) |

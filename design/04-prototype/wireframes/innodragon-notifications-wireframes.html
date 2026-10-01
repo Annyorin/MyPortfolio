@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InnoDragon — настройки уведомлений — desktop вайрфреймы</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  /* Матрица событие × канал (как Monday) — без бренда */
+  .chk{
+    width:14px; height:14px; border:1.5px solid var(--ink); border-radius:3px;
+    flex:none; background:#fff; display:inline-block; position:relative; vertical-align:middle;
+  }
+  .chk.on{background:var(--ink)}
+  .chk.on::after{
+    content:""; position:absolute; left:3px; top:1px; width:5px; height:8px;
+    border:solid #fff; border-width:0 1.5px 1.5px 0; transform:rotate(45deg);
+  }
+  .chk.indeterminate{background:var(--ink)}
+  .chk.indeterminate::after{
+    content:""; position:absolute; left:2px; top:5px; width:8px; height:2px; background:#fff;
+  }
+  .chk.disabled{opacity:.35; border-color:var(--mut)}
+  .settings-panel{
+    flex:1; min-height:0; display:flex; flex-direction:column; gap:8px;
+    border:1.5px solid var(--ink); border-radius:12px; padding:10px 12px; background:#fff;
+  }
+  .settings-panel .sp-title{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .settings-panel .sp-title .t{font-size:14px; font-weight:700}
+  .ch-bar{
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .ch-pill{
+    flex:1; min-width:0; border:1px solid var(--line); border-radius:8px;
+    padding:6px 8px; background:var(--block); font-size:10px;
+    display:flex; flex-direction:column; gap:3px;
+  }
+  .ch-pill .ch-name{font-weight:700; font-size:11px; color:var(--ink); display:flex; align-items:center; gap:5px}
+  .ch-pill .ch-meta{color:var(--mut)}
+  .ch-pill.warn{border-color:var(--ink); background:#fff}
+  .ch-pill .warn-dot{width:7px; height:7px; border-radius:50%; background:var(--f3); flex:none}
+  .mtx{
+    flex:1; min-height:0; overflow:auto;
+    border:1px solid var(--line); border-radius:10px; background:#fff;
+  }
+  .mtx table{width:100%; border-collapse:collapse; font-size:11px}
+  .mtx th, .mtx td{
+    border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:middle;
+  }
+  .mtx th{
+    background:var(--block); font-size:10px; font-weight:700; color:var(--mut);
+    position:sticky; top:0; z-index:1;
+  }
+  .mtx th.ch, .mtx td.ch{text-align:center; width:72px}
+  .mtx tr.group td{
+    background:var(--block); font-weight:700; font-size:11px; color:var(--ink);
+  }
+  .mtx tr.group.hl td{outline:1.5px dashed var(--ink); outline-offset:-1px}
+  .mtx tr.group.off td{background:var(--block2)}
+  .mtx tr.item td.ev{padding-left:22px; font-weight:400; color:var(--ink)}
+  .mtx tr.item.muted td.ev{color:var(--mut)}
+  .mtx .ev-cell{display:flex; align-items:center; gap:8px}
+  .mtx .cnt{font-size:10px; color:var(--mut); font-weight:500; margin-left:auto}
+  .foot{
+    display:flex; align-items:center; gap:10px; padding-top:8px;
+    border-top:1px solid var(--line); margin-top:auto;
+  }
+  .foot .spacer{flex:1}
+  .toast{
+    position:absolute; left:50%; bottom:18px; transform:translateX(-50%);
+    background:var(--ink); color:#fff; border-radius:10px; padding:8px 12px;
+    font-size:11px; display:flex; align-items:center; gap:12px; z-index:8;
+    white-space:nowrap;
+  }
+  .toast a{color:#fff; text-decoration:underline; font-weight:700}
+  .banner{
+    border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+    background:var(--block); font-size:11px; display:flex; gap:8px; align-items:flex-start;
+  }
+</style>
+</head>
+<body>
+
+<h1>InnoDragon — настройки уведомлений — desktop вайрфреймы</h1>
+<p class="sub">Каркасы куска «уведомления»: лента → настройки как <b>таблица событие × канал</b> (Monday / Weeek), не вкладки KSC. Колонки: Системные · Почта · Telegram. Подключение канала отдельно от галочек. Это структура, не визуальный стиль.</p>
+
+<div class="princ">
+  <span>Матрица: строка = событие, колонка = канал</span>
+  <span>Канал ≠ вкладка с копией дерева</span>
+  <span>Connect бота / SMTP отдельно</span>
+  <span>Группа с чекбоксом по колонке</span>
+  <span>Одно сохранение политики</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Политика за один заход</div>
+  <div><span class="dot" style="background:var(--f2)">2</span> Канал не подключён</div>
+  <div><span class="dot" style="background:var(--f3)">3</span> Массовое выкл + Undo</div>
+  <div><span class="dot" style="background:var(--f4)">4</span> Ошибка / пусто</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>Вход</b>: shell → Уведомления</span>
+  <span class="arr">→</span>
+  <span class="node"><b>Лента</b></span>
+  <span class="arr">→</span>
+  <span class="node"><b>Настройки</b></span>
+  <span class="tabs">
+    <span class="tab">событие × Сист / Почта / TG</span>
+  </span>
+  <span class="arr">→</span>
+  <span class="node"><b>Выход</b>: Save · Connect · Undo</span>
+</div>
+
+<!-- ── ПОТОК 1 ───────────────────────────────────────────────── -->
+<section>
+  <h2>1. Вход и основная матрица (target)</h2>
+  <p>Лента → настройки. Одна таблица: события слева, каналы колонками. Статус канала над таблицей. Cancel / Save справа.</p>
+
+  <div class="row">
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">InnoDragon</div>
+          <span>Активы</span>
+          <span>Уязвимости</span>
+          <span>Инциденты</span>
+          <span class="on">Уведомления</span>
+          <span>Отчёты</span>
+          <span>Настройки</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Уведомления</div>
+              <div class="note">Лента событий · фильтр непрочитанных</div>
+            </div>
+            <div class="h-right">
+              <div class="btn ghost">Фильтр</div>
+              <div class="btn pr">Настройки</div>
+            </div>
+          </div>
+          <div class="dept-table">
+            <div class="drow head"><span class="c1">Событие</span><span class="c2">Канал</span><span class="c3">Время</span></div>
+            <div class="drow"><span class="c1">Critical CVE на активе</span><span class="c2">Telegram</span><span class="c3">12:04</span></div>
+            <div class="drow"><span class="c1">Скан завершён</span><span class="c2">Почта</span><span class="c3">11:40</span></div>
+            <div class="drow"><span class="c1">Новый инцидент</span><span class="c2">Система</span><span class="c3">09:12</span></div>
+            <div class="drow"><span class="c1">Агент EDR offline</span><span class="c2">Telegram</span><span class="c3">вчера</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-1. Лента уведомлений</div>
+        <div class="d">Точка входа. CTA «Настройки» → матрица политики.</div>
+      </div>
+    </div>
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows"><span class="dot" style="background:var(--f1)">1</span></div>
+        <nav class="desk-nav" aria-label="Разделы">
+          <div class="brand">InnoDragon</div>
+          <span>Активы</span>
+          <span>Уязвимости</span>
+          <span>Инциденты</span>
+          <span class="on">Уведомления</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main" style="padding:10px">
+          <div class="settings-panel">
+            <div class="sp-title">
+              <div class="t">Настройки уведомлений</div>
+              <div class="note">✕</div>
+            </div>
+            <div class="ch-bar">
+              <div class="ch-pill">
+                <div class="ch-name">Системные</div>
+                <div class="ch-meta">всегда · 8 вкл</div>
+              </div>
+              <div class="ch-pill">
+                <div class="ch-name">Почта</div>
+                <div class="ch-meta">подключена · 5 вкл</div>
+              </div>
+              <div class="ch-pill">
+                <div class="ch-name">Telegram</div>
+                <div class="ch-meta">подключён · 3 вкл</div>
+              </div>
+            </div>
+            <div class="mtx">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Событие</th>
+                    <th class="ch">Сист.</th>
+                    <th class="ch">Почта</th>
+                    <th class="ch">TG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk indeterminate"></span> Все уведомления <span class="cnt">16 / 78</span></div></td>
+                    <td class="ch"><span class="chk indeterminate"></span></td>
+                    <td class="ch"><span class="chk indeterminate"></span></td>
+                    <td class="ch"><span class="chk indeterminate"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk on"></span> Уязвимость <span class="cnt">3/8</span></div></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk indeterminate"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="item">
+                    <td class="ev">Новая critical</td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                  </tr>
+                  <tr class="item">
+                    <td class="ev">Изменение CVSS</td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="item muted">
+                    <td class="ev">Закрыта без патча</td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk indeterminate"></span> Актив <span class="cnt">1/3</span></div></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                  </tr>
+                  <tr class="item">
+                    <td class="ev">Новый актив</td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk"></span> Сканирование <span class="cnt">0/2</span></div></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk on"></span> Инцидент <span class="cnt">2/3</span></div></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="item">
+                    <td class="ev">Создан отчёт об инцидентах</td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="foot">
+              <div class="spacer"></div>
+              <div class="btn ghost">Отмена</div>
+              <div class="btn pr">Сохранить</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-2. Матрица событие × канал</div>
+        <div class="d">Как Monday: колонки каналов на одном экране. Нет вкладок. Отчёт внутри «Инцидент». «Сканирование» — сущность.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ПОТОК 2 ───────────────────────────────────────────────── -->
+<section>
+  <h2>2. Telegram не подключён</h2>
+  <p>Колонка TG в шапке с warning; ячейки колонки disabled. Connect — отдельный шаг, не вкладка.</p>
+
+  <div class="row">
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows"><span class="dot" style="background:var(--f2)">2</span></div>
+        <nav class="desk-nav">
+          <div class="brand">InnoDragon</div>
+          <span class="on">Уведомления</span>
+          <span>Активы</span>
+          <span>Отчёты</span>
+        </nav>
+        <div class="desk-main" style="padding:10px">
+          <div class="settings-panel">
+            <div class="sp-title"><div class="t">Настройки уведомлений</div><div class="note">✕</div></div>
+            <div class="ch-bar">
+              <div class="ch-pill">
+                <div class="ch-name">Системные</div>
+                <div class="ch-meta">всегда · 8 вкл</div>
+              </div>
+              <div class="ch-pill">
+                <div class="ch-name">Почта</div>
+                <div class="ch-meta">подключена · 5 вкл</div>
+              </div>
+              <div class="ch-pill warn">
+                <div class="ch-name"><i class="warn-dot"></i> Telegram</div>
+                <div class="ch-meta">не подключён · 0</div>
+              </div>
+            </div>
+            <div class="banner">
+              <b>!</b>
+              <div>
+                <b>Telegram не подключён</b> — колонка недоступна, алерты не уйдут.
+                <div style="margin-top:6px"><span class="chip on">Подключить Telegram</span></div>
+              </div>
+            </div>
+            <div class="mtx">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Событие</th>
+                    <th class="ch">Сист.</th>
+                    <th class="ch">Почта</th>
+                    <th class="ch">TG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk indeterminate"></span> Актив</div></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk disabled"></span></td>
+                  </tr>
+                  <tr class="item">
+                    <td class="ev">Новый актив</td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk disabled"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk on"></span> Уязвимость</div></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk disabled"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="foot">
+              <div class="spacer"></div>
+              <div class="btn ghost">Отмена</div>
+              <div class="btn pr">Сохранить</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-3. Колонка TG — не подключён</div>
+        <div class="d">Статус в шапке матрицы + disabled в колонке. Сценарий 3: нет ложной уверенности после Save.</div>
+      </div>
+    </div>
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows"><span class="dot" style="background:var(--f2)">2</span></div>
+        <nav class="desk-nav">
+          <div class="brand">InnoDragon</div>
+          <span class="on">Уведомления</span>
+        </nav>
+        <div class="desk-main">
+          <div class="desk-header">
+            <div class="h-left">
+              <div class="h-title">Подключение Telegram</div>
+              <div class="note">Отдельно от матрицы событий</div>
+            </div>
+          </div>
+          <div class="desk-panel" style="max-width:420px">
+            <div class="pt">Бот</div>
+            <div class="field">Открыть бота в Telegram</div>
+            <div class="btn pr" style="margin-top:6px">Подписаться по ссылке</div>
+            <div class="hr"></div>
+            <div class="note">После подключения колонка TG в матрице станет активной.</div>
+            <div class="btn ghost" style="margin-top:8px">Назад к настройкам</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-4. Connect Telegram</div>
+        <div class="d">Как Weeek/MDR Subscribe. Аналогично SMTP для колонки «Почта».</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ПОТОК 3 ───────────────────────────────────────────────── -->
+<section>
+  <h2>3. Клик по заголовку группы и Undo</h2>
+  <p>Минус в ячейке группы × канал → только «вкл колонку». Массовое выкл строки/группы — toast Undo 5 с.</p>
+
+  <div class="row">
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows"><span class="dot" style="background:var(--f3)">3</span></div>
+        <nav class="desk-nav">
+          <div class="brand">InnoDragon</div>
+          <span class="on">Уведомления</span>
+        </nav>
+        <div class="desk-main" style="padding:10px">
+          <div class="settings-panel">
+            <div class="sp-title"><div class="t">Настройки уведомлений</div><div class="note">✕</div></div>
+            <div class="note">Hover на минусе в колонке: «Нажмите, чтобы выбрать всё в канале»</div>
+            <div class="mtx">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Событие</th>
+                    <th class="ch">Сист.</th>
+                    <th class="ch">Почта</th>
+                    <th class="ch">TG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="group hl">
+                    <td><div class="ev-cell"><span class="chk indeterminate"></span> Уязвимость <span class="cnt">частично</span></div></td>
+                    <td class="ch"><span class="chk indeterminate"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="item">
+                    <td class="ev">Новая critical</td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="item muted">
+                    <td class="ev">Изменение CVSS</td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk on"></span> Актив</div></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="foot">
+              <div class="spacer"></div>
+              <div class="btn ghost">Отмена</div>
+              <div class="btn pr">Сохранить</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-5. Indeterminate в ячейке группы×канал</div>
+        <div class="d">Минус = частично в этой колонке. Клик → вкл всё по колонке; выкл — из галочки.</div>
+      </div>
+    </div>
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows"><span class="dot" style="background:var(--f3)">3</span></div>
+        <nav class="desk-nav">
+          <div class="brand">InnoDragon</div>
+          <span class="on">Уведомления</span>
+        </nav>
+        <div class="desk-main" style="padding:10px; position:relative">
+          <div class="settings-panel">
+            <div class="sp-title"><div class="t">Настройки уведомлений</div><div class="note">✕</div></div>
+            <div class="mtx">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Событие</th>
+                    <th class="ch">Сист.</th>
+                    <th class="ch">Почта</th>
+                    <th class="ch">TG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="group off">
+                    <td><div class="ev-cell"><span class="chk"></span> Уязвимость <span class="cnt">0</span></div></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="item muted">
+                    <td class="ev">Новая critical</td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk on"></span> Актив</div></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="foot">
+              <div class="spacer"></div>
+              <div class="btn ghost">Отмена</div>
+              <div class="btn pr">Сохранить</div>
+            </div>
+          </div>
+          <div class="toast">Группа «Уязвимость» выкл во всех каналах <a>Отменить</a> · 5с</div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-6. Toast Undo после массового выкл</div>
+        <div class="d">Клик по заголовку группы снял все колонки. Подсветка + Undo 5 с.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ПОТОК 4 ───────────────────────────────────────────────── -->
+<section>
+  <h2>4. Пусто, ошибка сети, выравнивание колонок</h2>
+  <p>Отдельные состояния. «Выровнять по колонке» — опционально вместо старого «Применить ко всем вкладкам».</p>
+
+  <div class="row">
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows"><span class="dot" style="background:var(--f4)">4</span></div>
+        <nav class="desk-nav">
+          <div class="brand">InnoDragon</div>
+          <span class="on">Уведомления</span>
+        </nav>
+        <div class="desk-main" style="padding:10px">
+          <div class="settings-panel">
+            <div class="sp-title"><div class="t">Настройки уведомлений</div><div class="note">✕</div></div>
+            <div class="ch-bar">
+              <div class="ch-pill"><div class="ch-name">Системные</div><div class="ch-meta">0 вкл</div></div>
+              <div class="ch-pill"><div class="ch-name">Почта</div><div class="ch-meta">0 вкл</div></div>
+              <div class="ch-pill"><div class="ch-name">Telegram</div><div class="ch-meta">0 вкл</div></div>
+            </div>
+            <div class="mtx">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Событие</th>
+                    <th class="ch">Сист.</th>
+                    <th class="ch">Почта</th>
+                    <th class="ch">TG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk"></span> Все · 0 / 78</div></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk"></span> Уязвимость</div></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk"></span> Заявка</div></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                    <td class="ch"><span class="chk"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="foot">
+              <div class="spacer"></div>
+              <div class="btn ghost">Отмена</div>
+              <div class="btn pr">Сохранить</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-7. Пустая матрица</div>
+        <div class="d">Ничего не выбрано ни в одной колонке. Счётчики в шапке — 0.</div>
+      </div>
+    </div>
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows"><span class="dot" style="background:var(--f4)">4</span></div>
+        <nav class="desk-nav">
+          <div class="brand">InnoDragon</div>
+          <span class="on">Уведомления</span>
+        </nav>
+        <div class="desk-main" style="padding:10px; position:relative">
+          <div class="settings-panel" style="opacity:.5">
+            <div class="sp-title"><div class="t">Настройки уведомлений</div></div>
+            <div class="skel-line" style="width:40%"></div>
+            <div class="skel-block" style="min-height:180px"></div>
+          </div>
+          <div class="overlay" style="border-radius:0">
+            <div class="modal desk-modal">
+              <div style="font-weight:700; margin-bottom:6px">Не удалось сохранить</div>
+              <div class="note" style="margin-bottom:12px">Ошибка сети. Матрица на сервере не изменилась.</div>
+              <div class="btn pr">Повторить</div>
+              <div class="btn ghost" style="margin-top:6px">Закрыть</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-8. Ошибка сети</div>
+        <div class="d">После Retry — снова save; локальные галочки в матрице не сбрасываем.</div>
+      </div>
+    </div>
+
+    <div class="cell desk">
+      <div class="desk-frame">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <nav class="desk-nav">
+          <div class="brand">InnoDragon</div>
+          <span class="on">Уведомления</span>
+        </nav>
+        <div class="desk-main" style="padding:10px">
+          <div class="settings-panel">
+            <div class="sp-title"><div class="t">Настройки уведомлений</div><div class="note">✕</div></div>
+            <div class="banner">
+              <b>✓</b>
+              <div>Скопировать колонку <b>Системные</b> → Почта и Telegram (только подключённые).</div>
+            </div>
+            <div class="mtx">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Событие</th>
+                    <th class="ch">Сист.</th>
+                    <th class="ch">Почта</th>
+                    <th class="ch">TG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="group">
+                    <td><div class="ev-cell"><span class="chk on"></span> Уязвимость</div></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                    <td class="ch"><span class="chk on"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="foot">
+              <div class="btn ghost">Выровнять по колонке…</div>
+              <div class="spacer"></div>
+              <div class="btn ghost">Отмена</div>
+              <div class="btn pr">Сохранить</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">NTF-9. Выровнять по колонке</div>
+        <div class="d">Замена «Применить ко всем вкладкам»: копирование одной колонки в другие. Не в неподключённый TG.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>Логика, которой нет на каркасах</h2>
+  <p>Правила поведения — чтобы не потерять между флоу и UI.</p>
+  <ul class="note" style="max-width:880px; display:flex; flex-direction:column; gap:8px; list-style:disc; padding-left:18px; color:var(--ink)">
+    <li>Нет вкладок каналов: одна матрица, как Monday (событие × Bell/Email/Mobile) и Weeek (форматы на событии).</li>
+    <li>Ячейка = пересечение события и канала. Групповой чекбокс слева управляет строкой; чекбокс в шапке колонки — всеми событиями канала.</li>
+    <li>Минус в ячейке группы×канал → клик всегда «вкл колонку для группы». Выкл — из галочки.</li>
+    <li>Неподключённый канал: колонка disabled + Connect в шапке. Не молчаливый save.</li>
+    <li>«Выровнять по колонке» — опция; Save — единственная фиксация на сервер.</li>
+    <li>Отчёт об инцидентах — строка внутри группы «Инцидент». Группа «Сканирование» — не глагол.</li>
+  </ul>
+</section>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 ﻿---
 type: notes
 env: 01-research
-updated: 2026-09-16
+updated: 2026-09-30
 ---
 
 # Рабочие заметки
@@ -10,19 +10,29 @@ updated: 2026-09-16
 
 ## Активная задача
 1. Сводный дашборд программы «А» (InnoPhish) — исследование 0–5 **done**. Дайджест `outputs/research-digest.md` не перезаписывать.
-2. InnoDragon, кусок уведомлений — desk + competitive **done** (2026-09-16). Публичный сжатый выход: `outputs/research-digest-innodragon.md`. Интервью и замер — нет.
+2. InnoDragon, уведомления — **обновлено 2026-09-30**: полевое интервью SOC (L1–L3+DFIR, NIST, alert≠инцидент) → `sources/interview-ib-notifications.md`; sync digest + brief + `copy/innodragon.md`.
 
-## InnoDragon (2026-09-16)
+## InnoDragon (2026-09-16 → 2026-09-30)
 | Фаза | Статус | Артефакт |
 |------|--------|----------|
-| 0 scope | done | `briefs/innodragon-00-scope.md` |
-| 1 brief + ЦА | done | `briefs/innodragon-01-brief.md` |
+| 0 scope | done | `briefs/innodragon-00-scope.md` (+ интервью в границах) |
+| 1 brief + ЦА | done | `briefs/innodragon-01-brief.md` (sync с интервью) |
 | 2 competitors | done | `competitors/innodragon/*` + `_matrix.md` |
+| интервью SOC | done | `sources/interview-ib-notifications.md` (n=1, 2026-09-30) |
 | digest | ready | `outputs/research-digest-innodragon.md` |
+| living copy | ready | `../03-content/copy/innodragon.md` |
 | 3–5 | skip | не подменять PRD программы «А» |
 
-## Активная задача (программа «А»)
-Сводный дашборд программы «А» — исследование 0–5 **done**. Следующее вне среды: IA / prototype (другие среды).
+## Сделано 2026-09-30
+- Полевое интервью SOC → замена синтетики в `sources/interview-ib-notifications.md`
+- Sync: digest, brief, scope, `copy/innodragon.md` (NIST, alert≠инцидент, роли L1–L3+DFIR)
+- **InnoPhish график:** отказ от TIP-A/когорты в hover; серия обучения + легенда; вертикаль → список атак → `sources/decision-chart-index-2026-09-30.md` (+ wireframes, digest §5, `_matrix.md`)
+- **InnoPhish IA + UF:** `04-prototype/flows/dashboard-ia.md`, `dashboard-user-flows.md`; FigJam страница Phish — [UF-Portfolio](https://www.figma.com/board/apRL892T8oK9XfD7YvbCRe/UF-Portfolio?node-id=1-2); sync `copy/innophish.md`, insights
+
+## Сделано 2026-09-29
+- `competitors/_matrix-attacks-reactions-training.md` — матрица **без «Мы»**: прямые / гибрид (EALP) / косвенные; §1–3 атаки·реакции·обучение SA; **§4** РФ LMS (iSpring, WebTutor, Mirapolis, Equeo, Teachbase, Moodle) + Excel + кандидаты Secure-T / RED SA
+- `competitors/lms-ru.md`, `competitors/ealp.md` — кластер LMS и гибрид SA+LMS
+- `competitors/_matrix.md` — матрица фич дашборда InnoPhish в формате как у InnoDragon (легенда ✅◐❌?, белые пятна, паттерны / анти-паттерны); добавлены строки графика LITE, ховера, когорты, реакций, repeat clickers.
 
 ## Прогресс фаз
 | Фаза | Статус | Артефакт |

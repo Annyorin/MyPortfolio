@@ -13,6 +13,7 @@
 |------|-----|----------|
 | Координатор | основная сессия (`CLAUDE.md` / `AGENTS.md`) | статус, маршруты, решения |
 | Исполнители | analyst, architect, planner, developer, designer | свой промпт, свои файлы |
+| Превью | local-preview | Vite до правок UI/кода |
 | Дизайн-субагенты | research / content / ds / prototype | одна среда `design/` |
 | Ревьюеры | tz, design, architecture, plan, code | почти read-only |
 | Rescuer | только интерпретация блокера | без записи |
@@ -33,6 +34,7 @@
         → design-reviewer
         → architect ⇄ architecture-reviewer
         → planner ⇄ plan-reviewer
+        → local-preview               (Vite, до первой правки UI/кода)
         → developer ⇄ code-reviewer   (по каждой задаче)
 ```
 

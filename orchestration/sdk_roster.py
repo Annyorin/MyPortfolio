@@ -137,6 +137,16 @@ def build_agents() -> dict:
             disallowedTools=["Bash", "Agent", "Edit"],
             permissionMode="plan",
         ),
+        "local-preview": AgentDefinition(
+            description="Поднимает локальный Vite-сайт перед правками UI/кода.",
+            prompt=_prompt(
+                "13_agent_local_preview.md",
+                "Код и git не трогай. Верни JSON со status/url.",
+            ),
+            tools=["Read", "Grep", "Glob", "Bash"],
+            disallowedTools=["Agent", "Write", "Edit"],
+            permissionMode="acceptEdits",
+        ),
         "developer": AgentDefinition(
             description="Реализация одной задачи плана.",
             prompt=_prompt("08_agent_developer.md", "Не рефактори без указания."),
