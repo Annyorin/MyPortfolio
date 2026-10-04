@@ -30,6 +30,25 @@ const PREVIEW_QUALITY = 40;
 /** Keep a preview only if it is meaningfully lighter than the original. */
 const MIN_SAVING = 0.25;
 
+/**
+ * Portfolio card / hero covers stay on full PNG in `<img>` (pre-Oct4 sharpness).
+ * Soft q40 WebP twins smear on the scaled main canvas; case pages already skip
+ * progressive loading, so these must not enter the manifest either.
+ */
+const SKIP_PREVIEW = new Set([
+  "card-citybike.png",
+  "card-default.png",
+  "card-innodragon.png",
+  "card-innophish.png",
+  "case-dragon-hero.png",
+  "case-phish-final-2-full.png",
+  "case-phish-hero-full.png",
+  "dragon.png",
+  "img-1.png",
+  "img-2.png",
+  "phish.png",
+]);
+
 function* imagesIn(dir, prefix = "") {
   for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
     if (entry.name === "lq") continue;
@@ -47,6 +66,11 @@ let before = 0;
 let after = 0;
 
 for (const name of imagesIn(SOURCE)) {
+  if (SKIP_PREVIEW.has(name)) {
+    skipped.push(`${name} (full PNG on cards)`);
+    continue;
+  }
+
   const from = path.join(SOURCE, name);
   const out = name.replace(/\.[^.]+$/, ".webp");
   const to = path.join(TARGET, out);

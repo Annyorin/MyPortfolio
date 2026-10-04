@@ -483,16 +483,16 @@ describe("portfolio scene renderer", () => {
     const expected = [
       {
         id: "cardA",
-        title: "InnoDragon",
-        file: "img-1.png",
-        url: "case-dragon.html",
+        title: "InnoPhish",
+        file: "img-2.png",
+        url: "case-phish.html",
         action: "",
       },
       {
         id: "cardB",
-        title: "InnoPhish",
-        file: "img-2.png",
-        url: "case-phish.html",
+        title: "InnoDragon",
+        file: "img-1.png",
+        url: "case-dragon.html",
         action: "",
       },
       {

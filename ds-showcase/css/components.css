@@ -3,6 +3,21 @@
  * Fill/border from Figma Ui kit 41:11646; colors via var(--color-*).
  */
 
+/*
+ * WCAG 2.4.7 Focus Visible: ring only for keyboard.
+ * Mouse/touch must not leave a ring. Chrome treats a button click as
+ * :focus-visible — html.is-pointer-focus is set on pointerdown and
+ * cleared on Tab / arrows (see setupTheme).
+ */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+html.is-pointer-focus :focus,
+html.is-pointer-focus :focus-visible {
+  outline: none !important;
+}
+
 /* —— Icon —— */
 .ds-icon {
   box-sizing: border-box;
@@ -184,7 +199,7 @@
 }
 
 .ds-fab:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -242,7 +257,7 @@
 }
 
 .ds-link:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -301,7 +316,7 @@
 }
 
 .ds-button:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -414,7 +429,7 @@
 }
 
 .ds-tapper:focus-visible {
-  outline: 2px solid var(--color-black);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -432,7 +447,7 @@
 }
 
 .ds-tapper .scene-tapper__hit:focus-visible {
-  outline: 2px solid var(--color-black);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -556,6 +571,11 @@
   z-index: 3;
 }
 
+.ds-about-me:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 /* —— Hover / CursorHover (CTA) —— Figma 41:1548 / 260:24098 Behance / 260:24115 Посмотреть —— */
 .ds-hover {
   box-sizing: border-box;
@@ -614,7 +634,7 @@
 }
 
 .ds-hover:focus-visible {
-  outline: 2px solid var(--color-black);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -668,6 +688,11 @@
 .ds-card:hover {
   box-shadow: var(--shadow);
   transform: scale(1.03);
+}
+
+.ds-card:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .ds-card.is-card-dragging,
@@ -959,7 +984,7 @@
 }
 
 .ds-button-round:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -1066,7 +1091,7 @@
 }
 
 .ds-header__burger:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -1141,7 +1166,7 @@
 }
 
 .ds-toolbar__back:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -1211,7 +1236,7 @@
 }
 
 .ds-toolbar__burger:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -1304,7 +1329,7 @@
 }
 
 .ds-segments__item:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -1326,6 +1351,11 @@
 
 .ds-title-sidebar:hover {
   color: var(--color-gray-text);
+}
+
+.ds-title-sidebar:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* —— Menu / SideBar TOC (Figma Menu 227:16241) —— */
@@ -1385,6 +1415,6 @@
 }
 
 .ds-menu-mobile .ds-title-sidebar:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }

@@ -54,15 +54,23 @@ scope: storybook-demo+portfolio-home+case-phish+case-dragon
 | card.b.title | InnoPhish | — | Заголовок Card кейса (дашборд) | owner 2026-09-15; research-digest |
 | card.b.meta | · 2024–2026 | — | Мета Card кейса | owner 2026-09-15 (как card.b / период) |
 | card.b.description | Программа для повышения осведомлённости сотрудников в области ИБ и укрепления их устойчивости к кибератакам, основанным на социальной инженерии. | — | Описание Card (4 строки, переносы в content.js) | Figma Card + owner |
-| case.phish.role_value | UX/UI дизайнер: исследование и макеты. Код и бэклог — не мои. | — | Мета: роль | owner; шаблон слой B |
-| case.phish.team_value | 4 фронта, 4 бэка + дизайнер | — | Мета: команда | owner |
-| case.phish.intro_body | InnoPhish — сводная страница для ИБ. Цель / аудитория / критерии (SLA-ритм). Время доклада после запуска не замерила. | — | Вводные | owner + [SLA 3→30](https://faithful-pink-98c.notion.site/SLA-3-30-16dd55a60207806c9bbcd56968f2e633) |
-| case.phish.context_body | EvilGo + обучение + Excel; ~60% — аудитория, не UI; одна сводка и файл вместо второго экрана. | — | Контекст (длинная) | digest n=2 + owner |
-| case.phish.analysis_title | Исследование | — | Заголовок секции (длинная) | owner |
-| case.phish.analysis_body | Сжатые выводы: бенчмарки, интервью n=2, работа / ценности / барьеры / что не копировать. Полный канон — copy/innophish.md. | — | Секция «Исследование», длинная версия | digest + матрица; не простыня интервью |
-| case.phish.hypotheses_body | Сначала всё на одном экране — не прочитали. Вкладки. PDF вместо второго экрана. | — | Гипотезы, короткая | owner тест |
-| case.phish.hypotheses_body_long | Сводка ≠ «Отчёты»; срез, не тренд; топ + курс; сигнал без формулы; HR/SOC на вкладках не закрыты. | — | Гипотезы, длинная добавка | digest + owner |
-| case.phish.conclusions_body | Макет в прод. Целилась в скорость доклада — не замерила. Провал — страница без вкладок. Дальше: делить типы цифр; раньше решить сводка или отчёт. | — | Выводы | owner |
+| case.phish.role_value | UX/UI дизайнер: Discovery и ux-исследование для дашборда, макеты интерфейса. | — | Мета: роль | Figma 509:18872 |
+| case.phish.team_value | 4 фронтендера, 4 бэкендера, дизайнер, проджект-менеджер, стейкхолдеры — CISO и Директор ИБ | — | Мета: команда | Figma 509:18872 |
+| case.phish.context_title | Продукт | — | Fill-блок после hero | Figma 509:18872 |
+| case.phish.context_body | Описание программы + рассылки / аналитика / курсы / отчётность. | — | Fill-блок «Продукт» | Figma 509:18872 |
+| case.phish.intro_title | Контекст задачи | — | Заголовок контекста | Figma 509:18872 |
+| case.phish.intro_body | Excel/Word → задача сводки; ## Цель / Аудитория / Проблемы / Критерии. | — | Контекст + вводные блоки | Figma 509:18872 |
+| case.phish.analysis_title | Исследование | — | Заголовок секции (длинная) | Figma 509:18872 |
+| case.phish.analysis_body | Бенчмарки → требования → интервью → вопросы → JTBD → триггеры → ценности → гипотезы. | — | Секция «Исследование», длинная | Figma + digest |
+| case.phish.design_title | Проектирование | — | Нав + секция (длинная) | Figma 509:18872 |
+| case.phish.design_body | IA / бизнес-схема / User Flow + img markers. | — | Проектирование | Figma + draft |
+| case.phish.ux_test_title | UX-тест | — | Нав + секция | Figma 509:18872 |
+| case.phish.ux_test_body | 2 vs 3 вкладки; n=8; картинки вариантов; 3,4 мин → 45 сек. | — | UX-тест | Figma 509:18872 |
+| case.phish.finals_title | Финальные макеты | — | Нав + секция | Figma 509:18872 |
+| case.phish.finals_body | Изменения + финальные кадры + синк + ревью. | — | Финальные макеты | Figma 509:18872 |
+| case.phish.conclusions_title | Результат и ограничения | — | Заголовок секции | Figma 509:18872 |
+| case.phish.nav_conclusions | Результаты | — | Подпись sidenav | Figma menu |
+| case.phish.conclusions_body | Что сделала / научило / не измеряла / дальше / иначе. | — | Результат | Figma 509:18872 |
 | case.phish.source_file | design/03-content/copy/case-phish.md | — | Полный текст кейса (A + B) | — |
 | tapper.zoom_out | Уменьшить масштаб | — | a11y-имя кнопки − (Tapper) | tz:technical_specification.md§3 |
 | tapper.zoom_in | Увеличить масштаб | — | a11y-имя кнопки + (Tapper) | tz:technical_specification.md§3 |
@@ -85,7 +93,14 @@ scope: storybook-demo+portfolio-home+case-phish+case-dragon
 |------|------|------|
 | avatar | — | Экспорт из Figma Ui kit: Avatar 48×48 (Profile) |
 | card.image | — | Экспорт из Figma Ui kit: изображение карточки InnoDragon |
-| card.b.image | — | Кадр сводного дашборда InnoPhish (макет); не сток |
+| card.b.image / case.phish.hero | images/phish.png | Hero дашборда InnoPhish (Figma 509:18898 @2×) |
+| case.phish.ia | images/case-phish-ia.png | IA diagram |
+| case.phish.business | images/case-phish-business.png | Бизнес-схема |
+| case.phish.flow | images/case-phish-flow.png | User Flow |
+| case.phish.test_2tabs | images/case-phish-test-2tabs.png | UX-тест, 2 вкладки |
+| case.phish.test_3tabs | images/case-phish-test-3tabs.png | UX-тест, 3 вкладки |
+| case.phish.final_1 | images/case-phish-final-1.png | Финальные макеты, блок 1 |
+| case.phish.final_2 | images/case-phish-final-2.png | Финальные макеты, блок 2 |
 | img_bg | — | Экспорт из Figma Ui kit: IMG_BG |
 | img_1 | — | Экспорт из Figma Ui kit: IMG_1 |
 | img_2 | — | Экспорт из Figma Ui kit: IMG_2 |
@@ -93,4 +108,4 @@ scope: storybook-demo+portfolio-home+case-phish+case-dragon
 | comp | — | Экспорт из Figma Ui kit: Comp (коллаж) |
 
 ## Tone of voice — краткая выжимка
-Демо UI — как в макете, без маркетинговой переписки. Кейс InnoPhish — слой B по `strategy/case-writing-template.md`: речь, не склейка ярлыков; без `as-is` / `dual-mode` / JTBD на сайте; без выдуманных %; нет замера — «не замерила». Кавычки «ёлочки»; висячие предлоги — NBSP.
+Демо UI — как в макете, без маркетинговой переписки. Кейс InnoPhish — слой B по макету Figma `509:18872` и `strategy/case-writing-template.md`. Заголовок JTBD на сайте оставлен как в макете. Без выдуманных % вне макета/исследования. Кавычки «ёлочки»; висячие предлоги — NBSP.

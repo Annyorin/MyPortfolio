@@ -166,7 +166,7 @@ const CSS = `
     z-index: 1;
   }
   .dots-theme-slot { position: relative; display: inline-flex; align-items: center; }
-  .dots-theme-toggle:focus-visible { outline: 2px solid var(--color-primary, #64b3f9); outline-offset: 2px; }
+  .dots-theme-toggle:focus-visible { outline: 2px solid var(--focus-ring, #2d97f7); outline-offset: 2px; }
   /* While booting the toggle must not hover over the loader. */
   html.is-booting .dots-theme-toggle { opacity: 0; pointer-events: none; }
   /* Leave crossfade: floating sits above the veil (z-index 99999 > 10000) — hide it. */
@@ -431,10 +431,42 @@ function writeStored(theme) {
  *
  * @param {{ mount?: boolean }} [options]
  */
+/**
+ * Pointer vs keyboard modality for focus rings (WCAG 2.4.7).
+ * Chrome marks a mouse click on a button as :focus-visible — hide the ring
+ * until the user Tabs (or uses arrows).
+ *
+ * @returns {void}
+ */
+function setupFocusModality() {
+  const html = document.documentElement;
+  if (!html?.classList || typeof document.addEventListener !== "function") {
+    return;
+  }
+  const onPointer = () => {
+    html.classList.add("is-pointer-focus");
+  };
+  const onKey = (event) => {
+    const key = event && typeof event.key === "string" ? event.key : "";
+    if (
+      key === "Tab" ||
+      key === "ArrowUp" ||
+      key === "ArrowDown" ||
+      key === "ArrowLeft" ||
+      key === "ArrowRight"
+    ) {
+      html.classList.remove("is-pointer-focus");
+    }
+  };
+  document.addEventListener("pointerdown", onPointer, true);
+  document.addEventListener("keydown", onKey, true);
+}
+
 export function setupTheme({ mount = true } = {}) {
   // The entry module is imported in stubbed environments too, where document may
   // be a bare object without head/body.
   if (typeof document === "undefined" || !document.head?.append) return noopTheme();
+  setupFocusModality();
 
   const html = document.documentElement;
   if (!html?.setAttribute) return noopTheme();

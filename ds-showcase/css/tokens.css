@@ -48,6 +48,13 @@
 
   /* Page — light theme (Figma page #F5F5F5; surfaces stay --color-white) */
   --page-bg: #f5f5f5;
+
+  /*
+   * Focus ring — WCAG 2.4.7 Focus Visible (AA), 2.4.13 Focus Appearance:
+   * 2px solid blue, ≥3:1 vs white. Uses the darker primary from the pair
+   * (#2d97f7); light #64b3f9 fails 3:1 on #fefefe.
+   */
+  --focus-ring: #2d97f7;
 }
 
 /* Dark — fills from DarkColors 383:15362 + Портфолио.Главная 386:20585 */
@@ -64,6 +71,8 @@ html[data-theme="dark"] {
   --shadow: 0 5px 9px #2f2f3540;
   --shadow-mobile: 0 3px 9px #2f2f3540;
   --page-bg: #121214;
+  /* Lighter primary on dark page — ≥3:1 vs #121214 */
+  --focus-ring: #64b3f9;
 }
 
 /* On-primary / inverse ink: --color-white is remapped to surface in dark */

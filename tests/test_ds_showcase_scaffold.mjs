@@ -91,6 +91,7 @@ const REQUIRED_TOKEN_VARS = [
   "--type-caption-line",
   "--type-caption-weight",
   "--page-bg",
+  "--focus-ring",
 ];
 
 const EXPECTED_CSS_HREFS = [

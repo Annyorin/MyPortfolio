@@ -32,8 +32,8 @@ const MEDIA_ASSETS = [
   { key: "icon.burger-menu", rel: "assets/icons/burger-menu.svg" },
   { key: "avatar", rel: "assets/images/avatar.png" },
   { key: "card.image", rel: "assets/images/card-default.png" },
-  { key: "card.image.a", rel: "assets/images/img-1.png" },
-  { key: "card.image.b", rel: "assets/images/img-2.png" },
+  { key: "card.image.a", rel: "assets/images/img-2.png" },
+  { key: "card.image.b", rel: "assets/images/img-1.png" },
   { key: "card.image.c", rel: "assets/images/card-citybike.png" },
   { key: "img_bg", rel: "assets/images/img-bg.png" },
   { key: "img_1", rel: "assets/images/img-1.png" },
@@ -306,6 +306,7 @@ describe("Regression smoke inventory and foundations tokens", () => {
       "--color-black",
       "--color-gray-l",
       "--shadow",
+      "--focus-ring",
     ]) {
       assert.ok(tokens.includes(name), `token missing: ${name}`);
     }
