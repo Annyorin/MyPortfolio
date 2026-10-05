@@ -68,12 +68,12 @@ describe("portfolio case-dragon page", () => {
     assert.match(config, /portfolio\/case-dragon\.html/);
   });
 
-  it("contentMap wires card.a.url and case.dragon keys", async () => {
+  it("contentMap wires card.b.url and case.dragon keys", async () => {
     const { contentMap } = await import(
       pathToFileURL(abs("shared/content.js")).href
     );
-    assert.equal(contentMap["card.a.url"], "case-dragon.html");
-    assert.ok(!Object.prototype.hasOwnProperty.call(contentMap, "card.a.action"));
+    assert.equal(contentMap["card.b.url"], "case-dragon.html");
+    assert.ok(!Object.prototype.hasOwnProperty.call(contentMap, "card.b.action"));
     assert.equal(contentMap["case.dragon.period_label"], "Период выполнения");
     assert.equal(contentMap["case.dragon.platforms_value"], "Desktop");
     assert.equal(contentMap["case.dragon.role_value"]?.includes("UX/UI"), true);

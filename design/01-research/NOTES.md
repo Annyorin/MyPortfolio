@@ -1,4 +1,4 @@
-﻿---
+---
 type: notes
 env: 01-research
 updated: 2026-09-30

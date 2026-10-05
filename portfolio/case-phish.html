@@ -86,9 +86,10 @@
       <nav id="case-side-nav" class="ds-side-nav ds-menu-mobile" aria-label="Оглавление кейса">
         <a class="ds-title-sidebar is-active" href="#context" data-case-nav="context">Контекст</a>
         <a class="ds-title-sidebar ds-title-sidebar--muted" href="#analysis" data-case-nav="analysis">Исследование</a>
-        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#hypotheses" data-case-nav="hypotheses">Гипотезы и решения</a>
-        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#conclusions" data-case-nav="conclusions">Выводы</a>
-        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#contacts" data-case-nav="contacts">Контакты</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#design" data-case-nav="design">Проектирование</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#ux_test" data-case-nav="ux_test">UX-тест</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#finals" data-case-nav="finals">Финальные макеты</a>
+        <a class="ds-title-sidebar ds-title-sidebar--muted" href="#conclusions" data-case-nav="conclusions">Результаты</a>
       </nav>
     </aside>
 
@@ -143,37 +144,41 @@
             </div>
           </div>
 
-          <div class="ds-segments" data-active="0" role="tablist" aria-label="Длинная версия активна">
+          <div class="ds-segments" data-active="0" role="tablist" aria-label="Полностью активна">
             <span class="ds-segments__thumb" aria-hidden="true"></span>
-            <button type="button" class="ds-segments__item ds-segments__item--active" role="tab" aria-selected="true" data-case="segments-long">Длинная версия</button>
-            <button type="button" class="ds-segments__item" role="tab" aria-selected="false" tabindex="-1" data-case="segments-short">Короткая версия</button>
+            <button type="button" class="ds-segments__item ds-segments__item--active" role="tab" aria-selected="true" data-case="segments-long">Полностью</button>
+            <button type="button" class="ds-segments__item" role="tab" aria-selected="false" tabindex="-1" data-case="segments-short">Кратко</button>
           </div>
         </div>
 
-        <section id="context" class="case-page__block-pic" aria-labelledby="case-context-title">
-          <div class="case-page__picture" data-case="picture">
-            <img
-              class="case-page__picture-img"
-              data-case="hero-img"
-              src="../ds-showcase/assets/images/phish.png"
-              alt="InnoPhish cover"
-              width="590"
-              height="283"
-            >
-          </div>
-          <div class="case-page__fill-block">
-            <h2 id="case-context-title" class="case-page__fill-title" data-case="context-title">Контекст задачи</h2>
-            <p class="case-page__fill-body" data-case="context-body"></p>
+        <section id="context" aria-labelledby="case-context-title">
+          <div class="case-page__block-pic">
+            <div class="case-page__picture" data-case="picture">
+              <img
+                class="case-page__picture-img"
+                data-case="hero-img"
+                src="../ds-showcase/assets/images/phish.png"
+                alt="InnoPhish cover"
+                width="572"
+                height="357"
+              >
+            </div>
+            <div class="case-page__fill-block">
+              <h2 id="case-context-title" class="case-page__fill-title" data-case="context-title">Продукт</h2>
+              <p class="case-page__fill-body" data-case="context-body"></p>
+            </div>
           </div>
           <div class="case-page__text-block">
-            <h2 class="case-page__text-title" data-case="intro-title">Вводные</h2>
+            <h2 class="case-page__text-title" data-case="intro-title">Контекст задачи</h2>
             <p class="case-page__text-body" data-case="intro-body"></p>
           </div>
         </section>
 
         <section id="analysis" class="case-page__section-stub" aria-label="Исследование" data-case-long-only></section>
-        <section id="hypotheses" class="case-page__section-stub" aria-label="Гипотезы и решения"></section>
-        <section id="conclusions" class="case-page__section-stub" aria-label="Выводы"></section>
+        <section id="design" class="case-page__section-stub" aria-label="Проектирование" data-case-long-only></section>
+        <section id="ux_test" class="case-page__section-stub" aria-label="UX-тест"></section>
+        <section id="finals" class="case-page__section-stub" aria-label="Финальные макеты"></section>
+        <section id="conclusions" class="case-page__section-stub" aria-label="Результаты"></section>
 
         <footer id="contacts" class="case-page__footer">
           <div class="case-page__footer-row">

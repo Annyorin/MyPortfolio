@@ -81,14 +81,21 @@ function buildUrl(pathFromDsRoot, mode) {
  * Unknown keys log a warning and return a safe non-throwing fallback.
  *
  * @param {string} key
- * @param {{ mode?: "alias" | "repo" }} [options]
+ * @param {{ mode?: "alias" | "repo", full?: boolean }} [options]
  * @returns {string}
  */
 export function resolveAsset(key, options = {}) {
   const assets = contentMap?.assets;
   const ref = assets && typeof assets === "object" ? assets[key] : undefined;
+  const fullPath =
+    options.full === true &&
+    ref &&
+    typeof ref.fullPathFromDsRoot === "string"
+      ? ref.fullPathFromDsRoot.trim()
+      : "";
   const pathFromDsRoot =
-    ref && typeof ref.pathFromDsRoot === "string" ? ref.pathFromDsRoot.trim() : "";
+    fullPath ||
+    (ref && typeof ref.pathFromDsRoot === "string" ? ref.pathFromDsRoot.trim() : "");
 
   if (!pathFromDsRoot) {
     console.warn(`[resolveAsset] unknown or empty asset key: ${String(key)}`);

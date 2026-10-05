@@ -308,6 +308,11 @@ html.is-boot-reveal .viewport {
   z-index: 30;
 }
 
+.scene-about-cluster:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .scene-about-cluster:hover,
 .scene-about-cluster.is-card-grab,
 .scene-about-cluster.is-card-dragging {
@@ -585,7 +590,7 @@ html.is-boot-reveal .viewport {
 }
 
 .scene-about__sticker:focus-visible {
-  outline: 2px solid #232323;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -758,7 +763,7 @@ html.is-boot-reveal .viewport {
 }
 
 .scene-tapper__hit:focus-visible {
-  outline: 2px solid #232323;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

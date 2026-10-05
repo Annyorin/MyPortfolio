@@ -217,6 +217,16 @@ describe("TC-E2E-05 keyboard focus and accessible names", () => {
     assert.match(components, /\.ds-hover:focus-visible\s*\{/);
     assert.match(components, /\.ds-tapper:focus-visible\s*\{/);
     assert.match(components, /\.ds-button:focus-visible\s*\{/);
+    assert.match(
+      components,
+      /\.ds-card:focus-visible\s*\{[^}]*--focus-ring/s
+    );
+    assert.match(
+      components,
+      /\.ds-about-me:focus-visible\s*\{[^}]*--focus-ring/s
+    );
+    assert.match(components, /:focus:not\(:focus-visible\)/);
+    assert.match(components, /html\.is-pointer-focus :focus-visible/);
 
     assert.match(html, /class="ds-tapper"[^>]*aria-label="Tapper"/);
     assert.match(html, /class="ds-hover"[^>]*aria-label="Behance"/);
