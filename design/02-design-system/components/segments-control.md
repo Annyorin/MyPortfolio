@@ -35,7 +35,7 @@ Track (Secondary, radius 20, padding 4) + 2 equally flex сегмента + acti
 | active pill | White `#FEFEFE` · radius 20 |
 | active shadow | Shadow `0 5px 9px #BBBBBD40` |
 | active border | 0.5px `rgba(0,0,0,0.04)` |
-| label | Text2 · Inter Regular 14/18 · Black `#232323` |
+| label | Text2 · Inter Regular 14/20 · Black `#232323` |
 | segment padding | px 10 · py 8 (active) / py 3 (inactive) |
 
 ## Правила применения

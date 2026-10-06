@@ -1,7 +1,7 @@
 ---
 type: registry
 env: 04-prototype
-updated: 2026-10-01
+updated: 2026-10-05
 mirrored-version: 0.1.2
 ---
 
@@ -25,6 +25,13 @@ mirrored-version: 0.1.2
 | IP-REA-1 · Сводка · Реакции | wireframe · 3 вкладки | pending | — | — | wireframe | 2026-10-01 · HTML board · PNG [`../outputs/innophish-wireframes/02-tab-reactions.png`](../outputs/innophish-wireframes/02-tab-reactions.png) |
 | IP-TRN-1 · Сводка · Обучение | wireframe · 3 вкладки | pending | — | — | wireframe | 2026-10-01 · HTML board · PNG [`../outputs/innophish-wireframes/03-tab-training.png`](../outputs/innophish-wireframes/03-tab-training.png) |
 | IP-PDF-1 · PDF для CISO (опц.) | wireframe · export preview | pending | — | — | wireframe | 2026-10-01 · HTML board · PNG [`../outputs/innophish-wireframes/04-pdf-ciso.png`](../outputs/innophish-wireframes/04-pdf-ciso.png) |
+| IP-SPD-1 · Сводка · скорость реакции (репорт) | wireframe · блок | pending | — | — | wireframe | 2026-10-05 · [`../wireframes/attack-reaction-speed-wireframe.html`](../wireframes/attack-reaction-speed-wireframe.html) · заполненный список атак, медиана + min |
+| IP-SPD-1b · Сводка · скорость реакции (клик) | wireframe · блок | pending | — | — | wireframe | 2026-10-05 · тот же HTML · срез «Клик»: быстрый клик = риск |
+| IP-SPD-EMPTY · скорость · репортов 0 | wireframe · блок | pending | — | — | wireframe | 2026-10-05 · тот же HTML · атаки есть, репортов ещё нет |
+| IP-SPD-SPARSE · скорость · мало событий | wireframe · блок | pending | — | — | wireframe | 2026-10-05 · тот же HTML · 1–2 репорта, медиана «—» |
+| DB-REACT-FILT-1 · Реакции · топ-5 без отдела X | wireframe · сценарий фильтра | pending | — | — | wireframe | 2026-10-05 · [`../wireframes/reactions-dept-filter-wireframe.html`](../wireframes/reactions-dept-filter-wireframe.html) · «Все» = критичный топ-5 |
+| DB-REACT-FILT-2 · Реакции · picker подразделений | wireframe · гипотеза | pending | — | — | wireframe | 2026-10-05 · тот же HTML · поиск + дерево multi-select / include children |
+| DB-REACT-FILT-3 · Реакции · срез отдела | wireframe · сценарий фильтра | pending | — | — | wireframe | 2026-10-05 · тот же HTML · уязвимые выбранной ветки |
 | DB-IB · Дашборд ИБ (primary) | wireframe · IA [`../flows/dashboard-ia.md`](../flows/dashboard-ia.md) | pending | — | — | wireframe | 2026-09-15 · mobile [`../wireframes/dashboard-wireframes.html`](../wireframes/dashboard-wireframes.html) |
 | DB-IB-D · Дашборд ИБ (primary) Desktop | wireframe · IA · DASH-IB | pending | — | — | wireframe | 2026-09-30 · [`../wireframes/dashboard-wireframes-desktop.html`](../wireframes/dashboard-wireframes-desktop.html) · график индекс+обучение+│ |
 | DB-HR · Срез HR (обучение) | wireframe · IA | pending | — | — | wireframe | 2026-09-15 · mobile |

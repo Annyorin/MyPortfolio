@@ -78,7 +78,35 @@ body.case-page .is-reveal.is-in {
   transform: none;
 }
 
+/* Highlighter mark: Figma marker 534:15807 — white ink on primary fill. */
+.case-page__mark {
+  --highlighted: 0;
+  --highlight: color-mix(in srgb, var(--color-primary) 80%, transparent);
+  color: var(--color-white);
+  line-height: inherit;
+  background: linear-gradient(120deg, var(--highlight) 50%, transparent 50%)
+    110% 0 / 200% 100% no-repeat;
+  background-position: calc((1 - var(--highlighted)) * 110%) 0;
+  transition: background-position 1s;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.case-page__mark span {
+  color: inherit;
+}
+
+/* Dark remaps --color-white to surface; on-primary ink is --color-black. */
+html[data-theme="dark"] .case-page__mark {
+  color: var(--color-black);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .case-page__mark {
+    --highlighted: 1;
+    transition: none;
+  }
+
   body.case-page .is-reveal {
     opacity: 1;
     transform: none;
@@ -425,6 +453,11 @@ body.is-page-crossfading .case-page__fab {
   align-items: stretch;
 }
 
+/* Mobile (&lt;768 / ≤768): one Fill_Block per job — Figma 561:18198 */
+.case-page__jtbd-merged {
+  display: none;
+}
+
 .case-page__jtbd-text {
   margin: 0;
   width: 100%;
@@ -729,8 +762,19 @@ body.is-page-crossfading .case-page__fab {
 
 /* —— ≤768: tighter padding, single-column meta, fluid pictures —— */
 @media (max-width: 768px) {
+  /* Figma TextBlockSecond 561:18198: Job = 1 card, inline Когда/Я хочу/Чтобы */
   .case-page__jtbd-row {
-    grid-template-columns: 1fr;
+    display: block;
+    grid-template-columns: none;
+    gap: 0;
+  }
+
+  .case-page__jtbd-row > .case-page__jtbd-cell {
+    display: none;
+  }
+
+  .case-page__jtbd-merged {
+    display: flex;
   }
 
   .case-page__main {
@@ -1064,7 +1108,8 @@ body.case-page [data-case-zoomable]:not(.is-empty) .case-page__picture-img {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 72px 24px 88px;
+  padding: 0;
+  overflow: hidden;
   background: rgba(18, 18, 20, 0.72);
   cursor: zoom-out;
 }
@@ -1113,12 +1158,13 @@ body.case-page [data-case-zoomable]:not(.is-empty) .case-page__picture-img {
 }
 
 .case-page__lightbox-stage {
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  max-width: 100%;
-  max-height: 100%;
-  overflow: hidden;
+  max-width: none;
+  max-height: none;
+  overflow: visible;
   cursor: zoom-out;
   touch-action: none;
 }
@@ -1132,7 +1178,7 @@ body.case-page [data-case-zoomable]:not(.is-empty) .case-page__picture-img {
   max-height: none;
   width: auto;
   height: auto;
-  object-fit: none;
+  object-fit: fill;
   border-radius: 8px;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
   cursor: grab;
@@ -1164,11 +1210,50 @@ body.case-page [data-case-zoomable]:not(.is-empty) .case-page__picture-img {
   background-color: #fefefe !important;
   box-shadow: 0 5px 9px rgba(187, 187, 189, 0.25) !important;
   color: #121214 !important;
+  /* Real halves instead of DS pad+gap: no dead chrome, no ::before hit hack. */
+  padding: 0;
+  gap: 0;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
-.case-page__lightbox-tapper .scene-tapper__hit:disabled {
-  opacity: 0.35;
-  cursor: default;
+/*
+ * Each ± is a true 52×40 half. Padding keeps the 24×24 icons at the same
+ * visual spots as DS (pad 16 / gap 24), but the whole half is the hit target.
+ */
+.case-page__lightbox-tapper .scene-tapper__hit {
+  box-sizing: border-box;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 40px;
+  margin: 0;
+}
+
+.case-page__lightbox-tapper
+  .scene-tapper__hit[data-tapper-action="zoom-out"] {
+  padding: 8px 12px 8px 16px;
+}
+
+.case-page__lightbox-tapper
+  .scene-tapper__hit[data-tapper-action="zoom-in"] {
+  padding: 8px 16px 8px 12px;
+}
+
+/* Clicks must hit the <button>, not the <img> (native drag steals click). */
+.case-page__lightbox-tapper .scene-tapper__hit .ds-icon,
+.case-page__lightbox-tapper .scene-tapper__hit img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/*
+ * aria-disabled stays for a11y + JS no-op at min/max zoom, but visual parity
+ * with the active half: same icon weight/color and the same hover swap.
+ */
+.case-page__lightbox-tapper .scene-tapper__hit[aria-disabled="true"] {
+  opacity: 1;
+  cursor: pointer;
 }
 
 html.is-case-lightbox-open,
@@ -1192,7 +1277,7 @@ html.is-case-lightbox-open body {
   }
 
   .case-page__lightbox {
-    padding: 64px 12px 80px;
+    padding: 0;
   }
 
   .case-page__lightbox-close {

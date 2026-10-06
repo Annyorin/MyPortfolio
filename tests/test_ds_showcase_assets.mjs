@@ -182,6 +182,24 @@ describe("TC-UNIT-01 MediaAsset keys map to disk files", () => {
     assert.deepEqual(missing, [], `Missing MediaAsset files: ${missing.join(", ")}`);
   });
 
+  it("Plus/Minus default is Black, hover is Gray_text (Tapper 41:1311)", () => {
+    const plus = fs.readFileSync(path.join(SHOWCASE_ROOT, "assets/icons/plus.svg"), "utf8");
+    const plusHover = fs.readFileSync(
+      path.join(SHOWCASE_ROOT, "assets/icons/plus-hover.svg"),
+      "utf8"
+    );
+    const minus = fs.readFileSync(path.join(SHOWCASE_ROOT, "assets/icons/minus.svg"), "utf8");
+    const minusHover = fs.readFileSync(
+      path.join(SHOWCASE_ROOT, "assets/icons/minus-hover.svg"),
+      "utf8"
+    );
+    assert.match(plus, /stroke="#121214"/);
+    assert.doesNotMatch(plus, /stroke="#888888"/);
+    assert.match(minus, /stroke="#121214"/);
+    assert.match(plusHover, /stroke="#888888"/);
+    assert.match(minusHover, /stroke="#888888"/);
+  });
+
   it("index.html references each MediaAsset path and meaningful alt on raster imgs", () => {
     const html = fs.readFileSync(INDEX_PATH, "utf8");
     for (const { key, rel } of MEDIA_ASSETS) {

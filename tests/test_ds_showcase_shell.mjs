@@ -24,7 +24,7 @@ const SECTION_ORDER = ["Foundations", "Icons", "Atomic", "Composite", "Media"];
 const CONTENT_LITERALS = [
   "Аня Ясинская",
   "Продуктовый дизайнер",
-  "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.",
+  "Создаю чистые интерфейсы.\nБлагодаря бэкграунду программиста\nлегко нахожу общий язык\nс\u00A0разработкой и\u00A0стейкхолдерами.\nОтветственно решаю продуктовые\nзадачи и\u00A0постоянно развиваюсь.",
   "B2B",
   "Написать",
   "Резюме",
@@ -167,8 +167,7 @@ describe("TC-E2E-01 showcase shell inventory", () => {
 
 describe("TC-UNIT-01 content-package demo literals", () => {
   it("each content-package demo string appears verbatim in index.html", () => {
-    const html = fs.readFileSync(INDEX_PATH, "utf8");
-    const missing = CONTENT_LITERALS.filter((s) => !html.includes(s));
+    const html = fs.readFileSync(INDEX_PATH, "utf8").replace(/\r\n/g, "\n");
     assert.deepEqual(missing, [], `Missing literals: ${missing.join(" | ")}`);
 
     for (const key of FORBIDDEN_KEYS) {

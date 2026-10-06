@@ -35,7 +35,7 @@ updated: 2026-09-13
 | CursorFigma | `163:11657` | см. `cursor-figma.md` |
 
 ## Состояния
-default; Plus/Minus — default / hover.
+default; Plus/Minus — default Black `#121214` / hover Gray_text `#888888` (Figma `55:9403`/`55:9402`, `55:9406`/`55:9405`).
 
 ## Токены
 | Свойство | Токен |

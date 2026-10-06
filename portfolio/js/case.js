@@ -1,6 +1,6 @@
 /**
  * Portfolio case page: segments, FAB scroll-to-top, side-nav active, mobile drawer,
- * section fade-up reveal (setupCaseReveal).
+ * section fade-up reveal (setupCaseReveal), highlight marks (setupCaseMarks).
  */
 
 import { contentMap } from "../../shared/content.js";
@@ -91,6 +91,9 @@ const CASE_IMG_MARKER_RE = /^\[\[img:([a-zA-Z0-9._-]+)(?:\|([^\]]*))?\]\]$/;
 /** Inline JTBD grid marker: [[jtbd:gridKey]] → contentMap.jtbdGrids[gridKey]. */
 const CASE_JTBD_MARKER_RE = /^\[\[jtbd:([a-zA-Z0-9._-]+)\]\]$/;
 
+/** Inline highlighter: ==phrase== → <mark class="case-page__mark"><span>phrase</span></mark>. */
+const CASE_MARK_RE = /==([\s\S]+?)==/g;
+
 /** @type {Record<string, string>} */
 const CASE_CARD_PREFIX = {
   phish: "card.a",
@@ -110,6 +113,43 @@ const CONTACT_ACTIONS = [
  */
 function textOf(value) {
   return fixHangingPrepositions(typeof value === "string" ? value : "");
+}
+
+/**
+ * Fills an element with already-typographed text. `==phrase==` becomes a
+ * highlighter mark; without markers the node stays textContent.
+ *
+ * @param {HTMLElement} el
+ * @param {string} text
+ */
+function setMarkedText(el, text) {
+  const source = typeof text === "string" ? text : "";
+  if (!source.includes("==")) {
+    el.textContent = source;
+    return;
+  }
+  el.replaceChildren();
+  CASE_MARK_RE.lastIndex = 0;
+  let lastIndex = 0;
+  let match = CASE_MARK_RE.exec(source);
+  while (match) {
+    if (match.index > lastIndex) {
+      el.appendChild(
+        document.createTextNode(source.slice(lastIndex, match.index))
+      );
+    }
+    const mark = document.createElement("mark");
+    mark.className = "case-page__mark";
+    const span = document.createElement("span");
+    span.textContent = match[1];
+    mark.appendChild(span);
+    el.appendChild(mark);
+    lastIndex = match.index + match[0].length;
+    match = CASE_MARK_RE.exec(source);
+  }
+  if (lastIndex < source.length) {
+    el.appendChild(document.createTextNode(source.slice(lastIndex)));
+  }
 }
 
 /**
@@ -158,7 +198,7 @@ function setBodyText(selector, text) {
   const hasHeadings = parts.some((part) => /^##\s+/.test(part));
   const parent = el.parentElement;
   if (!hasHeadings && parts.length <= 1) {
-    el.textContent = fixed;
+    setMarkedText(el, fixed);
     return;
   }
   if (!hasHeadings) {
@@ -168,19 +208,19 @@ function setBodyText(selector, text) {
       for (const part of parts) {
         const node = document.createElement("p");
         node.className = className;
-        node.textContent = part;
+        setMarkedText(node, part);
         frag.appendChild(node);
       }
       parent.insertBefore(frag, el);
       el.remove();
       return;
     }
-    el.textContent = fixed;
+    setMarkedText(el, fixed);
     el.style.whiteSpace = "pre-line";
     return;
   }
   if (!(parent instanceof HTMLElement)) {
-    el.textContent = fixed;
+    setMarkedText(el, fixed);
     return;
   }
   const className = el.className;
@@ -189,7 +229,7 @@ function setBodyText(selector, text) {
     const heading = part.match(/^##\s+(.+)$/);
     const node = document.createElement(heading ? "h3" : "p");
     node.className = heading ? "case-page__text-sub" : className;
-    node.textContent = heading ? heading[1] : part;
+    setMarkedText(node, heading ? heading[1] : part);
     frag.appendChild(node);
   }
   parent.insertBefore(frag, el);
@@ -219,13 +259,63 @@ function appendBodyParagraphs(container, body, className = "case-page__text-body
     if (longOnly) {
       el.setAttribute("data-case-long-only", "");
     }
-    el.textContent = heading ? heading[1] : part;
+    setMarkedText(el, heading ? heading[1] : part);
     container.appendChild(el);
   }
 }
 
 /**
+ * One JTBD cell card: bold prefix + gray rest (desktop Fill_Block).
+ *
+ * @param {{ prefix?: string, text?: string }} cell
+ * @returns {HTMLElement}
+ */
+function createJtbdCellCard(cell) {
+  const card = document.createElement("div");
+  card.className =
+    "case-page__fill-block case-page__fill-block--compact case-page__jtbd-cell";
+  const p = document.createElement("p");
+  p.className = "case-page__jtbd-text";
+  const prefix = document.createElement("span");
+  prefix.className = "case-page__jtbd-prefix";
+  prefix.textContent = textOf(cell?.prefix || "");
+  const rest = document.createElement("span");
+  rest.className = "case-page__jtbd-rest";
+  rest.textContent = textOf(cell?.text || "");
+  p.append(prefix, rest);
+  card.appendChild(p);
+  return card;
+}
+
+/**
+ * Mobile Job card (Figma 561:18198): one Fill_Block, inline Когда / Я хочу / Чтобы.
+ *
+ * @param {Array<{ prefix?: string, text?: string }>} cells
+ * @returns {HTMLElement}
+ */
+function createJtbdMergedCard(cells) {
+  const card = document.createElement("div");
+  card.className =
+    "case-page__fill-block case-page__fill-block--compact case-page__jtbd-merged";
+  const p = document.createElement("p");
+  p.className = "case-page__jtbd-text";
+  cells.forEach((cell, i) => {
+    if (i > 0) p.appendChild(document.createTextNode(" "));
+    const prefix = document.createElement("span");
+    prefix.className = "case-page__jtbd-prefix";
+    prefix.textContent = textOf(cell?.prefix || "");
+    const rest = document.createElement("span");
+    rest.className = "case-page__jtbd-rest";
+    rest.textContent = textOf(cell?.text || "");
+    p.append(prefix, rest);
+  });
+  card.appendChild(p);
+  return card;
+}
+
+/**
  * Builds JTBD card grid (Figma TextBlockSecond / Fill_Block rows).
+ * Desktop: 3 cards per row. ≤768: one merged card per job (561:18198).
  *
  * @param {string} gridKey
  * @returns {HTMLElement | null}
@@ -245,20 +335,9 @@ function createJtbdGrid(gridKey) {
     rowEl.className = "case-page__jtbd-row";
     rowEl.setAttribute("role", "listitem");
     for (const cell of cells) {
-      const card = document.createElement("div");
-      card.className = "case-page__fill-block case-page__fill-block--compact";
-      const p = document.createElement("p");
-      p.className = "case-page__jtbd-text";
-      const prefix = document.createElement("span");
-      prefix.className = "case-page__jtbd-prefix";
-      prefix.textContent = textOf(cell?.prefix || "");
-      const rest = document.createElement("span");
-      rest.className = "case-page__jtbd-rest";
-      rest.textContent = textOf(cell?.text || "");
-      p.append(prefix, rest);
-      card.appendChild(p);
-      rowEl.appendChild(card);
+      rowEl.appendChild(createJtbdCellCard(cell));
     }
+    rowEl.appendChild(createJtbdMergedCard(cells));
     grid.appendChild(rowEl);
   }
   return grid.childElementCount > 0 ? grid : null;
@@ -292,7 +371,11 @@ function createCasePicture(assetKey, caption = "") {
   if (fullSrc && fullSrc !== img.src) {
     img.dataset.fullSrc = fullSrc;
   }
-  img.alt = textOf(caption) || assetKey;
+  img.alt =
+    textOf(caption) ||
+    (assetKey === "case.phish.competitors"
+      ? "Референсы дашбордов KnowBe4, Hoxhunt, Антифишинг и\u00A0iSpring"
+      : assetKey);
   img.decoding = "async";
   // Eager: lazy + height:auto caused 0×0 boxes that never entered the
   // viewport, so zoomable case pictures stayed blank and skew reveal layout.
@@ -365,7 +448,7 @@ function appendRichBody(
     const heading = part.match(/^##\s+(.+)$/);
     const el = document.createElement(heading ? "h3" : "p");
     el.className = heading ? "case-page__text-sub" : className;
-    el.textContent = heading ? heading[1] : part;
+    setMarkedText(el, heading ? heading[1] : part);
     if (heading && !mergeHeadings) {
       block = null;
     }
@@ -608,8 +691,8 @@ function fillContent(content, caseId) {
 
   const hero = document.querySelector("[data-case='hero-img']");
   const picture = document.querySelector("[data-case='picture']");
-  // Zoom/lightbox opted-in per case (InnoPhish). Dragon hero stays as before.
-  if (caseId === "phish" && picture instanceof HTMLElement) {
+  // Zoom/lightbox opted-in for InnoPhish and InnoDragon heroes.
+  if ((caseId === "phish" || caseId === "dragon") && picture instanceof HTMLElement) {
     picture.setAttribute("data-case-zoomable", "");
   }
   if (hero instanceof HTMLImageElement) {
@@ -1193,8 +1276,113 @@ export function setupCaseReveal() {
   };
 }
 
+/**
+ * Plays the highlighter sweep once when a `.case-page__mark` enters the
+ * viewport. Marks already on screen still animate via rAF (first paint at
+ * `--highlighted: 0`).
+ *
+ * @returns {() => void} teardown
+ */
+export function setupCaseMarks() {
+  if (typeof document === "undefined" || typeof window === "undefined") {
+    return () => {};
+  }
+  if (!document.body?.classList?.contains("case-page")) {
+    return () => {};
+  }
+
+  const marks = Array.from(
+    document.querySelectorAll(".case-page__mark")
+  ).filter((el) => el instanceof HTMLElement);
+  if (marks.length === 0) {
+    return () => {};
+  }
+
+  /** @type {Set<HTMLElement>} */
+  const played = new Set();
+  /** @type {number[]} */
+  const rafIds = [];
+  let cancelled = false;
+  /** @type {IntersectionObserver | null} */
+  let observer = null;
+
+  /**
+   * @param {HTMLElement} mark
+   */
+  function play(mark) {
+    if (cancelled || played.has(mark)) {
+      return;
+    }
+    played.add(mark);
+    observer?.unobserve(mark);
+    const id = window.requestAnimationFrame(() => {
+      if (cancelled) {
+        return;
+      }
+      mark.style.setProperty("--highlighted", "1");
+    });
+    rafIds.push(id);
+  }
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) {
+          continue;
+        }
+        if (entry.target instanceof HTMLElement) {
+          play(entry.target);
+        }
+      }
+    },
+    { root: null, threshold: 0 }
+  );
+
+  for (const mark of marks) {
+    observer.observe(mark);
+  }
+
+  const kickId = window.requestAnimationFrame(() => {
+    if (cancelled) {
+      return;
+    }
+    const vh = window.innerHeight || 0;
+    const vw = window.innerWidth || 0;
+    for (const mark of marks) {
+      if (played.has(mark)) {
+        continue;
+      }
+      const rect = mark.getBoundingClientRect();
+      const inView =
+        rect.width > 0 &&
+        rect.height > 0 &&
+        rect.bottom > 0 &&
+        rect.right > 0 &&
+        rect.top < vh &&
+        rect.left < vw;
+      if (inView) {
+        play(mark);
+      }
+    }
+  });
+  rafIds.push(kickId);
+
+  return () => {
+    cancelled = true;
+    for (const id of rafIds) {
+      window.cancelAnimationFrame(id);
+    }
+    observer?.disconnect();
+    observer = null;
+  };
+}
+
 const LIGHTBOX_SCALE_MAX = 8;
 const LIGHTBOX_ZOOM_FACTOR = 1.25;
+/** Inset for the initial contain-fit so the full bitmap stays on-screen. */
+const LIGHTBOX_FIT_PAD_X = 24;
+const LIGHTBOX_FIT_PAD_TOP = 72;
+const LIGHTBOX_FIT_PAD_BOTTOM = 88;
 
 /**
  * Builds DS tapper (+/−) for case lightbox zoom.
@@ -1246,6 +1434,7 @@ function createLightboxTapper() {
     imgDefault.alt = "";
     imgDefault.width = 24;
     imgDefault.height = 24;
+    imgDefault.draggable = false;
 
     const imgHover = document.createElement("img");
     imgHover.className = "ds-icon__state ds-icon__state--hover";
@@ -1253,6 +1442,7 @@ function createLightboxTapper() {
     imgHover.alt = "";
     imgHover.width = 24;
     imgHover.height = 24;
+    imgHover.draggable = false;
 
     icon.appendChild(imgDefault);
     icon.appendChild(imgHover);
@@ -1334,17 +1524,27 @@ function setupCaseLightbox() {
   function draw() {
     if (!overlayImg) return;
     clampPan();
-    overlayImg.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${k})`;
+    const { w: nw, h: nh } = naturalSize();
+    overlayImg.style.width = `${Math.max(1, Math.round(nw * k))}px`;
+    overlayImg.style.height = `${Math.max(1, Math.round(nh * k))}px`;
+    overlayImg.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
     const zoomed = k > fit * 1.001;
     stage?.classList.toggle("is-zoomed", zoomed);
     if (tapper) {
       const out = tapper.querySelector('[data-tapper-action="zoom-out"]');
       const inn = tapper.querySelector('[data-tapper-action="zoom-in"]');
+      // Use aria-disabled (not native disabled): native disabled swallows
+      // activation and can let the click fall through to the overlay under the
+      // tapper (padding gutter), which closes the lightbox — left/− feels broken.
       if (out instanceof HTMLButtonElement) {
-        out.disabled = k <= fit * 1.001;
+        const atMin = k <= fit * 1.001;
+        out.disabled = false;
+        out.setAttribute("aria-disabled", atMin ? "true" : "false");
       }
       if (inn instanceof HTMLButtonElement) {
-        inn.disabled = k >= LIGHTBOX_SCALE_MAX * 0.999;
+        const atMax = k >= LIGHTBOX_SCALE_MAX * 0.999;
+        inn.disabled = false;
+        inn.setAttribute("aria-disabled", atMax ? "true" : "false");
       }
     }
   }
@@ -1357,10 +1557,17 @@ function setupCaseLightbox() {
     const box = stage.getBoundingClientRect();
     const { w, h } = naturalSize();
     if (!w || !h || box.width <= 0 || box.height <= 0) return;
-    fit = Math.min(box.width / w, box.height / h, 1);
+    const availW = Math.max(1, box.width - LIGHTBOX_FIT_PAD_X * 2);
+    const availH = Math.max(
+      1,
+      box.height - LIGHTBOX_FIT_PAD_TOP - LIGHTBOX_FIT_PAD_BOTTOM
+    );
+    fit = Math.min(availW / w, availH / h, 1);
     k = fit;
-    x = (box.width - w * k) / 2;
-    y = (box.height - h * k) / 2;
+    const dw = Math.max(1, Math.round(w * k));
+    const dh = Math.max(1, Math.round(h * k));
+    x = LIGHTBOX_FIT_PAD_X + (availW - dw) / 2;
+    y = LIGHTBOX_FIT_PAD_TOP + (availH - dh) / 2;
     draw();
   }
 
@@ -1513,21 +1720,78 @@ function setupCaseLightbox() {
     });
 
     tapper = createLightboxTapper();
-    tapper.addEventListener("click", (event) => {
+
+    /**
+     * Resolve ± from event target, or by X inside the chrome (half split).
+     *
+     * @param {Event} event
+     * @returns {HTMLElement | null}
+     */
+    function tapperHitFromEvent(event) {
+      const target = event.target;
+      if (target instanceof Element) {
+        const direct = target.closest("[data-tapper-action]");
+        if (direct instanceof HTMLElement) return direct;
+      }
+      if (!tapper || !("clientX" in event)) return null;
+      const box = tapper.getBoundingClientRect();
+      const x = /** @type {{ clientX: number }} */ (event).clientX;
+      const action = x < box.left + box.width / 2 ? "zoom-out" : "zoom-in";
+      const hit = tapper.querySelector(`[data-tapper-action="${action}"]`);
+      return hit instanceof HTMLElement ? hit : null;
+    }
+
+    /**
+     * @param {Event} event
+     * @returns {void}
+     */
+    function onTapperActivate(event) {
+      event.preventDefault();
       event.stopPropagation();
-      const hit =
-        event.target instanceof Element
-          ? event.target.closest("[data-tapper-action]")
-          : null;
+      const hit = tapperHitFromEvent(event);
       if (!(hit instanceof HTMLElement)) return;
+      if (hit.getAttribute("aria-disabled") === "true") return;
       const action = hit.getAttribute("data-tapper-action");
       if (action === "zoom-in") {
-        event.preventDefault();
         zoomBy(LIGHTBOX_ZOOM_FACTOR);
       } else if (action === "zoom-out") {
-        event.preventDefault();
         zoomBy(1 / LIGHTBOX_ZOOM_FACTOR);
       }
+    }
+
+    /** Swallow the synthetic click after pointerup already zoomed. */
+    let tapperPointerHandled = false;
+    /** @type {number | null} */
+    let tapperActivePointerId = null;
+
+    // Eat pointers on chrome so stage/overlay never treat ± as backdrop.
+    // Activate on pointerup — click alone can be lost to native img-drag.
+    tapper.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+      tapperPointerHandled = false;
+      tapperActivePointerId = event.pointerId;
+    });
+    tapper.addEventListener("pointerup", (event) => {
+      if (event.button != null && event.button !== 0) return;
+      if (tapperActivePointerId !== event.pointerId) return;
+      tapperActivePointerId = null;
+      tapperPointerHandled = true;
+      onTapperActivate(event);
+    });
+    tapper.addEventListener("pointercancel", (event) => {
+      if (tapperActivePointerId === event.pointerId) {
+        tapperActivePointerId = null;
+      }
+    });
+    tapper.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (tapperPointerHandled) {
+        tapperPointerHandled = false;
+        return;
+      }
+      // Keyboard / non-pointer activation.
+      onTapperActivate(event);
     });
 
     overlay.appendChild(closeBtn);
@@ -1584,6 +1848,8 @@ function setupCaseLightbox() {
       overlayImg.removeAttribute("src");
       overlayImg.alt = "";
       overlayImg.style.transform = "";
+      overlayImg.style.width = "";
+      overlayImg.style.height = "";
     }
     k = 1;
     fit = 1;
@@ -1691,6 +1957,7 @@ export function initCasePage() {
   const caseId = readCaseId();
   fillContent(contentMap, caseId);
   const unbindReveal = setupCaseReveal();
+  const unbindMarks = setupCaseMarks();
   const unbindLightbox = setupCaseLightbox();
 
   const segments = document.querySelector(".ds-segments");
@@ -1725,6 +1992,7 @@ export function initCasePage() {
 
   return () => {
     unbindReveal();
+    unbindMarks();
     unbindLightbox();
     unbindSegments();
     unbindFab();

@@ -33,7 +33,7 @@ const REQUIRED_PRODUCT_FILES = [
 const DEMO_CONTENT_LITERALS = [
   "Аня Ясинская",
   "Продуктовый дизайнер",
-  "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.",
+  "Создаю чистые интерфейсы.\nБлагодаря бэкграунду программиста\nлегко нахожу общий язык\nс\u00A0разработкой и\u00A0стейкхолдерами.\nОтветственно решаю продуктовые\nзадачи и\u00A0постоянно развиваюсь.",
   "B2B",
   "Написать",
   "Резюме",
@@ -246,7 +246,7 @@ describe("TC-E2E-02 design/ scope ban", () => {
 
 describe("Regression DemoContent (shell TC-E2E-01)", () => {
   it("content-package demo literals present in index.html", () => {
-    const html = fs.readFileSync(INDEX_PATH, "utf8");
+    const html = fs.readFileSync(INDEX_PATH, "utf8").replace(/\r\n/g, "\n");
     const missing = DEMO_CONTENT_LITERALS.filter((s) => !html.includes(s));
     assert.deepEqual(missing, [], `Missing DemoContent: ${missing.join(" | ")}`);
   });

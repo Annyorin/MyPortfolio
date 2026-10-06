@@ -63,7 +63,7 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Button / primary hover | `158:11312` | xboMnqU5JURL0xlzxN7edN | Primary hover | Property 1=primary, 2=hover | `components/button.md` | synced | 2026-09-08 |
 | Button / Text default | `226:15947` | xboMnqU5JURL0xlzxN7edN | Text покой · no fill · H2 | Property 1=Text, 2=default | `components/button.md` | synced | 2026-09-13 |
 | Button / Text hover | `227:15952` | xboMnqU5JURL0xlzxN7edN | Text hover · Gray_text | Property 1=Text, 2=hover | `components/button.md` | synced | 2026-09-13 |
-| Tapper | `41:1311` | xboMnqU5JURL0xlzxN7edN | Кнопка 104×40 | default | `components/tapper.md` | synced | 2026-09-08 |
+| Tapper | `41:1311` | xboMnqU5JURL0xlzxN7edN | Кнопка 104×40 · ± Black / hover Gray_text | default | `components/tapper.md` | synced | 2026-10-06 |
 | Stiker | `41:1517` | xboMnqU5JURL0xlzxN7edN | Бейдж «Обо мне» 81×32 | default | `components/stiker.md` | synced | 2026-09-08 |
 | Tooltip | `92:11490` | xboMnqU5JURL0xlzxN7edN | Подсказка pill | default | `components/tooltip.md` | synced | 2026-09-08 |
 | Hint | `251:21308` | xboMnqU5JURL0xlzxN7edN | Белая tip у стикеров Macbook · max ~252 · radius 0 25 25 25 | default | `components/hint.md` | synced | 2026-09-14 |
@@ -111,7 +111,7 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Группа | node-id / коллекция | Назначение | Локальный файл | Синк |
 |--------|---------------------|------------|----------------|------|
 | Color | Ui kit `41:11520` | Primary, Secondary, White, Black, Gray_text, Gray_dark, GrayL, Primary_hover | `foundations/color.md` | 2026-09-08 |
-| Typography | Ui kit `41:11520` | H1, H2, Text/Text1, Caption (Inter); Text2 14/18 на SegmentsControl | `foundations/typography.md` | 2026-09-08 |
+| Typography | Ui kit `41:11520` / `41:1558` | H1, H2, Text/Text1, Text2 14/20, Caption (Inter) | `foundations/typography.md` | 2026-10-06 |
 | Effects | Ui kit `41:11520` | Shadow (Card default+hover, Sidebar, SegmentsControl pill); Mobile (MenuMobile); вв (не к Card); FAB blur 4.5 | `foundations/elevation.md` | 2026-09-13 |
 
 ## Страницы библиотеки

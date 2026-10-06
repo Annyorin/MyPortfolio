@@ -1,5 +1,6 @@
 /**
  * Input Gesture Layer — normalize keyboard/wheel/pointer into CameraController commands.
+ * Wheel zooms to the cursor (same as Ctrl/Meta+wheel). Keyboard hotkeys unchanged.
  * Does not rebuild the scene graph.
  */
 
@@ -299,27 +300,20 @@ export function bindInput(viewportEl, camera, inputMode = {}) {
    * @param {WheelEvent} e
    */
   const onWheel = (e) => {
-    const mod = Boolean(e.ctrlKey || e.metaKey);
     e.preventDefault?.();
-
-    if (mod) {
-      const rect =
-        typeof /** @type {{getBoundingClientRect?: Function}} */ (viewportEl)
-          .getBoundingClientRect === "function"
-          ? /** @type {{getBoundingClientRect: Function}} */ (viewportEl).getBoundingClientRect()
-          : { left: 0, top: 0 };
-      const pivot = {
-        x: e.clientX - (rect.left || 0),
-        y: e.clientY - (rect.top || 0),
-      };
-      const direction = e.deltaY < 0 ? 1 : e.deltaY > 0 ? -1 : 0;
-      if (direction !== 0) {
-        camera.zoomBy?.(direction * zoomStep() * wheelZoomScale(e), pivot);
-      }
-      return;
+    const rect =
+      typeof /** @type {{getBoundingClientRect?: Function}} */ (viewportEl)
+        .getBoundingClientRect === "function"
+        ? /** @type {{getBoundingClientRect: Function}} */ (viewportEl).getBoundingClientRect()
+        : { left: 0, top: 0 };
+    const pivot = {
+      x: e.clientX - (rect.left || 0),
+      y: e.clientY - (rect.top || 0),
+    };
+    const direction = e.deltaY < 0 ? 1 : e.deltaY > 0 ? -1 : 0;
+    if (direction !== 0) {
+      camera.zoomBy?.(direction * zoomStep() * wheelZoomScale(e), pivot);
     }
-
-    camera.panBy?.(-e.deltaX, -e.deltaY);
   };
 
   /**

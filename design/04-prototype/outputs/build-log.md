@@ -2,7 +2,7 @@
 type: log
 env: 04-prototype
 status: active
-updated: 2026-10-01
+updated: 2026-10-05
 ---
 
 # Build log
@@ -11,6 +11,8 @@ updated: 2026-10-01
 
 | Дата | Экран | node-id | Версия зеркала | Примечание |
 |------|-------|---------|----------------|------------|
+| 2026-10-05 | **InnoPhish · Реакции · фильтр подразделений** | pending | — (до DS/Figma) | `wireframes/reactions-dept-filter-wireframe.html` · кадры DB-REACT-FILT-1 / 2 / 3. Топ-5 критичных → picker (гипотеза: чип + дерево) → срез уязвимых отдела. Ссылка из `reactions-tab-wireframe.html`. Figma не собирался. Зеркало DS не трогали. |
+| 2026-10-05 | **InnoPhish · блок скорость реакции на атаки** | pending | — (до DS/Figma) | `wireframes/attack-reaction-speed-wireframe.html` · кадры IP-SPD-1 / IP-SPD-1b / IP-SPD-EMPTY / IP-SPD-SPARSE. Lo-fi каркас блока (не вся сводка). Figma не собирался. Зеркало DS не трогали. |
 | 2026-10-01 | **InnoPhish · 3 вкладки сводки** desktop wireframes + PNG | pending | — (до DS/Figma) | `wireframes/innophish-dashboard-wireframes.html` · кадры IP-ATT-1 / IP-REA-1 / IP-TRN-1 / IP-PDF-1. PNG: `outputs/innophish-wireframes/01-tab-attacks.png` … `03-tab-training.png` (+ опц. `04-pdf-ciso.png`, full board). Figma не собирался. |
 | 2026-10-01 | **InnoPhish · IA v2 + User Flow** (FigJam) | `69:289` (IA), `69:414` (UF v2), `71:416` (as-is), `71:464` (Почему v2) | — (IA/flow, не UI) | UF-Portfolio `apRL892T8oK9XfD7YvbCRe`. Меню + 3 вкладки Сводки; UF v2; as-is EvilGo; блок 2 vs 3 вкладки. |
 | 2026-09-30 | **Desktop wireframe board** · сводка «А» + график v1 | pending | — (до DS/Figma) | Обновлён `wireframes/dashboard-wireframes-desktop.html`: DB-IB-D с графиком (индекс + серия обучения + │), DB-TIP-D (TIP-VERT), legend train off, связки переходов. Синхрон: `dashboard-ib-home-wireframe.html`, `risk-index-chart-wireframe.html` §1b, IA §7 + `DB-TIP-D`. Figma не собирался. |
@@ -64,6 +66,8 @@ updated: 2026-10-01
 | Wireframe board дашборд (desktop) | `wireframes/dashboard-wireframes-desktop.html` (+ `board-desktop.css`) · 2026-09-30: +TIP-VERT, график v1 |
 | Chart index / hover rules | `wireframes/risk-index-chart-wireframe.html` · `wireframes/chart-hover-rules-wireframe.html` |
 | IB home detail | `wireframes/dashboard-ib-home-wireframe.html` |
+| InnoPhish · скорость реакции | `wireframes/attack-reaction-speed-wireframe.html` · IP-SPD-1 / 1b / EMPTY / SPARSE |
+| InnoPhish · Реакции · фильтр отделов | `wireframes/reactions-dept-filter-wireframe.html` · DB-REACT-FILT-1 / 2 / 3 |
 
 ## Заблокировано контрактами
 | Контракт | Чего ждём |
