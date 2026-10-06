@@ -17,7 +17,7 @@ updated: 2026-09-26
 | Chip | `chip.md` | synced | 2026-09-08 | `40:1171` |
 | Link | `link.md` | synced | 2026-09-08 | `40:1199` |
 | Button | `button.md` | synced | 2026-09-13 | `158:11315` |
-| Tapper | `tapper.md` | synced | 2026-09-08 | `41:1311` |
+| Tapper | `tapper.md` | synced | 2026-10-06 | `41:1311` |
 | Stiker | `stiker.md` | synced | 2026-09-08 | `41:1517` |
 | Tooltip | `tooltip.md` | synced | 2026-09-08 | `92:11490` |
 | Hint | `hint.md` | synced | 2026-09-14 | `251:21308` |

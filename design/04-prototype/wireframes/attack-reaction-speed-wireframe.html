@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InnoPhish — скорость реакции на&nbsp;атаки — lo-fi</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  /* Локальная геометрия блока — палитра только из board.css */
+  .cell.block{width:560px}
+  .desk-frame.block-frame{
+    width:560px;
+    height:auto;
+    min-height:0;
+    flex-direction:column;
+  }
+  .desk-frame.block-frame .desk-main{padding:12px; gap:8px}
+  .seg-tabs{
+    display:flex; gap:0;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff; width:fit-content;
+  }
+  .seg-tabs span{
+    padding:6px 12px; font-size:11px; color:var(--mut);
+    border-right:1px solid var(--line);
+  }
+  .seg-tabs span:last-child{border-right:none}
+  .seg-tabs span.on{background:var(--ink); color:#fff; font-weight:700}
+  .attack-list{
+    display:flex; flex-direction:column; gap:0;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff;
+  }
+  .attack-list .arow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .attack-list .arow:last-child{border-bottom:none}
+  .attack-list .arow.head{
+    background:var(--block); color:var(--mut); font-weight:600; font-size:10px;
+  }
+  .attack-list .c-name{flex:2.4; min-width:0}
+  .attack-list .c-meta{flex:.85; color:var(--mut); font-size:10px}
+  .attack-list .c-med{flex:.95; text-align:right; font-variant-numeric:tabular-nums}
+  .attack-list .c-min{flex:.95; text-align:right; font-variant-numeric:tabular-nums; color:var(--mut)}
+  .attack-list .c-med .mv{font-size:16px; font-weight:700; margin-top:0}
+  .attack-list .c-min .ms{font-size:11px; font-weight:500}
+  .attack-list .muted .mv,
+  .attack-list .muted{color:var(--mut); font-weight:500}
+  .org-metric{display:flex; align-items:baseline; justify-content:space-between; gap:12px}
+  .org-metric .mv{font-size:22px; font-weight:700; letter-spacing:-.02em}
+  .head-row{display:flex; align-items:flex-start; justify-content:space-between; gap:8px; flex-wrap:wrap}
+  .logic ul{margin:0 0 0 16px; line-height:1.55}
+  .logic li{margin-bottom:8px}
+  .logic li:last-child{margin-bottom:0}
+</style>
+</head>
+<body>
+
+<h1>InnoPhish — скорость реакции на&nbsp;атаки</h1>
+<p class="sub">Отдельный блок вкладки «Атаки» на&nbsp;сводке: время до&nbsp;репорта (фидбэк «это&nbsp;фишинг») по&nbsp;учебным атакам. Список атак, не&nbsp;людей. Паттерн time-to-report. Это структура, не&nbsp;визуальный стиль. Рядом: <a href="innophish-dashboard-wireframes.html">сводка 3 вкладки</a> · <a href="dashboard-ib-home-wireframe.html">главная ИБ</a>.</p>
+
+<div class="princ">
+  <span>Медиана — главное число, среднее не&nbsp;показываем</span>
+  <span>Min только внутри атаки / шаблона</span>
+  <span>Репорт и&nbsp;клик — разные срезы</span>
+  <span>Без&nbsp;лидерборда людей и&nbsp;общего рекорда</span>
+  <span>ФИО не&nbsp;на&nbsp;сводке</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Чтение блока на&nbsp;сводке</div>
+  <div><span class="dot" style="background:var(--f4)">4</span> Клик по&nbsp;строке → раздел Атаки</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>Сводка</b></span>
+  <span class="arr">→</span>
+  <span class="tabs">
+    <span class="tab" style="border-color:var(--ink); background:#fff; font-weight:700">Атаки</span>
+    <span class="tab">Реакции</span>
+    <span class="tab">Обучение</span>
+  </span>
+  <span class="arr">→</span>
+  <span class="node"><b>этот блок</b> · скорость реакции</span>
+</div>
+
+<section>
+  <h2>1. Состояния блока</h2>
+  <p>Один блок, четыре ячейки. Срез «Репорт» — канон. «Клик» — второй срез, не&nbsp;в&nbsp;одной ячейке с&nbsp;репортом.</p>
+
+  <div class="row">
+
+    <!-- IP-SPD-1 -->
+    <div class="cell block">
+      <div class="desk-frame block-frame">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <div class="desk-main">
+          <div class="desk-panel">
+            <div class="head-row">
+              <div>
+                <div class="pt">Сводка · вкладка Атаки</div>
+                <div class="h-title" style="font-size:15px; font-weight:700; margin-top:2px">Скорость реакции на&nbsp;атаки</div>
+              </div>
+              <div class="seg-tabs" aria-label="Срез сигнала">
+                <span class="on">Репорт</span>
+                <span>Клик</span>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div class="org-metric">
+                <div>
+                  <div class="ml">Медиана репорта по&nbsp;всем атакам в&nbsp;срезе</div>
+                  <div class="note" style="margin-top:2px">467 человек с&nbsp;репортом · не&nbsp;все, кому доставлено</div>
+                </div>
+                <div class="mv">22 мин</div>
+              </div>
+            </div>
+
+            <div class="attack-list">
+              <div class="arow head">
+                <span class="c-name">Атака · шаблон</span>
+                <span class="c-meta">Дата</span>
+                <span class="c-med">Медиана</span>
+                <span class="c-min">Самая быстрая</span>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Кликфикс Яндекс Телемост Бэкдор</b><br>
+                  <span class="note">clickfix · 186 репортов</span>
+                </div>
+                <div class="c-meta">12 сен</div>
+                <div class="c-med"><div class="mv">18 мин</div></div>
+                <div class="c-min"><div class="ms">1 м 42 с</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Кликфикс SSO Битрикс</b><br>
+                  <span class="note">sso / credential · 142 репорта</span>
+                </div>
+                <div class="c-meta">28 авг</div>
+                <div class="c-med"><div class="mv">24 мин</div></div>
+                <div class="c-min"><div class="ms">2 м 10 с</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>ОС логин</b><br>
+                  <span class="note">os credential · 98 репортов</span>
+                </div>
+                <div class="c-meta">14 июл</div>
+                <div class="c-med"><div class="mv">31 мин</div></div>
+                <div class="c-min"><div class="ms">3 м 05 с</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Вложение Акт сверки 1С</b><br>
+                  <span class="note">вложение / макрос · 41 репорт</span>
+                  <span class="chip" style="margin-top:4px">шаблон сложнее</span>
+                </div>
+                <div class="c-meta">22 мая</div>
+                <div class="c-med"><div class="mv">2 ч 14 мин</div></div>
+                <div class="c-min"><div class="ms">18 мин</div></div>
+              </div>
+            </div>
+
+            <div class="note">Клик по&nbsp;строке открывает раздел Атаки. ФИО рекордсменов — в&nbsp;tooltip / drill.</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">IP-SPD-1 · Репорт · заполненный</div>
+        <div class="d">Четыре учебные атаки. Медиана крупно, min мельче и&nbsp;только у&nbsp;строки. Над&nbsp;списком — орг-медиана среза, не&nbsp;общий минимум. Высокая медиана у&nbsp;«Вложение Акт сверки 1С» — шаблон сложнее обнаруживается.</div>
+      </div>
+    </div>
+
+    <!-- IP-SPD-1b -->
+    <div class="cell block">
+      <div class="desk-frame block-frame">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <div class="desk-main">
+          <div class="desk-panel">
+            <div class="head-row">
+              <div>
+                <div class="pt">Сводка · вкладка Атаки</div>
+                <div class="h-title" style="font-size:15px; font-weight:700; margin-top:2px">Скорость реакции на&nbsp;атаки</div>
+              </div>
+              <div class="seg-tabs" aria-label="Срез сигнала">
+                <span>Репорт</span>
+                <span class="on">Клик</span>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div class="org-metric">
+                <div>
+                  <div class="ml">Медиана клика по&nbsp;всем атакам в&nbsp;срезе</div>
+                  <div class="note" style="margin-top:2px">412 человек с&nbsp;кликом · быстрый клик = риск</div>
+                </div>
+                <div class="mv">7 мин</div>
+              </div>
+            </div>
+
+            <div class="attack-list">
+              <div class="arow head">
+                <span class="c-name">Атака · шаблон</span>
+                <span class="c-meta">Дата</span>
+                <span class="c-med">Медиана</span>
+                <span class="c-min">Самая быстрая</span>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Кликфикс Яндекс Телемост Бэкдор</b><br>
+                  <span class="note">clickfix · 103 клика</span>
+                </div>
+                <div class="c-meta">12 сен</div>
+                <div class="c-med"><div class="mv">6 мин</div></div>
+                <div class="c-min"><div class="ms">48 с</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Кликфикс SSO Битрикс</b><br>
+                  <span class="note">sso / credential · 176 кликов</span>
+                </div>
+                <div class="c-meta">28 авг</div>
+                <div class="c-med"><div class="mv">8 мин</div></div>
+                <div class="c-min"><div class="ms">1 м 05 с</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>ОС логин</b><br>
+                  <span class="note">os credential · 213 кликов</span>
+                </div>
+                <div class="c-meta">14 июл</div>
+                <div class="c-med"><div class="mv">11 мин</div></div>
+                <div class="c-min"><div class="ms">1 м 22 с</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Вложение Акт сверки 1С</b><br>
+                  <span class="note">вложение / макрос · 88 кликов</span>
+                  <span class="chip" style="margin-top:4px">быстрый клик · риск</span>
+                </div>
+                <div class="c-meta">22 мая</div>
+                <div class="c-med"><div class="mv">3 мин</div></div>
+                <div class="c-min"><div class="ms">22 с</div></div>
+              </div>
+            </div>
+
+            <div class="note">Быстрый клик — риск, не&nbsp;«хорошо». Не&nbsp;смешивать с&nbsp;репортом в&nbsp;одной ячейке. Строка → раздел Атаки.</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">IP-SPD-1b · Клик · тот же&nbsp;список</div>
+        <div class="d">Тот же&nbsp;список атак, срез «Клик». Чип «Клик» активен. У&nbsp;сложного шаблона клики быстрее — это риск, не&nbsp;достижение. Медиана и&nbsp;min клика, без&nbsp;репорта в&nbsp;ячейке.</div>
+      </div>
+    </div>
+
+    <!-- IP-SPD-EMPTY -->
+    <div class="cell block">
+      <div class="desk-frame block-frame">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <div class="desk-main">
+          <div class="desk-panel">
+            <div class="head-row">
+              <div>
+                <div class="pt">Сводка · вкладка Атаки</div>
+                <div class="h-title" style="font-size:15px; font-weight:700; margin-top:2px">Скорость реакции на&nbsp;атаки</div>
+              </div>
+              <div class="seg-tabs" aria-label="Срез сигнала">
+                <span class="on">Репорт</span>
+                <span>Клик</span>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div class="org-metric">
+                <div>
+                  <div class="ml">Медиана репорта по&nbsp;всем атакам в&nbsp;срезе</div>
+                  <div class="note" style="margin-top:2px">Репортов ещё 0 · кампании уже идут</div>
+                </div>
+                <div class="mv muted" style="color:var(--mut); font-weight:500">—</div>
+              </div>
+            </div>
+
+            <div class="attack-list">
+              <div class="arow head">
+                <span class="c-name">Атака · шаблон</span>
+                <span class="c-meta">Дата</span>
+                <span class="c-med">Медиана</span>
+                <span class="c-min">Самая быстрая</span>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Кликфикс Яндекс Телемост Бэкдор</b><br>
+                  <span class="note">clickfix · 0 репортов · доставлено 1 142</span>
+                </div>
+                <div class="c-meta">12 сен</div>
+                <div class="c-med muted"><div class="mv">—</div></div>
+                <div class="c-min"><div class="ms">—</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Кликфикс SSO Битрикс</b><br>
+                  <span class="note">sso / credential · 0 репортов · 1 098</span>
+                </div>
+                <div class="c-meta">28 авг</div>
+                <div class="c-med muted"><div class="mv">—</div></div>
+                <div class="c-min"><div class="ms">—</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>ОС логин</b><br>
+                  <span class="note">os credential · 0 репортов · 1 120</span>
+                </div>
+                <div class="c-meta">14 июл</div>
+                <div class="c-med muted"><div class="mv">—</div></div>
+                <div class="c-min"><div class="ms">—</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Вложение Акт сверки 1С</b><br>
+                  <span class="note">вложение / макрос · 0 репортов · 980</span>
+                </div>
+                <div class="c-meta">22 мая</div>
+                <div class="c-med muted"><div class="mv">—</div></div>
+                <div class="c-min"><div class="ms">—</div></div>
+              </div>
+            </div>
+
+            <div class="note">Атаки есть, репортов ещё нет. Не&nbsp;путать с&nbsp;состоянием «нет кампаний».</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">IP-SPD-EMPTY · атаки есть, репортов 0</div>
+        <div class="d">Список кампаний на&nbsp;месте (имена, даты, шаблоны, delivered). Времена — прочерк. Это не&nbsp;пустая сводка без&nbsp;атак.</div>
+      </div>
+    </div>
+
+    <!-- IP-SPD-SPARSE -->
+    <div class="cell block">
+      <div class="desk-frame block-frame">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f4)">4</span>
+        </div>
+        <div class="desk-main">
+          <div class="desk-panel">
+            <div class="head-row">
+              <div>
+                <div class="pt">Сводка · вкладка Атаки</div>
+                <div class="h-title" style="font-size:15px; font-weight:700; margin-top:2px">Скорость реакции на&nbsp;атаки</div>
+              </div>
+              <div class="seg-tabs" aria-label="Срез сигнала">
+                <span class="on">Репорт</span>
+                <span>Клик</span>
+              </div>
+            </div>
+
+            <div class="metric">
+              <div class="org-metric">
+                <div>
+                  <div class="ml">Медиана репорта по&nbsp;всем атакам в&nbsp;срезе</div>
+                  <div class="note" style="margin-top:2px">3 репорта на&nbsp;срез · медиана ненадёжна</div>
+                </div>
+                <div class="mv muted" style="color:var(--mut); font-weight:500">—</div>
+              </div>
+            </div>
+
+            <div class="attack-list">
+              <div class="arow head">
+                <span class="c-name">Атака · шаблон</span>
+                <span class="c-meta">Дата</span>
+                <span class="c-med">Медиана</span>
+                <span class="c-min">Самая быстрая</span>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Кликфикс Яндекс Телемост Бэкдор</b><br>
+                  <span class="note">clickfix · 2 репорта</span>
+                  <span class="chip" style="margin-top:4px">мало событий</span>
+                </div>
+                <div class="c-meta">12 сен</div>
+                <div class="c-med muted"><div class="mv">—</div></div>
+                <div class="c-min"><div class="ms">4 м 12 с</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Кликфикс SSO Битрикс</b><br>
+                  <span class="note">sso / credential · 1 репорт</span>
+                  <span class="chip" style="margin-top:4px">мало событий</span>
+                </div>
+                <div class="c-meta">28 авг</div>
+                <div class="c-med muted"><div class="mv">—</div></div>
+                <div class="c-min"><div class="ms">11 мин</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>ОС логин</b><br>
+                  <span class="note">os credential · 0 репортов</span>
+                </div>
+                <div class="c-meta">14 июл</div>
+                <div class="c-med muted"><div class="mv">—</div></div>
+                <div class="c-min"><div class="ms">—</div></div>
+              </div>
+              <div class="arow">
+                <div class="c-name">
+                  <b>Вложение Акт сверки 1С</b><br>
+                  <span class="note">вложение / макрос · 0 репортов</span>
+                </div>
+                <div class="c-meta">22 мая</div>
+                <div class="c-med muted"><div class="mv">—</div></div>
+                <div class="c-min"><div class="ms">—</div></div>
+              </div>
+            </div>
+
+            <div class="note">Порог «мало событий»: меньше 3 репортов. Min можно показать с&nbsp;1 события. Медиану — нет.</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">IP-SPD-SPARSE · 1–2 репорта</div>
+        <div class="d">Медиана серым прочерком. Min на&nbsp;строках с&nbsp;событиями. Чип «мало событий». Орг-медиана тоже «—»: трёх точек на&nbsp;срез мало.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>2. Невидимая логика</h2>
+  <p>Правила, которых нет на&nbsp;каркасе, но&nbsp;их нельзя потерять между&nbsp;флоу и&nbsp;кодом.</p>
+  <div class="desk-panel logic" style="max-width:920px">
+    <ul class="note">
+      <li><b>Почему не&nbsp;среднее.</b> Выбросы (очень поздний репорт) ломают среднее. В&nbsp;UI среднее не&nbsp;пишем. Репрезентативное число — медиана time-to-report.</li>
+      <li><b>Почему не&nbsp;общий min.</b> Один рекорд «самая быстрая реакция по&nbsp;всем атакам» не&nbsp;даёт картины. Над&nbsp;списком — орг-медиана среза. Min живёт только в&nbsp;строке атаки / шаблона: потолок скорости и&nbsp;сложность обнаружения этого шаблона.</li>
+      <li><b>Не&nbsp;лидерборд людей.</b> Не&nbsp;ранжируем сотрудников «самые быстрые по&nbsp;всем атакам». Единица списка — учебная атака (название · дата · тип шаблона).</li>
+      <li><b>Порог «мало событий».</b> n&nbsp;&lt;&nbsp;3 репорта на&nbsp;атаку (и&nbsp;на&nbsp;орг-срез): медиану не&nbsp;считаем — «—» и&nbsp;чип «мало событий». Минимум можно показать уже с&nbsp;1 события. 0 репортов — отдельное состояние IP-SPD-EMPTY, не&nbsp;SPARSE.</li>
+      <li><b>Знаменатель.</b> n = люди с&nbsp;репортом (фидбэк «это&nbsp;фишинг»), не&nbsp;все delivered. В&nbsp;срезе «Клик» n = люди с&nbsp;кликом. Delivered можно подписать в&nbsp;EMPTY, чтобы не&nbsp;спутать с&nbsp;«нет кампаний».</li>
+      <li><b>Два сигнала, два среза.</b> Репорт = определили атаку (хорошо быстрее). Клик = риск, если быстро (автопилот). Не&nbsp;класть оба числа в&nbsp;одну ячейку. Сегменты «Репорт» / «Клик».</li>
+      <li><b>Клик по&nbsp;строке</b> ведёт в&nbsp;раздел Атаки (карточка / список этой кампании). Не&nbsp;в&nbsp;профиль человека.</li>
+      <li><b>Дрифт min между&nbsp;отделами.</b> Минимум сильно плавает от&nbsp;отдела к&nbsp;отделу. Не&nbsp;строить ранжир подразделений по&nbsp;min. Сравнение шаблонов — по&nbsp;медиане репорта.</li>
+      <li><b>PII.</b> ФИО рекордсменов на&nbsp;сводке нет. При&nbsp;необходимости — tooltip / drill в&nbsp;Пользователи, не&nbsp;первый экран.</li>
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

@@ -29,7 +29,7 @@ const CARD_DESCRIPTION =
   "Система управления безопасностью. Позволяет организациям эффективно защищать свои сети и активы в реальном времени.";
 
 const SIDEBAR_BIO =
-  "Создаю чистые интерфейсы. Благодаря бэкграунду программиста легко нахожу общий язык с разработкой и стейкхолдерами. Ответственно решаю продуктовые задачи и постоянно развиваюсь.";
+  "Создаю чистые интерфейсы.\nБлагодаря бэкграунду программиста\nлегко нахожу общий язык\nс\u00A0разработкой и\u00A0стейкхолдерами.\nОтветственно решаю продуктовые\nзадачи и\u00A0постоянно развиваюсь.";
 
 /** Figma / mirror / screen-spec: BG/1/2 = 345×230; IMG_3 = 345×345; Comp ≈149×103; me 254; Macbook 388×283. */
 const MEDIA_BOXES = {
@@ -315,7 +315,10 @@ describe("TC-E2E-02 Sidebar structure and action buttons", () => {
     assert.ok(sidebar, "Sidebar aside required");
     const block = sidebar[0];
 
-    assert.ok(block.includes(SIDEBAR_BIO), "bio must be verbatim");
+    assert.ok(
+      block.replace(/\r\n/g, "\n").includes(SIDEBAR_BIO),
+      "bio must be verbatim"
+    );
     assert.ok(/ds-profile/.test(block), "reuses Profile");
     assert.ok(/ds-avatar/.test(block), "reuses Avatar");
     assert.ok(/ds-sidebar__copyright/.test(block), "copyright");
@@ -344,6 +347,7 @@ describe("TC-E2E-02 Sidebar structure and action buttons", () => {
     const bio = ruleBody(css, ".ds-sidebar__bio");
     assert.ok(bio && /var\(--color-black\)/.test(bio));
     assert.ok(bio && /var\(--type-text-2-size\)/.test(bio));
+    assert.match(bio, /white-space\s*:\s*pre-line/);
 
     assert.ok(ruleBody(css, ".ds-button--primary"));
     assert.ok(ruleBody(css, ".ds-button--secondary"));

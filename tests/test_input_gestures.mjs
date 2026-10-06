@@ -2,7 +2,7 @@
  * Input Gesture Layer routing (task 2.4 / UC-03, UC-04).
  *
  * TC-E2E-01: Ctrl+= → scale grows
- * TC-E2E-02: wheel without ctrl → pan translate; scale unchanged
+ * TC-E2E-02: wheel without ctrl → zoom to cursor; preventDefault
  * TC-E2E-03: Ctrl+wheel → zoom; preventDefault called
  * TC-E2E-04: Space+drag → pan; suppressClicks true during gesture
  * TC-UNIT-01: 100% and fit hotkeys call zoomTo / fitToContent
@@ -172,22 +172,19 @@ describe("input gesture layer", () => {
     unbind();
   });
 
-  it("TC-E2E-02: wheel without ctrl pans translate; scale unchanged", async () => {
+  it("TC-E2E-02: wheel without ctrl zooms to cursor; preventDefault", async () => {
     const { bindInput } = await import(INPUT_URL);
     const { createCameraController } = await import(CAMERA_URL);
     const viewport = createViewportHarness();
     const camera = createCameraController({ style: {} });
     const inputMode = { spaceDown: false, isPanning: false, suppressClicks: false };
     const unbind = bindInput(viewport, camera, inputMode);
-    const before = camera.getState();
+    const before = camera.getState().scale;
 
-    const ev = wheelEvent({ deltaX: 40, deltaY: 25 });
+    const ev = wheelEvent({ deltaY: -100, clientX: 320, clientY: 180 });
     viewport.dispatchEvent(ev);
 
-    const after = camera.getState();
-    assert.equal(after.scale, before.scale);
-    assert.notEqual(after.translateX, before.translateX);
-    assert.notEqual(after.translateY, before.translateY);
+    assert.ok(camera.getState().scale > before);
     assert.equal(ev.defaultPrevented, true);
     unbind();
   });

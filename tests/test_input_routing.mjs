@@ -2,7 +2,7 @@
  * Input Gesture Layer routing unit suite (task 3.1 / UC-03, UC-04).
  *
  * TC-E2E-01: hotkeys table routes to camera commands
- * TC-UNIT-Wheel-pan: wheel without mod → pan, scale unchanged
+ * TC-UNIT-Wheel-zoom-plain: wheel without mod → zoom to cursor
  * TC-UNIT-Wheel-zoom: Ctrl/Meta+wheel → zoom to cursor; preventDefault
  * TC-UNIT-Space: Space+drag pan + suppressClicks
  * TC-UNIT-Edit: bare +/- ignored in text field
@@ -233,7 +233,7 @@ describe("input routing", () => {
     unbind();
   });
 
-  it("TC-UNIT-Wheel-pan: wheel without modifier pans; scale unchanged", async () => {
+  it("TC-UNIT-Wheel-zoom-plain: wheel without modifier zooms to cursor", async () => {
     const { bindInput } = await import(INPUT_URL);
     const { createCameraController } = await import(CAMERA_URL);
     const viewport = createViewportHarness();
@@ -244,15 +244,22 @@ describe("input routing", () => {
       suppressClicks: false,
     };
     const unbind = bindInput(viewport, camera, inputMode);
-    const before = camera.getState();
+    const before = camera.getState().scale;
+    const pivot = { x: 220, y: 160 };
+    const worldBefore = camera.screenToWorld(pivot.x, pivot.y);
 
-    const ev = wheelEvent({ deltaX: 35, deltaY: 20 });
+    const ev = wheelEvent({
+      deltaY: -90,
+      clientX: pivot.x,
+      clientY: pivot.y,
+    });
     viewport.dispatchEvent(ev);
 
     const after = camera.getState();
-    assert.equal(after.scale, before.scale);
-    assert.equal(after.translateX, before.translateX - 35);
-    assert.equal(after.translateY, before.translateY - 20);
+    const screenAfter = camera.worldToScreen(worldBefore.x, worldBefore.y);
+    assert.ok(after.scale > before);
+    assert.ok(Math.abs(screenAfter.x - pivot.x) < 0.6);
+    assert.ok(Math.abs(screenAfter.y - pivot.y) < 0.6);
     assert.equal(ev.defaultPrevented, true);
     unbind();
   });

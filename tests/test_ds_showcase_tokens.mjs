@@ -45,7 +45,7 @@ const TYPE_TOKENS = {
   "--type-text-line": "20px",
   "--type-text-weight": "400",
   "--type-text-2-size": "14px",
-  "--type-text-2-line": "18px",
+  "--type-text-2-line": "20px",
   "--type-text-2-weight": "400",
   "--type-caption-size": "12px",
   "--type-caption-line": "16px",

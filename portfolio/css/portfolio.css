@@ -408,6 +408,12 @@ html.is-boot-reveal .viewport {
   pointer-events: none;
 }
 
+/* Hide CursorHover chips («Посмотреть» / Behance); card pointer cursor stays. */
+.ds-card__cursor-hover--float,
+.ds-card__cursor-hover--float.is-visible {
+  display: none;
+}
+
 @media (hover: none) {
   .ds-card__cursor-hover--float {
     display: none;
@@ -880,7 +886,7 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
   width: max-content;
 }
 
-/* Figma Inform: gap 16; bio Text2 14/18 Black */
+/* Figma Inform: gap 16; bio Text2 14/20 Black */
 .portfolio-mobile__sidebar .ds-sidebar__inform {
   gap: 16px;
   width: 100%;

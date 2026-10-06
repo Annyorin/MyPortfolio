@@ -870,6 +870,7 @@ html.is-pointer-focus :focus-visible {
   line-height: var(--type-text-2-line);
   font-weight: var(--type-text-2-weight);
   color: var(--color-black);
+  white-space: pre-line;
 }
 
 .ds-sidebar__skills {

@@ -26,7 +26,7 @@ portfolio_home_node: "41:1416"
 | Группа | Токены | Источник в Figma |
 |--------|--------|------------------|
 | Color | Primary `#64b3f9`, Primary_hover `#79befc`, Secondary `#ededed`, White `#FEFEFE`, Black Figma Variable `#000000` · **product override `#232323`**, Gray_text `#888888`, Gray_dark `#e4e4e4`, GrayL `#6B6B6B` | Variables @ `41:11520` |
-| Typography | Inter · H1 20/24/600 · H2 16/20/500 · Text/Text1 16/20/400 · Caption 12/16/500 · Text2 14/18/400 (SegmentsControl) | Variables @ `41:11520` |
+| Typography | Inter · H1 20/24/600 · H2 16/20/500 · Text/Text1 16/20/400 · Text2 14/20/400 · Caption 12/16/500 | Variables @ `41:11520` / specimen `41:1558` |
 | Elevation | Shadow `0 5px 9px #BBBBBD40` (Card **default + hover**, Sidebar, SegmentsControl active pill, **Hint**); Mobile `0 3px 9px #8B8B8E40` (MenuMobile); FloatingAction drop `0 5 / 4.5 #BBBBBD40`; «вв» не к Card | Effect styles @ `41:11520` |
 | Layout | фиксированные размеры компонентов (см. layout.md) | metadata Ui kit |
 | Motion | — | нет в Ui kit |
@@ -112,7 +112,7 @@ portfolio_home_node: "41:1416"
 - Эффект «вв» есть в файле; **не** использовать на Card (только Shadow).
 - FloatingAction: blur тени на компоненте **4.5**, не обязательно radius 9 именованного Shadow.
 - GrayL только CSS, без свотча на витрине (если свотч отсутствует).
-- Text2 (14/18) зафиксирован на SegmentsControl; отдельного свотча в foundations может не быть.
+- Text2 (14/20 Regular) — стиль `Text2`, свотч Typography `41:1558`.
 - Motion-токенов нет; hover — статические варианты.
 - Macbook atomic Ui kit **388×283**; в About me child **126×92 @ −10°** — не подгонять atomic под composition.
 - About me Stiker в dark: fill остаётся White `#FEFEFE`, text Primary `#2D97F7` — не remap на surface.

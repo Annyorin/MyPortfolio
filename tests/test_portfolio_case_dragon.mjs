@@ -42,7 +42,19 @@ describe("portfolio case-dragon page", () => {
     assert.match(html, /class=["'][^"']*\bds-fab\b/);
     assert.match(html, /href=["']main\.html["']/);
     assert.match(html, /id=["']context["']/);
+    assert.match(html, /id=["']analysis["']/);
+    assert.match(html, /aria-label=["']Исследование["']/);
+    assert.match(html, /id=["']design["']/);
+    assert.match(html, /id=["']ux_test["']/);
+    assert.match(html, /id=["']finals["']/);
+    assert.match(html, /id=["']conclusions["']/);
     assert.match(html, /id=["']contacts["']/);
+    assert.doesNotMatch(html, /id=["']hypotheses["']/);
+    assert.match(html, /data-case-nav=["']design["']/);
+    assert.match(html, /data-case-nav=["']ux_test["']/);
+    assert.match(html, /data-case-nav=["']finals["']/);
+    assert.match(html, /Результаты/);
+    assert.match(html, /case-dragon-hero\.png/);
     assert.match(
       html,
       /Аня Ясинская — Продуктовый дизайнер · UX\/UI дизайнер/
@@ -75,21 +87,82 @@ describe("portfolio case-dragon page", () => {
     assert.equal(contentMap["card.b.url"], "case-dragon.html");
     assert.ok(!Object.prototype.hasOwnProperty.call(contentMap, "card.b.action"));
     assert.equal(contentMap["case.dragon.period_label"], "Период выполнения");
+    assert.equal(contentMap["case.dragon.period_value"], "2024–2026 год");
     assert.equal(contentMap["case.dragon.platforms_value"], "Desktop");
     assert.equal(contentMap["case.dragon.role_value"]?.includes("UX/UI"), true);
-    assert.equal(contentMap["case.dragon.team_value"]?.includes("4 фронта"), true);
+    assert.equal(
+      contentMap["case.dragon.team_value"]?.includes("4\u00A0фронтендера"),
+      true
+    );
+    assert.equal(contentMap["case.dragon.context_title"], "Продукт");
+    assert.equal(contentMap["case.dragon.intro_title"], "Контекст задачи");
+    assert.equal(contentMap["case.dragon.analysis_title"], "Исследование");
+    assert.equal(contentMap["case.dragon.design_title"], "Проектирование");
+    assert.equal(contentMap["case.dragon.ux_test_title"], "UX-тест");
+    assert.equal(contentMap["case.dragon.finals_title"], "Финальные макеты");
+    assert.equal(
+      contentMap["case.dragon.conclusions_title"],
+      "Результат и\u00A0ограничения"
+    );
+    assert.equal(contentMap["case.dragon.nav_conclusions"], "Результаты");
     assert.match(contentMap["case.dragon.intro_body"], /## Цель/);
     assert.match(contentMap["case.dragon.intro_body"], /## Критерии успеха/);
-    assert.match(contentMap["case.dragon.intro_body"], /ушёл в/);
-    assert.match(contentMap["case.dragon.analysis_body"], /## Бенчмарки/);
-    assert.match(contentMap["case.dragon.analysis_body"], /первый клик/);
-    assert.match(contentMap["case.dragon.analysis_body"], /среднее время/);
-    assert.match(contentMap["case.dragon.intro_body"], /записи прогона/);
+    assert.match(contentMap["case.dragon.intro_body"], /## Как сейчас/);
+    assert.match(contentMap["case.dragon.intro_body"], /\[\[img:case\.dragon\.as_is\]\]/);
+    assert.match(contentMap["case.dragon.analysis_body"], /## Конкуренты/);
+    assert.match(contentMap["case.dragon.analysis_body"], /MaxPatrol/);
     assert.match(contentMap["case.dragon.analysis_body"], /Weeek/);
-    assert.doesNotMatch(contentMap["case.dragon.analysis_body"], /A\/B/);
+    assert.doesNotMatch(contentMap["case.dragon.analysis_body"], /KnowBe4/);
+    assert.match(contentMap["case.dragon.analysis_body"], /## Результаты интервью/);
+    assert.match(contentMap["case.dragon.analysis_body"], /## Гипотезы/);
+    assert.match(contentMap["case.dragon.analysis_body"], /## JTBD/);
+    assert.match(
+      contentMap["case.dragon.analysis_body"],
+      /\[\[jtbd:case\.dragon\.jtbd\]\]/
+    );
+    assert.equal(contentMap.jtbdGrids?.["case.dragon.jtbd"]?.length, 9);
+    assert.equal(contentMap.jtbdGrids["case.dragon.jtbd"][0].cells.length, 3);
+    assert.match(
+      contentMap.jtbdGrids["case.dragon.jtbd"][0].cells[0].prefix,
+      /^Когда /
+    );
+    assert.match(
+      contentMap.jtbdGrids["case.dragon.jtbd"][0].cells[0].text,
+      /критичное уведомление/
+    );
+    assert.equal(
+      contentMap.jtbdGrids["case.dragon.jtbd"][8].cells[1].prefix,
+      "Я не хочу "
+    );
+    assert.match(
+      contentMap["case.dragon.analysis_body"],
+      /\[\[img:case\.dragon\.competitors\]\]/
+    );
+    assert.match(contentMap["case.dragon.design_body"], /\[\[img:case\.dragon\.ia\]\]/);
+    assert.match(
+      contentMap["case.dragon.design_body"],
+      /\[\[img:case\.dragon\.flow\]\]/
+    );
+    assert.match(contentMap["case.dragon.ux_test_body"], /0,6/);
+    assert.match(contentMap["case.dragon.ux_test_body"], /1,3/);
+    assert.match(
+      contentMap["case.dragon.ux_test_body"],
+      /\[\[img:case\.dragon\.test_btn/
+    );
+    assert.match(
+      contentMap["case.dragon.ux_test_body"],
+      /\[\[img:case\.dragon\.test_toggle/
+    );
+    assert.match(
+      contentMap["case.dragon.finals_body"],
+      /\[\[img:case\.dragon\.final_1\]\]/
+    );
+    assert.match(
+      contentMap["case.dragon.finals_body"],
+      /\[\[img:case\.dragon\.final_2\]\]/
+    );
     assert.doesNotMatch(contentMap["case.dragon.intro_body"], /чистые интерфейсы/);
-    assert.equal(contentMap["case.dragon.context_title"], "Контекст задачи");
-    assert.equal(contentMap["case.dragon.intro_title"], "Вводные");
+    assert.ok(!Object.prototype.hasOwnProperty.call(contentMap, "case.dragon.hypotheses_body"));
     assert.equal(contentMap["case.dragon.next_label"], "Далее");
     assert.equal(contentMap["case.dragon.next_url"], "case-phish.html");
     assert.equal(contentMap["toolbar.back"], "Назад");
@@ -99,10 +172,56 @@ describe("portfolio case-dragon page", () => {
       contentMap.assets["case.dragon.hero"]?.pathFromDsRoot,
       "images/case-dragon-hero.png"
     );
-    assert.ok(
-      fs.existsSync(abs("ds-showcase/assets/images/case-dragon-hero.png")),
-      "hero asset file must exist"
+    for (const key of [
+      "case.dragon.hero",
+      "case.dragon.as_is",
+      "case.dragon.competitors",
+      "case.dragon.ia",
+      "case.dragon.flow",
+      "case.dragon.test_btn",
+      "case.dragon.test_toggle",
+      "case.dragon.final_1",
+      "case.dragon.final_2",
+    ]) {
+      const rel = contentMap.assets[key]?.pathFromDsRoot;
+      assert.ok(rel, `${key} asset key missing`);
+      assert.ok(
+        fs.existsSync(abs(`ds-showcase/assets/${rel}`)),
+        `${rel} must exist`
+      );
+    }
+  });
+
+  it("contentMap wraps InnoDragon highlighter phrases in == markers", async () => {
+    const { contentMap } = await import(
+      pathToFileURL(abs("shared/content.js")).href
     );
+    const analysis = contentMap["case.dragon.analysis_body"];
+    const ux = contentMap["case.dragon.ux_test_body"];
+    const finals = contentMap["case.dragon.finals_body"];
+    const conclusions = contentMap["case.dragon.conclusions_body"];
+    assert.match(
+      analysis,
+      /==Проанализировала аналогичные продукты и\u00A0сделала таблицу фич==/
+    );
+    assert.match(
+      analysis,
+      /==Из\u00A0этого сформулировала требования к\u00A0решению\.==/
+    );
+    assert.match(analysis, /==Провёла интервью==/);
+    assert.doesNotMatch(analysis, /==Провела интервью==/);
+    assert.match(ux, /==Что\u00A0было\.==/);
+    assert.match(ux, /==Чего не\u00A0было\.==/);
+    assert.match(ux, /==Протестировала интерфейс,==/);
+    assert.match(ux, /==0,6\u00A0сек против 0,7\.==/);
+    assert.match(ux, /==1,3\u00A0мин против 2\u00A0мин\.==/);
+    assert.doesNotMatch(finals, /==/);
+    assert.match(conclusions, /==Что\u00A0сделала\.==/);
+    assert.match(conclusions, /==Чему научило\.==/);
+    assert.match(conclusions, /==Что\u00A0не\u00A0измеряла\.==/);
+    assert.match(conclusions, /==Что\u00A0дальше\.==/);
+    assert.match(conclusions, /==Что\u00A0сделала\u00A0бы\u00A0иначе\.==/);
+    assert.match(conclusions, /3,5/);
   });
 
   it("case.js exports initCasePage and binds segments/FAB/drawer helpers", () => {
@@ -130,6 +249,13 @@ describe("portfolio case-dragon page", () => {
     assert.match(src, /bindNextCaseLink|case-page__next/);
     assert.match(src, /next_url/);
     assert.match(src, /from ["']\.\.\/\.\.\/ds-showcase\/js\/segments\.js["']/);
+    assert.match(
+      src,
+      /caseId === ["']phish["'] \|\| caseId === ["']dragon["']/
+    );
+    assert.match(src, /fillStubSection\(["']design["']/);
+    assert.match(src, /fillStubSection\(["']ux_test["']/);
+    assert.match(src, /fillStubSection\(["']finals["']/);
   });
 
   it("case.css covers Figma breakpoints without token redefinition", () => {

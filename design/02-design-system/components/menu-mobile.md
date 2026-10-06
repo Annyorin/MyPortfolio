@@ -32,7 +32,7 @@ default; активный пункт — Black; остальные — Gray_text
 | radius | 12 |
 | fill | White |
 | shadow | Mobile · `--shadow-mobile` `0 3px 9px #8B8B8E40` |
-| item | Text2 14/18 Regular · height 40 · width 143 |
+| item | Text2 14/20 Regular · height 40 · width 143 |
 | active | Black |
 | muted | Gray_text |
 

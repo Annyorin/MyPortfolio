@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сводка · Реакции · фильтр подразделений — lo-fi</title>
+<link rel="stylesheet" href="board.css">
+<link rel="stylesheet" href="board-desktop.css">
+<style>
+  /* Локальная геометрия сценария — палитра только из board.css */
+  .cell.scene{width:560px}
+  .desk-frame.scene-frame{
+    width:560px;
+    height:auto;
+    min-height:0;
+    flex-direction:column;
+  }
+  .desk-frame.scene-frame .desk-main{padding:12px; gap:8px}
+  .filter-row{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+  .chip.open{border-style:dashed}
+  .chip.sel{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .scope-row{display:flex; gap:8px; flex-wrap:wrap}
+  .scope-row .metric{
+    flex:1; min-width:90px;
+    border:1px solid var(--line); border-radius:10px;
+    padding:8px 10px; background:#fff;
+  }
+  .scope-row .ml{font-size:10px; color:var(--mut)}
+  .scope-row .mv{font-size:18px; font-weight:700; margin-top:4px}
+  .scope-row .metric .note{font-size:9px; margin-top:2px}
+  .dept-table{
+    display:flex; flex-direction:column; gap:0;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff;
+  }
+  .dept-table .drow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .dept-table .drow:last-child{border-bottom:none}
+  .dept-table .drow.head{
+    background:var(--block); color:var(--mut); font-weight:600; font-size:10px;
+  }
+  .dept-table .c-dept{flex:2.2; min-width:0}
+  .dept-table .c-n{flex:.7; text-align:right; font-weight:700}
+  .dept-table .c-r{flex:.8; text-align:right; color:var(--mut); font-variant-numeric:tabular-nums}
+  .callout{
+    border:1.5px dashed var(--ink); border-radius:10px;
+    padding:8px 10px; background:var(--block); font-size:11px; line-height:1.4;
+  }
+  .picker{
+    border:1px solid var(--line); border-radius:12px; background:#fff;
+    padding:10px; display:flex; flex-direction:column; gap:8px;
+    box-shadow:0 2px 10px rgba(31,29,26,.06);
+  }
+  .picker .ph{font-size:11px; font-weight:700}
+  .tree{display:flex; flex-direction:column; gap:2px; max-height:220px; overflow:hidden}
+  .trow{
+    display:flex; align-items:center; gap:8px;
+    padding:6px 8px; border-radius:8px; font-size:11px;
+  }
+  .trow:hover{background:var(--block)}
+  .trow.on{background:var(--block2)}
+  .trow .ind{width:14px; color:var(--mut); flex:none; text-align:center}
+  .trow .box{
+    width:14px; height:14px; border:1.5px solid var(--ink);
+    border-radius:3px; flex:none; background:#fff;
+  }
+  .trow .box.checked{background:var(--ink)}
+  .trow .box.partial{background:var(--block2); border-style:dashed}
+  .trow .lbl{flex:1; min-width:0}
+  .trow .cnt{color:var(--mut); font-size:10px; flex:none}
+  .trow.child{padding-left:28px}
+  .trow.child2{padding-left:44px}
+  .picker-foot{
+    display:flex; gap:8px; align-items:center; justify-content:space-between;
+    border-top:1px dashed var(--line); padding-top:8px; margin-top:2px;
+  }
+  .opt-row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .opt-row .toggle{
+    width:28px; height:16px; border-radius:999px; border:1px solid var(--ink);
+    background:var(--ink); position:relative; flex:none;
+  }
+  .opt-row .toggle::after{
+    content:""; position:absolute; top:2px; right:2px;
+    width:10px; height:10px; border-radius:50%; background:#fff;
+  }
+  .dim{opacity:.55}
+  .missing{color:var(--mut); font-size:10px}
+  .person-list{
+    display:flex; flex-direction:column; gap:0;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; background:#fff;
+  }
+  .person-list .prow{
+    display:flex; gap:8px; align-items:center;
+    padding:8px 10px; border-bottom:1px solid var(--line); font-size:11px;
+  }
+  .person-list .prow:last-child{border-bottom:none}
+  .person-list .prow.head{
+    background:var(--block); color:var(--mut); font-weight:600; font-size:10px;
+  }
+  .person-list .c-name{flex:2; min-width:0}
+  .person-list .c-meta{flex:2; color:var(--mut); font-size:10px}
+  .person-list .c-val{flex:1; text-align:right; font-weight:700}
+  .logic ul{margin:0 0 0 16px; line-height:1.55}
+  .logic li{margin-bottom:8px}
+  .logic li:last-child{margin-bottom:0}
+</style>
+</head>
+<body>
+
+<h1>Сводка · Реакции · фильтр подразделений</h1>
+<p class="sub">Сценарий: в&nbsp;режиме «Все» таблица показывает только <b>топ-5 критичных</b> отделов — нужный отдел может не&nbsp;попасть. Фильтр (гипотеза: чип + дерево) даёт срез уязвимых конкретного подразделения. Scope = уязвимые, не&nbsp;весь штат. Это структура, не&nbsp;визуальный стиль. Рядом: <a href="reactions-tab-wireframe.html">вкладка Реакции</a>.</p>
+
+<div class="princ">
+  <span>Топ-5 ≠ полный список отделов</span>
+  <span>Гипотеза: чип «Все подразделения» + дерево</span>
+  <span>Multi-select · include children</span>
+  <span>Срез = уязвимые отдела, не&nbsp;весь штат</span>
+  <span>Без traffic-light</span>
+</div>
+
+<div class="legend">
+  <div><span class="dot" style="background:var(--f1)">1</span> Найти отдел вне топ-5</div>
+  <div><span class="dot" style="background:var(--f2)">2</span> Назначить обучение срезу</div>
+</div>
+
+<div class="map">
+  <span class="node"><b>Реакции · Все</b></span>
+  <span class="arr">→</span>
+  <span class="node"><b>чип → picker</b></span>
+  <span class="arr">→</span>
+  <span class="node"><b>срез отдела X</b></span>
+</div>
+
+<section>
+  <h2>1. Три кадра сценария</h2>
+  <p>Порядок прохождения: топ-5 без нужного отдела → открытый picker → результат после выбора. Отдел-пример: <b>Юридический</b> (есть уязвимые, но не&nbsp;в&nbsp;критичном топ-5).</p>
+
+  <div class="row">
+
+    <!-- DB-REACT-FILT-1 -->
+    <div class="cell scene">
+      <div class="desk-frame scene-frame">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+        </div>
+        <div class="desk-main">
+          <div class="desk-header" style="padding:0; border:none; margin:0">
+            <div class="h-left">
+              <div class="h-title" style="font-size:15px; font-weight:700">Реакции · Все подразделения</div>
+              <div class="note">Кампания «Счёт за&nbsp;услуги» · уязвимых 94 · отделов с&nbsp;реакцией 9</div>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <span class="chip on">Все подразделения ▾</span>
+            <span class="chip">Все кампании периода</span>
+            <span class="note">чип закрыт · меню ещё нет</span>
+          </div>
+
+          <div class="scope-row">
+            <div class="metric"><div class="ml">Уязвимых</div><div class="mv">94</div><div class="note">орг-срез</div></div>
+            <div class="metric"><div class="ml">Отделов в&nbsp;топе</div><div class="mv">5</div><div class="note">из 9 с реакцией</div></div>
+            <div class="metric"><div class="ml">Ссылка / влож. / данные</div><div class="mv">103 · 34 · 23</div></div>
+          </div>
+
+          <div class="desk-panel" style="margin:0">
+            <div class="pt">Уязвимые подразделения · топ-5 критичных</div>
+            <div class="dept-table">
+              <div class="drow head">
+                <span class="c-dept">Подразделение</span>
+                <span class="c-n">Уязв.</span>
+                <span class="c-r">Ссылка</span>
+                <span class="c-r">Влож.</span>
+                <span class="c-r">Данные</span>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Продажи</b><br><span class="note">21 из 128 · 16%</span></div>
+                <div class="c-n">21</div><div class="c-r">28</div><div class="c-r">5</div><div class="c-r">9</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Бухгалтерия</b><br><span class="note">12 из 41 · 29%</span></div>
+                <div class="c-n">12</div><div class="c-r">6</div><div class="c-r">15</div><div class="c-r">4</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Поддержка</b><br><span class="note">11 из 86 · 13%</span></div>
+                <div class="c-n">11</div><div class="c-r">14</div><div class="c-r">4</div><div class="c-r">3</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Маркетинг</b><br><span class="note">7 из 57 · 12%</span></div>
+                <div class="c-n">7</div><div class="c-r">9</div><div class="c-r">2</div><div class="c-r">1</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Финансы</b><br><span class="note">6 из 39 · 15%</span></div>
+                <div class="c-n">6</div><div class="c-r">5</div><div class="c-r">3</div><div class="c-r">2</div>
+              </div>
+            </div>
+            <div class="note" style="margin-top:6px">Ранг по критичности (объём × тяжесть). Не полный список отделов с&nbsp;реакцией.</div>
+          </div>
+
+          <div class="callout">
+            <b>Нужного отдела нет.</b> «Юридический» есть среди 9 отделов с&nbsp;реакцией (3 уязвимых), но не&nbsp;входит в&nbsp;топ-5 → в&nbsp;таблице «Все» его не&nbsp;видно. Зачем фильтр: открыть конкретный отдел вне топа.
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-REACT-FILT-1 · Топ-5 · отдела X нет</div>
+        <div class="d">Чип «Все» закрыт. Таблица = только критичный топ-5. Юридический вне кадра — без фильтра его не&nbsp;открыть.</div>
+      </div>
+    </div>
+
+    <!-- DB-REACT-FILT-2 -->
+    <div class="cell scene">
+      <div class="desk-frame scene-frame">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+        </div>
+        <div class="desk-main">
+          <div class="desk-header" style="padding:0; border:none; margin:0">
+            <div class="h-left">
+              <div class="h-title" style="font-size:15px; font-weight:700">Реакции · фильтр открыт</div>
+              <div class="note">Гипотеза UI: чип → popover с&nbsp;поиском и&nbsp;деревом</div>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <span class="chip on open">Все подразделения ▴</span>
+            <span class="chip dim">Все кампании периода</span>
+          </div>
+
+          <div class="picker">
+            <div class="ph">Подразделения <span class="note">(гипотеза)</span></div>
+            <div class="field">🔍 Поиск: юрид…</div>
+            <div class="opt-row">
+              <span class="toggle" title="include children"></span>
+              <span class="note">Включать подотделы (include children)</span>
+            </div>
+            <div class="tree">
+              <div class="trow dim">
+                <span class="ind">▾</span>
+                <span class="box"></span>
+                <span class="lbl">Продажи</span>
+                <span class="cnt">21 уязв.</span>
+              </div>
+              <div class="trow">
+                <span class="ind">▾</span>
+                <span class="box"></span>
+                <span class="lbl"><b>Юридический</b></span>
+                <span class="cnt">3 уязв.</span>
+              </div>
+              <div class="trow child on">
+                <span class="ind"></span>
+                <span class="box checked"></span>
+                <span class="lbl">Юридический · головной</span>
+                <span class="cnt">2</span>
+              </div>
+              <div class="trow child2 on">
+                <span class="ind"></span>
+                <span class="box checked"></span>
+                <span class="lbl">Договорной отдел</span>
+                <span class="cnt">1</span>
+              </div>
+              <div class="trow dim">
+                <span class="ind">▸</span>
+                <span class="box"></span>
+                <span class="lbl">Бухгалтерия</span>
+                <span class="cnt">12</span>
+              </div>
+              <div class="trow dim">
+                <span class="ind">▸</span>
+                <span class="box"></span>
+                <span class="lbl">ИТ</span>
+                <span class="cnt">0 · нет в срезе</span>
+              </div>
+            </div>
+            <div class="picker-foot">
+              <span class="note">Выбрано: 1 ветка · 3 уязвимых</span>
+              <div style="display:flex; gap:6px">
+                <div class="btn ghost" style="padding:6px 12px; font-size:11px">Сбросить</div>
+                <div class="btn pr" style="padding:6px 12px; font-size:11px">Применить</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note">
+            Поиск сужает дерево, когда отделов много. Multi-select для нескольких веток; include children тянет подотделы. В&nbsp;дереве только узлы с&nbsp;данными среза / org-дерево — open&nbsp;Q. Счётчик «уязв.» = scope данных, не&nbsp;штат.
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-REACT-FILT-2 · Picker открыт</div>
+        <div class="d">Поиск «юрид…» + дерево с&nbsp;чекбоксами и&nbsp;include children. Находим Юридический, которого не&nbsp;было в&nbsp;топ-5.</div>
+      </div>
+    </div>
+
+    <!-- DB-REACT-FILT-3 -->
+    <div class="cell scene">
+      <div class="desk-frame scene-frame">
+        <div class="flows">
+          <span class="dot" style="background:var(--f1)">1</span>
+          <span class="dot" style="background:var(--f2)">2</span>
+        </div>
+        <div class="desk-main">
+          <div class="desk-header" style="padding:0; border:none; margin:0">
+            <div class="h-left">
+              <div class="h-title" style="font-size:15px; font-weight:700">Реакции · срез «Юридический»</div>
+              <div class="note">После Apply · не топ-5, а&nbsp;выбранная ветка</div>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <span class="chip sel">Юридический + подотделы ✕</span>
+            <span class="chip">Все кампании периода</span>
+            <span class="note">чип = активный фильтр</span>
+          </div>
+
+          <div class="scope-row">
+            <div class="metric"><div class="ml">Уязвимых в&nbsp;срезе</div><div class="mv">3</div><div class="note">не 94 орг</div></div>
+            <div class="metric"><div class="ml">Подразделений</div><div class="mv">2</div><div class="note">ветка + child</div></div>
+            <div class="metric"><div class="ml">Ссылка / влож. / данные</div><div class="mv">4 · 1 · 1</div></div>
+          </div>
+
+          <div class="desk-panel" style="margin:0">
+            <div class="pt">Уязвимые в&nbsp;выбранных подразделениях</div>
+            <div class="dept-table">
+              <div class="drow head">
+                <span class="c-dept">Подразделение</span>
+                <span class="c-n">Уязв.</span>
+                <span class="c-r">Ссылка</span>
+                <span class="c-r">Влож.</span>
+                <span class="c-r">Данные</span>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Юридический</b><br><span class="note">2 из 18 · 11%</span></div>
+                <div class="c-n">2</div><div class="c-r">3</div><div class="c-r">0</div><div class="c-r">1</div>
+              </div>
+              <div class="drow">
+                <div class="c-dept"><b>Договорной отдел</b><br><span class="note">1 из 7 · 14% · child</span></div>
+                <div class="c-n">1</div><div class="c-r">1</div><div class="c-r">1</div><div class="c-r">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="desk-panel" style="margin:0">
+            <div class="pt">Люди среза · уязвимые</div>
+            <div class="person-list">
+              <div class="prow head">
+                <span class="c-name">Сотрудник</span>
+                <span class="c-meta">Реакции · обучение</span>
+                <span class="c-val"></span>
+              </div>
+              <div class="prow">
+                <div class="avatar" style="width:22px;height:22px"></div>
+                <div class="c-name"><b>Орлова Е.В.</b></div>
+                <div class="c-meta">данные · <b>не начато</b></div>
+                <span class="tgbtn">Назначить</span>
+              </div>
+              <div class="prow">
+                <div class="avatar" style="width:22px;height:22px"></div>
+                <div class="c-name"><b>Громов Д.</b></div>
+                <div class="c-meta">ссылка ×2 · <b>завершено</b></div>
+                <span class="tgbtn">Дообучить</span>
+              </div>
+              <div class="prow">
+                <div class="avatar" style="width:22px;height:22px"></div>
+                <div class="c-name"><b>Панина С.</b></div>
+                <div class="c-meta">вложение · <b>в процессе</b></div>
+                <span class="tgbtn">Напомнить</span>
+              </div>
+            </div>
+            <div class="note" style="margin-top:6px">Список = только уязвимые выбранной ветки (3), не&nbsp;весь штат Юридического (18+7). CTA → DASH-ASSIGN с&nbsp;префиллом фильтра.</div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">
+        <div class="t">DB-REACT-FILT-3 · Срез отдела применён</div>
+        <div class="d">Чип показывает выбор. KPI и&nbsp;таблицы сужены до&nbsp;уязвимых ветки. Топ-5 больше не&nbsp;маска — виден нужный отдел.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>2. Логика вне каркаса</h2>
+  <div class="desk-panel logic" style="max-width:920px">
+    <ul class="note" style="color:var(--mut)">
+      <li><b>Зачем фильтр.</b> Режим «Все» на&nbsp;Реакциях показывает <b>топ-5 критичных</b> отделов, не&nbsp;полный список. Отдел с&nbsp;реакциями, но вне топа, без picker недоступен.</li>
+      <li><b>Гипотеза UI</b> (не канон DS): чип «Все подразделения» открывает popover — поиск + дерево org с&nbsp;multi-select и&nbsp;toggle «включать подотделы». Помечено на&nbsp;кадрах. Контракт компонента к&nbsp;среде 2 — если уйдёт в&nbsp;продукт.</li>
+      <li><b>Scope данных.</b> Счётчики и&nbsp;списки людей = <b>уязвимые</b> (опасная реакция в&nbsp;срезе), не&nbsp;весь штат отдела. Знаменатель «N из M» может показывать штат/доставленных для контекста %.</li>
+      <li><b>После Apply.</b> Чип меняет лейбл на&nbsp;выбор («Юридический + подотделы» / «3 подразделения»). Таблица отделов и&nbsp;списки людей фильтруются. Топ-5 в&nbsp;этом режиме не&nbsp;применяется — показываем выбранное.</li>
+      <li><b>Связь с&nbsp;каноном.</b> Закрытый чип на&nbsp;<a href="reactions-tab-wireframe.html">reactions-tab</a> (DB-REACT-D). Разворот строки отдела (DB-REACT-DEPT-D) — другой вход: клик по&nbsp;строке топа. Фильтр нужен, когда строки в&nbsp;топе нет.</li>
+      <li><b>Не делать:</b> подменять фильтром полный org-каталог без уязвимых; traffic-light; прятать поиск при &gt;~15 узлов; считать штат «уязвимыми».</li>
+      <li><b>Open Q:</b> дерево = только узлы с&nbsp;уязвимыми или полное org-дерево с&nbsp;«0»? Empty после фильтра (0 уязвимых) — отдельный кадр later. Сброс → снова топ-5 «Все».</li>
+    </ul>
+  </div>
+</section>
+
+</body>
+</html>

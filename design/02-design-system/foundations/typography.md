@@ -17,6 +17,7 @@ updated: 2026-09-06
 | H1 | 20 / 24 | Semi Bold 600 | H1 | Заголовок 1 · 20/24 sem |
 | H2 | 16 / 20 | Medium 500 | H2 | Заголовок 2 · 16/20 med |
 | Text | 16 / 20 | Regular 400 | Text | Текст · 16/20 reg |
+| Text2 | 14 / 20 | Regular 400 | Text2 · `41:1558` | Текст 2 · 14/20 reg |
 | Caption | 12 / 16 | Medium 500 | Caption | Подписи · 12/16 med |
 
 Letter-spacing: `0` у всех стилей.
