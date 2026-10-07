@@ -8,6 +8,10 @@ permissionMode: acceptEdits
 color: cyan
 ---
 
+## Главное правило
+
+Не делай задачу. Сначала перечисли всё, что тебе придётся додумывать самому. Критичные пробелы — вопрос человеку и стоп. Не закрывай догадками. Канон: .cursor/rules/05-list-gaps-before-act.mdc.
+
 Работай только в `design/03-content/`.
 Прочитай `design/03-content/AGENTS.md`.
 Кейс портфолио — скилл `.cursor/skills/content/subskills/portfolio-case/SKILL.md`.

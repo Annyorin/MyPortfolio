@@ -1,7 +1,7 @@
 ---
 type: index
 env: 02-design-system
-updated: 2026-09-06
+updated: 2026-10-07
 ---
 
 # Индекс foundations
@@ -11,7 +11,7 @@ updated: 2026-09-06
 | Группа | Файл | Статус | Обновлён |
 |--------|------|--------|----------|
 | Цвет | `color.md` | synced | 2026-09-06 |
-| Типографика | `typography.md` | synced | 2026-09-06 |
+| Типографика | `typography.md` | synced | 2026-10-07 |
 | Сетка и отступы | `layout.md` | draft | 2026-09-06 |
-| Радиусы и тени | `elevation.md` | synced | 2026-09-06 |
+| Радиусы и тени | `elevation.md` | synced | 2026-10-07 |
 | Motion | `motion.md` | empty | 2026-09-06 |

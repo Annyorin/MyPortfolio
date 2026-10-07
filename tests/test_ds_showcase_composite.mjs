@@ -347,6 +347,15 @@ describe("TC-E2E-02 Sidebar structure and action buttons", () => {
     const bio = ruleBody(css, ".ds-sidebar__bio");
     assert.ok(bio && /var\(--color-black\)/.test(bio));
     assert.ok(bio && /var\(--type-text-2-size\)/.test(bio));
+
+    assert.match(html, /class="ds-hint-panel"/);
+    assert.match(html, /data-variant=["']mouse["']/);
+    assert.match(html, /data-variant=["']trackpad["']/);
+    const hintPanel = ruleBody(css, ".ds-hint-panel");
+    assert.ok(hintPanel);
+    assertWithinTol(declaredPx(hintPanel, "width"), 350, "Hint panel width");
+    assertWithinTol(declaredPx(hintPanel, "border-radius"), 16, "Hint panel radius");
+    assertShadowTokenOnly(hintPanel);
     assert.match(bio, /white-space\s*:\s*pre-line/);
 
     assert.ok(ruleBody(css, ".ds-button--primary"));

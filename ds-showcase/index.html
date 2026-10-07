@@ -138,6 +138,18 @@
         <span class="ds-icon" role="listitem" aria-label="CursorFigma" data-icon="cursor-figma">
           <img src="assets/icons/cursor-figma.svg" alt="" width="20" height="20">
         </span>
+        <span class="ds-icon ds-icon--32" role="listitem" aria-label="mouseZoom" data-icon="mouseZoom">
+          <img src="assets/icons/mouse-zoom.svg" alt="" width="32" height="32">
+        </span>
+        <span class="ds-icon ds-icon--32" role="listitem" aria-label="mouseMove" data-icon="mouseMove">
+          <img src="assets/icons/mouse-move.svg" alt="" width="32" height="32">
+        </span>
+        <span class="ds-icon ds-icon--32" role="listitem" aria-label="handZoom" data-icon="handZoom">
+          <img src="assets/icons/hand-zoom.svg" alt="" width="32" height="32">
+        </span>
+        <span class="ds-icon ds-icon--32" role="listitem" aria-label="handMove" data-icon="handMove">
+          <img src="assets/icons/hand-move.svg" alt="" width="32" height="32">
+        </span>
       </div>
     </section>
 
@@ -357,6 +369,63 @@
         <a class="ds-title-sidebar ds-title-sidebar--muted" href="#conclusions">Выводы</a>
         <a class="ds-title-sidebar ds-title-sidebar--muted" href="#contacts">Контакты</a>
       </nav>
+
+      <div class="ds-hint-panel-samples" aria-label="Hint panel samples">
+        <article class="ds-hint-panel" data-variant="mouse">
+          <header class="ds-hint-panel__header">
+            <div class="ds-hint-panel__tabs" role="tablist" aria-label="Устройство">
+              <span class="ds-title-sidebar" role="tab" aria-selected="true">Мышка</span>
+              <span class="ds-title-sidebar ds-title-sidebar--muted" role="tab" aria-selected="false">Тачпад</span>
+            </div>
+            <button type="button" class="ds-hint-panel__close" aria-label="Закрыть">
+              <span class="ds-icon" aria-hidden="true" data-icon="close">
+                <img src="assets/icons/close.svg" alt="" width="20" height="20">
+              </span>
+            </button>
+          </header>
+          <div class="ds-hint-panel__body">
+            <div class="ds-hint-panel__row">
+              <span class="ds-icon ds-icon--32" aria-hidden="true" data-icon="mouseZoom">
+                <img src="assets/icons/mouse-zoom.svg" alt="" width="32" height="32">
+              </span>
+              <p class="ds-hint-panel__text"><span class="ds-hint-panel__label">Изменить масштаб: </span>Зажми <span class="ds-hint-panel__key">Ctrl</span> и&nbsp;крути колёсико мыши.</p>
+            </div>
+            <div class="ds-hint-panel__row">
+              <span class="ds-icon ds-icon--32" aria-hidden="true" data-icon="mouseMove">
+                <img src="assets/icons/mouse-move.svg" alt="" width="32" height="32">
+              </span>
+              <p class="ds-hint-panel__text"><span class="ds-hint-panel__label">Перемещение: </span>Зажми <span class="ds-hint-panel__key">Space</span> и&nbsp;левую кнопку мышки.</p>
+            </div>
+          </div>
+        </article>
+        <article class="ds-hint-panel" data-variant="trackpad">
+          <header class="ds-hint-panel__header">
+            <div class="ds-hint-panel__tabs" role="tablist" aria-label="Устройство">
+              <span class="ds-title-sidebar ds-title-sidebar--muted" role="tab" aria-selected="false">Мышка</span>
+              <span class="ds-title-sidebar" role="tab" aria-selected="true">Тачпад</span>
+            </div>
+            <button type="button" class="ds-hint-panel__close" aria-label="Закрыть">
+              <span class="ds-icon" aria-hidden="true" data-icon="close">
+                <img src="assets/icons/close.svg" alt="" width="20" height="20">
+              </span>
+            </button>
+          </header>
+          <div class="ds-hint-panel__body">
+            <div class="ds-hint-panel__row">
+              <span class="ds-icon ds-icon--32" aria-hidden="true" data-icon="handZoom">
+                <img src="assets/icons/hand-zoom.svg" alt="" width="32" height="32">
+              </span>
+              <p class="ds-hint-panel__text"><span class="ds-hint-panel__label">Изменить масштаб: </span>Зажми тачпад двумя пальцами.</p>
+            </div>
+            <div class="ds-hint-panel__row">
+              <span class="ds-icon ds-icon--32" aria-hidden="true" data-icon="handMove">
+                <img src="assets/icons/hand-move.svg" alt="" width="32" height="32">
+              </span>
+              <p class="ds-hint-panel__text"><span class="ds-hint-panel__label">Перемещение: </span>Свайпни на&nbsp;тачпаде двумя пальцами</p>
+            </div>
+          </div>
+        </article>
+      </div>
 
       <div class="ds-card-samples">
         <article class="ds-card ds-card--default">

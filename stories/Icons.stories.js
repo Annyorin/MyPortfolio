@@ -25,6 +25,10 @@ const ICONS = [
     label: "arrow-left",
     dataIcon: "vuesax/linear/arrow-left",
   },
+  { key: "icons.mouse-zoom", label: "mouseZoom", dataIcon: "mouseZoom" },
+  { key: "icons.mouse-move", label: "mouseMove", dataIcon: "mouseMove" },
+  { key: "icons.hand-zoom", label: "handZoom", dataIcon: "handZoom" },
+  { key: "icons.hand-move", label: "handMove", dataIcon: "handMove" },
 ];
 
 /**
@@ -37,16 +41,19 @@ export const Default = {
     list.setAttribute("role", "list");
 
     for (const icon of ICONS) {
+      const size = icon.key.startsWith("icons.mouse") || icon.key.startsWith("icons.hand")
+        ? 32
+        : 24;
       const item = document.createElement("span");
-      item.className = "ds-icon";
+      item.className = size === 32 ? "ds-icon ds-icon--32" : "ds-icon";
       item.setAttribute("role", "listitem");
       item.setAttribute("aria-label", icon.label);
       item.dataset.icon = icon.dataIcon;
       const img = document.createElement("img");
       img.src = resolveAsset(icon.key);
       img.alt = "";
-      img.width = 24;
-      img.height = 24;
+      img.width = size;
+      img.height = size;
       item.appendChild(img);
       list.appendChild(item);
     }

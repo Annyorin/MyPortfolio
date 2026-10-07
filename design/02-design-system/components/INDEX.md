@@ -1,7 +1,7 @@
 ---
 type: index
 env: 02-design-system
-updated: 2026-09-26
+updated: 2026-10-07
 ---
 
 # Индекс компонентов
@@ -10,7 +10,7 @@ updated: 2026-09-26
 
 | Компонент | Файл | Статус | Обновлён | node-id |
 |-----------|------|--------|----------|---------|
-| Icons (24 + social 20) | `icons.md` | synced | 2026-09-13 | `41:11521` |
+| Icons (24 + social 20 + gesture 32) | `icons.md` | synced | 2026-10-07 | `41:11521` (+ `603:18092` / `603:18130` / `566:29549` / `603:18274`) |
 | Avatar90 | `avatar.md` | synced | 2026-09-08 | `41:11499` |
 | Profile | `profile.md` | synced | 2026-09-08 | `40:1187` |
 | ProfileMobile | `profile-mobile.md` | synced | 2026-09-08 | `169:11933` |
@@ -21,6 +21,7 @@ updated: 2026-09-26
 | Stiker | `stiker.md` | synced | 2026-09-08 | `41:1517` |
 | Tooltip | `tooltip.md` | synced | 2026-09-08 | `92:11490` |
 | Hint | `hint.md` | synced | 2026-09-14 | `251:21308` |
+| Hint panel (Figma Hint) | `hint-panel.md` | synced | 2026-10-07 | `603:18197` (`603:18196` / `603:18195`) |
 | Hover / CursorHover | `hover.md` | synced | 2026-09-08 | `41:1548` |
 | CursorFigma | `cursor-figma.md` | synced | 2026-09-08 | `163:11657` |
 | FloatingAction | `floating-action.md` | synced | 2026-09-08 | `169:13303` |
@@ -39,4 +40,4 @@ updated: 2026-09-26
 
 Статусы: `draft` → `in-figma` → `synced` → `deprecated`.
 
-Именованных единиц в Figma Ui kit (основные): **≈51+**. Файлов-карточек: **26**.
+Именованных единиц в Figma Ui kit (основные): **≈56+**. Файлов-карточек: **27**.

@@ -1,7 +1,7 @@
 ---
 type: registry
 env: 02-design-system
-updated: 2026-09-26
+updated: 2026-10-07
 mcp: remote https://mcp.figma.com/mcp
 account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 ---
@@ -34,7 +34,7 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Компонент | node-id | fileKey | Назначение | Варианты | Локальный файл | Статус | Синк |
 |-----------|---------|---------|------------|----------|----------------|--------|------|
 | Ui kit (frame) | `41:11520` | xboMnqU5JURL0xlzxN7edN | Витрина foundations + компонентов | — | — | synced | 2026-09-08 |
-| Icons | `41:11521` | xboMnqU5JURL0xlzxN7edN | Группа иконок 24×24 | close, Plus, Minus, arrow-right, arrow-left, Burger_menu | `components/icons.md` | synced | 2026-09-13 |
+| Icons | `41:11521` | xboMnqU5JURL0xlzxN7edN | Группа иконок 24×24 + gesture 32×32 | close, Plus, Minus, arrow-right, arrow-left, Burger_menu, mouseZoom, mouseMove, handZoom, handMove | `components/icons.md` | synced | 2026-10-07 |
 | close | `40:1179` | xboMnqU5JURL0xlzxN7edN | Закрытие | — | `components/icons.md` | synced | 2026-09-08 |
 | Plus (set) | `55:9404` | xboMnqU5JURL0xlzxN7edN | Добавить | default, hover | `components/icons.md` | synced | 2026-09-08 |
 | Minus (set) | `55:9407` | xboMnqU5JURL0xlzxN7edN | Убрать | default, hover | `components/icons.md` | synced | 2026-09-08 |
@@ -67,6 +67,13 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Stiker | `41:1517` | xboMnqU5JURL0xlzxN7edN | Бейдж «Обо мне» 81×32 | default | `components/stiker.md` | synced | 2026-09-08 |
 | Tooltip | `92:11490` | xboMnqU5JURL0xlzxN7edN | Подсказка pill | default | `components/tooltip.md` | synced | 2026-09-08 |
 | Hint | `251:21308` | xboMnqU5JURL0xlzxN7edN | Белая tip у стикеров Macbook · max ~252 · radius 0 25 25 25 | default | `components/hint.md` | synced | 2026-09-14 |
+| Hint panel (Figma Hint) | `603:18197` | xboMnqU5JURL0xlzxN7edN | Панель жестов камеры · 350×173 · radius 16 · `.ds-hint-panel` | mouse, trackpad | `components/hint-panel.md` | synced | 2026-10-07 |
+| Hint panel / mouse | `603:18196` | xboMnqU5JURL0xlzxN7edN | Hint panel · Property 1=mouse | mouse | `components/hint-panel.md` | synced | 2026-10-07 |
+| Hint panel / trackpad | `603:18195` | xboMnqU5JURL0xlzxN7edN | Hint panel · Property 1=trackpad | trackpad | `components/hint-panel.md` | synced | 2026-10-07 |
+| mouseZoom | `603:18092` | xboMnqU5JURL0xlzxN7edN | Gesture icon 32×32 | — | `components/icons.md` · `icons/mouse-zoom.svg` | synced | 2026-10-07 |
+| mouseMove | `603:18130` | xboMnqU5JURL0xlzxN7edN | Gesture icon 32×32 | — | `components/icons.md` · `icons/mouse-move.svg` | synced | 2026-10-07 |
+| handZoom | `566:29549` | xboMnqU5JURL0xlzxN7edN | Gesture icon 32×32 | — | `components/icons.md` · `icons/hand-zoom.svg` | synced | 2026-10-07 |
+| handMove | `603:18274` | xboMnqU5JURL0xlzxN7edN | Gesture icon 32×32 | — | `components/icons.md` · `icons/hand-move.svg` | synced | 2026-10-07 |
 | CursorHover (Hover) | `41:1548` | xboMnqU5JURL0xlzxN7edN | CTA Behance+arrow 114×40 | default | `components/hover.md` | synced | 2026-09-08 |
 | FloatingAction | `169:13303` | xboMnqU5JURL0xlzxN7edN | FAB 50×50 arrow-up | default | `components/floating-action.md` | synced | 2026-09-08 |
 | Card | `40:1209` | xboMnqU5JURL0xlzxN7edN | Карточка 310×310 | default, hover | `components/card.md` | synced | 2026-09-13 |
@@ -111,8 +118,8 @@ account: makjsgjyeqei (allysonspiller1953@lembituses.com)
 | Группа | node-id / коллекция | Назначение | Локальный файл | Синк |
 |--------|---------------------|------------|----------------|------|
 | Color | Ui kit `41:11520` | Primary, Secondary, White, Black, Gray_text, Gray_dark, GrayL, Primary_hover | `foundations/color.md` | 2026-09-08 |
-| Typography | Ui kit `41:11520` / `41:1558` | H1, H2, Text/Text1, Text2 14/20, Caption (Inter) | `foundations/typography.md` | 2026-10-06 |
-| Effects | Ui kit `41:11520` | Shadow (Card default+hover, Sidebar, SegmentsControl pill); Mobile (MenuMobile); вв (не к Card); FAB blur 4.5 | `foundations/elevation.md` | 2026-09-13 |
+| Typography | Ui kit `41:11520` / `41:1558` | H1, H2, Text/Text1, Text2 14/20, Caption, Text3 14/20 Medium (Hint panel) | `foundations/typography.md` | 2026-10-07 |
+| Effects | Ui kit `41:11520` | Shadow (Card default+hover, Sidebar, SegmentsControl pill, Hint, Hint panel); Mobile (MenuMobile); вв (не к Card); FAB blur 4.5 | `foundations/elevation.md` | 2026-10-07 |
 
 ## Страницы библиотеки
 

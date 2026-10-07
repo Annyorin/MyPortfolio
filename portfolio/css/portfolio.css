@@ -270,6 +270,22 @@ html.is-boot-reveal .viewport {
   transform: translateY(-50%);
 }
 
+/* Hint panel — Figma 51:4107 instance 603:18346, 24px from right and bottom. */
+.scene-hint-panel {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 50;
+  pointer-events: auto;
+  cursor: auto;
+}
+
+@media (max-width: 1023px) {
+  .scene-hint-panel {
+    display: none !important;
+  }
+}
+
 .scene-chrome[data-node-kind="sidebar"],
 .scene-chrome.ds-sidebar {
   top: 24px;
@@ -802,7 +818,8 @@ html[data-theme="dark"] .viewport.portfolio--mobile {
 .viewport.portfolio--mobile #camera-pan,
 .viewport.portfolio--mobile .camera-pan,
 .viewport.portfolio--mobile .scene-infinite-bg,
-.viewport.portfolio--mobile .scene-chrome {
+.viewport.portfolio--mobile .scene-chrome,
+.viewport.portfolio--mobile .scene-hint-panel {
   display: none !important;
 }
 
@@ -897,6 +914,9 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
   line-height: var(--type-text-2-line);
   font-weight: var(--type-text-2-weight);
   color: var(--color-black);
+  /* Desktop \\n wraps are for 310px sidebar; on <1024 fill the sheet width. */
+  white-space: normal;
+  width: 100%;
 }
 
 .portfolio-mobile__sidebar .ds-sidebar__skills {

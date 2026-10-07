@@ -243,7 +243,7 @@ describe("TC-E2E-01 Atomic + Icons inventory and sizes", () => {
 
     const icons = /aria-labelledby=["']section-icons["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(icons);
-    assert.equal((icons[0].match(/class="ds-icon"/g) || []).length, 14);
+    assert.equal((icons[0].match(/class="ds-icon(?:\s|")/g) || []).length, 18);
 
     const atomic = /aria-labelledby=["']section-atomic["'][\s\S]*?<\/section>/i.exec(html);
     assert.ok(atomic);
@@ -334,6 +334,10 @@ describe("TC-E2E-01 Atomic + Icons inventory and sizes", () => {
         "/assets/icons/cv.svg",
         "/assets/icons/mail.svg",
         "/assets/icons/cursor-figma.svg",
+        "/assets/icons/mouse-zoom.svg",
+        "/assets/icons/mouse-move.svg",
+        "/assets/icons/hand-zoom.svg",
+        "/assets/icons/hand-move.svg",
         "/assets/images/avatar.png",
       ]) {
         const res = await httpGet(port, p);

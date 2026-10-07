@@ -41,6 +41,11 @@
   --type-text-2-line: 20px;
   --type-text-2-weight: 400;
 
+  /* TypographyStyle — Text 3: 14px / 20px / 500 · Hint panel markerHint */
+  --type-text-3-size: 14px;
+  --type-text-3-line: 20px;
+  --type-text-3-weight: 500;
+
   /* TypographyStyle — Caption: 12px / 16px / 500 (Подписи) */
   --type-caption-size: 12px;
   --type-caption-line: 16px;

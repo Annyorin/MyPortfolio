@@ -37,6 +37,7 @@ const STORY_GROUPS = [
   "TitleSidebar",
   "SideNav",
   "MenuMobile",
+  "HintPanel",
   "FloatingAction",
   "CursorFigma",
   "Icons",
@@ -64,6 +65,7 @@ const CONTENT_STORY_GROUPS = [
   "TitleSidebar",
   "SideNav",
   "MenuMobile",
+  "HintPanel",
   "AboutMe",
 ];
 

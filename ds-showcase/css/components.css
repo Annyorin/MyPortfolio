@@ -41,6 +41,28 @@ html.is-pointer-focus :focus-visible {
   height: 100%;
 }
 
+.ds-icon--32 {
+  width: 32px;
+  height: 32px;
+}
+
+/* Figma mouseMove 603:18130 — glyph 32.42×37.89 in a 32 slot (inset -9.2% / -0.66%) */
+.ds-icon--32[data-icon="mouseMove"] {
+  position: relative;
+  overflow: visible;
+}
+
+.ds-icon--32[data-icon="mouseMove"] > img {
+  position: absolute;
+  top: -9.2%;
+  right: -0.66%;
+  bottom: -9.2%;
+  left: -0.66%;
+  width: auto;
+  height: auto;
+  max-width: none;
+}
+
 /* Plus/Minus default↔hover swap (Figma Ui kit 41:11520) */
 .ds-icon--swap {
   position: relative;
@@ -404,6 +426,149 @@ html.is-pointer-focus :focus-visible {
   box-shadow: var(--shadow);
   pointer-events: none;
   white-space: normal;
+}
+
+/* —— Hint panel (Figma Hint 603:18197 · mouse 603:18196 / trackpad 603:18195) —— */
+.ds-hint-panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 350px;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: var(--color-white);
+  box-shadow: var(--shadow);
+}
+
+.ds-hint-panel__header {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 45px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-secondary);
+}
+
+.ds-hint-panel__tabs {
+  display: flex;
+  align-items: center;
+}
+
+.ds-hint-panel__tabs .ds-title-sidebar {
+  box-sizing: border-box;
+  width: 73px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: inherit;
+  text-align: start;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.ds-hint-panel__tabs .ds-title-sidebar:hover,
+.ds-hint-panel__tabs .ds-title-sidebar[aria-selected="true"] {
+  color: var(--color-black);
+}
+
+.ds-hint-panel__tabs .ds-title-sidebar--muted {
+  cursor: pointer;
+  color: var(--color-gray-text);
+}
+
+.ds-hint-panel__tabs .ds-title-sidebar--muted:hover {
+  color: var(--color-black);
+}
+
+.ds-hint-panel__close {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-black);
+}
+
+.ds-hint-panel__close .ds-icon {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+  background-color: currentColor;
+  -webkit-mask-image: url("../assets/icons/close.svg");
+  mask-image: url("../assets/icons/close.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+}
+
+.ds-hint-panel__close .ds-icon > img {
+  opacity: 0;
+}
+
+.ds-hint-panel__close:hover {
+  color: var(--color-gray-text);
+}
+
+.ds-hint-panel__close:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.ds-hint-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.ds-hint-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+}
+
+.ds-hint-panel__text {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: Inter, sans-serif;
+  font-size: var(--type-text-size);
+  line-height: var(--type-text-line);
+  font-weight: var(--type-text-weight);
+  color: var(--color-black);
+}
+
+.ds-hint-panel__label {
+  font-weight: var(--type-h2-weight);
+}
+
+.ds-hint-panel__key {
+  display: inline;
+  padding: 0 4px;
+  border-radius: 2px;
+  background-color: #eff7fe;
+  color: var(--color-primary);
+  font-size: var(--type-text-3-size);
+  line-height: var(--type-text-3-line);
+  font-weight: var(--type-text-3-weight);
+}
+
+html[data-theme="dark"] .ds-hint-panel__key {
+  background-color: color-mix(in srgb, var(--color-primary) 18%, var(--color-white));
 }
 
 /* —— Tapper —— */

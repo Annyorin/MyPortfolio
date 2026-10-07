@@ -5,7 +5,7 @@ env: 02-design-system
 status: synced
 source: figma
 figma-node: "41:11646"
-updated: 2026-09-06
+updated: 2026-10-07
 ---
 
 # Типографика
@@ -19,6 +19,7 @@ updated: 2026-09-06
 | Text | 16 / 20 | Regular 400 | Text | Текст · 16/20 reg |
 | Text2 | 14 / 20 | Regular 400 | Text2 · `41:1558` | Текст 2 · 14/20 reg |
 | Caption | 12 / 16 | Medium 500 | Caption | Подписи · 12/16 med |
+| Text3 | 14 / 20 | Medium 500 | Text3 (Hint panel markerHint) | — |
 
 Letter-spacing: `0` у всех стилей.
 
