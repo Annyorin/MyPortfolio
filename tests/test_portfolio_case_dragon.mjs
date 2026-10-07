@@ -108,7 +108,14 @@ describe("portfolio case-dragon page", () => {
     assert.match(contentMap["case.dragon.intro_body"], /## Цель/);
     assert.match(contentMap["case.dragon.intro_body"], /## Критерии успеха/);
     assert.match(contentMap["case.dragon.intro_body"], /## Как сейчас/);
-    assert.match(contentMap["case.dragon.intro_body"], /\[\[img:case\.dragon\.as_is\]\]/);
+    assert.match(
+      contentMap["case.dragon.intro_body"],
+      /\[\[imgscroll:case\.dragon\.as_is,case\.dragon\.as_is_2,case\.dragon\.as_is_3\]\]/
+    );
+    assert.doesNotMatch(
+      contentMap["case.dragon.intro_body"],
+      /\[\[img:case\.dragon\.as_is(?:_2|_3)?\]\]/
+    );
     assert.match(contentMap["case.dragon.analysis_body"], /## Конкуренты/);
     assert.match(contentMap["case.dragon.analysis_body"], /MaxPatrol/);
     assert.match(contentMap["case.dragon.analysis_body"], /Weeek/);
@@ -175,6 +182,8 @@ describe("portfolio case-dragon page", () => {
     for (const key of [
       "case.dragon.hero",
       "case.dragon.as_is",
+      "case.dragon.as_is_2",
+      "case.dragon.as_is_3",
       "case.dragon.competitors",
       "case.dragon.ia",
       "case.dragon.flow",
@@ -190,6 +199,18 @@ describe("portfolio case-dragon page", () => {
         `${rel} must exist`
       );
     }
+    for (const key of ["case.dragon.ia", "case.dragon.flow"]) {
+      const full = contentMap.assets[key]?.fullPathFromDsRoot;
+      assert.ok(full, `${key} fullPathFromDsRoot missing`);
+      assert.ok(
+        fs.existsSync(abs(`ds-showcase/assets/${full}`)),
+        `${full} must exist`
+      );
+    }
+    assert.equal(contentMap.assets["case.dragon.ia"]?.intrinsicWidth, 572);
+    assert.equal(contentMap.assets["case.dragon.ia"]?.intrinsicHeight, 167);
+    assert.equal(contentMap.assets["case.dragon.flow"]?.intrinsicWidth, 572);
+    assert.equal(contentMap.assets["case.dragon.flow"]?.intrinsicHeight, 162);
   });
 
   it("contentMap wraps InnoDragon highlighter phrases in == markers", async () => {
@@ -228,6 +249,29 @@ describe("portfolio case-dragon page", () => {
     const src = read("portfolio/js/case.js");
     assert.match(src, /export function initCasePage/);
     assert.match(src, /export function setupCaseReveal/);
+    assert.match(src, /CASE_IMGSCROLL_MARKER_RE/);
+    assert.match(src, /createCasePictureScroll/);
+    assert.match(src, /bindCaseHscrollDrag/);
+    assert.match(src, /bindCaseHscrollWheel/);
+    assert.match(src, /passive:\s*false/);
+    assert.match(src, /event\.ctrlKey\s*\|\|\s*event\.metaKey/);
+    assert.match(src, /CASE_HSCROLL_DRAG_THRESHOLD_PX/);
+    assert.match(src, /watchCaseHscrollFit/);
+    assert.match(src, /isCaseHscrollScrollable/);
+    assert.match(src, /case-page__hscroll-expand/);
+    assert.match(src, /Открыть экраны в просмотре/);
+    assert.match(src, /case-page__lightbox-frame/);
+    assert.match(src, /LIGHTBOX_STRIP_GAP/);
+    assert.match(src, /sourcesFromHscroll/);
+    assert.match(src, /openItems/);
+    assert.match(src, /is-scrollable/);
+    assert.match(
+      src,
+      /setPointerCapture[\s\S]*CASE_HSCROLL_DRAG_THRESHOLD_PX|CASE_HSCROLL_DRAG_THRESHOLD_PX[\s\S]*setPointerCapture/
+    );
+    assert.match(src, /classList\.toggle\("is-scrollable"/);
+    assert.match(src, /case-page__picture--scroll/);
+    assert.match(src, /case-page__hscroll/);
     assert.match(src, /fillContent\(contentMap,\s*caseId\);\s*const unbindReveal = setupCaseReveal\(\)/);
     assert.match(src, /rootMargin:\s*["']0px 0px -8% 0px["']/);
     assert.match(src, /threshold:\s*\[\s*0\s*,\s*0\.12\s*\]/);
@@ -246,6 +290,7 @@ describe("portfolio case-dragon page", () => {
     assert.match(src, /documentElement\.classList\.toggle\("is-drawer-open"/);
     assert.match(src, /dataset\.caseId|caseKeyPrefix/);
     assert.match(src, /data-case-long-only|applyCaseLengthMode/);
+    assert.match(src, /link\.hidden = Boolean\(section\.hidden\)/);
     assert.match(src, /bindNextCaseLink|case-page__next/);
     assert.match(src, /next_url/);
     assert.match(src, /from ["']\.\.\/\.\.\/ds-showcase\/js\/segments\.js["']/);
@@ -263,6 +308,55 @@ describe("portfolio case-dragon page", () => {
     assert.match(css, /\.case-page__shell/);
     assert.match(css, /\.case-page__sidebar/);
     assert.match(css, /\.case-page__toolbar/);
+    assert.match(css, /\.case-page__picture--scroll/);
+    assert.match(
+      css,
+      /\.case-page__picture--scroll\s*\{[^}]*position:\s*relative/s
+    );
+    // Shared hug: --scroll/--inline keep height auto.
+    assert.match(
+      css,
+      /\.case-page__picture--scroll\s*\{[^}]*aspect-ratio:\s*auto/s
+    );
+    assert.match(
+      css,
+      /\.case-page__picture--inline\s*\{[^}]*max-height:\s*none/s
+    );
+    assert.match(
+      css,
+      /@media\s*\(max-width:\s*768px\)[\s\S]*?\.case-page__picture--scroll\s*,\s*\.case-page__picture--inline\s*\{[^}]*max-height:\s*none/s
+    );
+    assert.match(css, /\.case-page__hscroll/);
+    assert.match(
+      css,
+      /\.case-page__hscroll\s*\{[^}]*touch-action:\s*pan-x/s
+    );
+    assert.match(
+      css,
+      /\.case-page__hscroll\s*\{[^}]*-webkit-overflow-scrolling:\s*touch/s
+    );
+    assert.match(css, /\.case-page__hscroll\.is-scrollable/);
+    assert.match(css, /\.case-page__hscroll-expand/);
+    assert.match(
+      css,
+      /\.case-page__lightbox-frame[^{]*\{[^}]*flex-direction:\s*row/s
+    );
+    assert.match(css, /\.case-page__hscroll-track/);
+    assert.match(css, /\.case-page__hscroll-img/);
+    // Caption→frames gap 16 on --scroll (shared with phish; was display:block).
+    assert.match(
+      css,
+      /body\.case-page\[data-case-id=["']phish["']\]\s+\.case-page__picture--scroll\s*,\s*body\.case-page\[data-case-id=["']dragon["']\]\s+\.case-page__picture--scroll\s*\{[^}]*gap:\s*16px/s
+    );
+    assert.match(css, /width:\s*530px/);
+    assert.match(css, /height:\s*269px/);
+    assert.match(css, /aspect-ratio:\s*530\s*\/\s*269/);
+    assert.doesNotMatch(css, /349\s*\/\s*177|min\(349px|min\(280px/);
+    assert.match(css, /overflow-x:\s*auto/);
+    assert.match(
+      css,
+      /\.case-page__hscroll\.is-scrollable\s+\[data-case-zoomable\]/
+    );
     assert.match(css, /position:\s*sticky/);
     assert.match(css, /@media\s*\(min-width:\s*1920px\)/);
     assert.match(css, /@media\s*\(max-width:\s*1365px\)/);

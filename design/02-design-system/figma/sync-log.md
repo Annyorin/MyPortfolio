@@ -1,7 +1,7 @@
 ---
 type: log
 env: 02-design-system
-updated: 2026-09-26
+updated: 2026-10-07
 ---
 
 # Лог синхронизаций с Figma
@@ -10,6 +10,12 @@ updated: 2026-09-26
 
 | Дата | Направление | node-id | Что затронуто | Результат |
 |------|-------------|---------|---------------|-----------|
+| 2026-10-07 | read whoami | — | OAuth session | ok · makjsgjyeqei · student Full |
+| 2026-10-07 | read screenshot+metadata+variables | `603:18197` | Hint set 390×495 · mouse/trackpad 350×173 | ok |
+| 2026-10-07 | read design_context | `603:18196` `603:18195` | Hint panel variants + copy + markerHint | ok |
+| 2026-10-07 | read metadata | `603:18092` `603:18130` `566:29549` `603:18274` | gesture icons 32×32 | ok |
+| 2026-10-07 | read download_assets svg | `603:18092` `603:18130` `566:29549` `603:18274` | export URLs (bytes: HTTP fetch blocked in session) | ok · URLs · local SVG written |
+| 2026-10-07 | write local | `603:18197` | hint-panel.md; icons 32×32; INDEX; registry; NOTES; manifest **v0.1.13** | ok |
 | 2026-09-26 | read+write local | `226:15768` `401:23328` | Header padding py16 / no px (снят pr 24); header.md; registry; INDEX; NOTES; manifest **v0.1.12** | ok · docs only |
 | 2026-09-26 | write local | `391:22957` `391:22959` `391:22958` | About me Plugin geometry + MacbookPng keys everywhere; close AABB 140.61 drift; manifest **v0.1.11** | ok · docs only |
 | 2026-09-26 | read metadata | `391:22957` `391:22958` | About me + MacbookPng sizes | ok · ≈209.6×116 · 310×226 |

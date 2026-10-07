@@ -19,6 +19,7 @@ import { resolveAsset as resolveAssetFull } from "./resolveAsset.js";
 import { withProgressiveAssets } from "./progressiveImages.js";
 import { mountScene } from "./scene.js";
 import { bindCanvasScrollbars } from "./scrollbars.js";
+import { bindHintPanel } from "./hintPanel.js";
 
 // The scene is handed light twins of the images; the originals are swapped in
 // once the loader is done (see bootDots.js).
@@ -352,6 +353,10 @@ export function initPortfolioStubs() {
   }
 
   syncMode();
+
+  if (viewportEl) {
+    bindHintPanel(viewportEl, { content: contentMap, resolveAsset });
+  }
 
   if (typeof window !== "undefined" && viewportEl) {
     window.addEventListener("resize", () => {

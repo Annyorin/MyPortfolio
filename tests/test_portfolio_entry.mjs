@@ -52,6 +52,7 @@ const STORY_GROUPS = [
   "TitleSidebar",
   "SideNav",
   "MenuMobile",
+  "HintPanel",
   "FloatingAction",
   "CursorFigma",
   "Icons",

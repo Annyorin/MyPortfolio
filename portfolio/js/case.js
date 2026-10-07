@@ -82,11 +82,19 @@ const CASE_REVEAL_SELECTORS = [
   ".case-page__section-stub > .case-page__text-block",
   ".case-page__section-stub > .case-page__picture",
   ".case-page__section-stub .case-page__picture--inline",
+  ".case-page__section-stub .case-page__picture--scroll",
   ".case-page__footer",
 ];
 
 /** Inline body marker: [[img:assetKey]] or [[img:assetKey|Caption]]. */
 const CASE_IMG_MARKER_RE = /^\[\[img:([a-zA-Z0-9._-]+)(?:\|([^\]]*))?\]\]$/;
+
+/**
+ * Horizontal scroll gallery: [[imgscroll:key1,key2,key3]] or
+ * [[imgscroll:key1,key2|caption]] (Figma ImgBlockScroll / troy `.case-hscroll`).
+ */
+const CASE_IMGSCROLL_MARKER_RE =
+  /^\[\[imgscroll:([a-zA-Z0-9._,-]+)(?:\|([^\]]*))?\]\]$/;
 
 /** Inline JTBD grid marker: [[jtbd:gridKey]] → contentMap.jtbdGrids[gridKey]. */
 const CASE_JTBD_MARKER_RE = /^\[\[jtbd:([a-zA-Z0-9._-]+)\]\]$/;
@@ -250,7 +258,11 @@ function appendBodyParagraphs(container, body, className = "case-page__text-body
     .filter(Boolean);
   const chunks = parts.length > 0 ? parts : [""];
   for (const part of chunks) {
-    if (CASE_IMG_MARKER_RE.test(part) || CASE_JTBD_MARKER_RE.test(part)) {
+    if (
+      CASE_IMG_MARKER_RE.test(part) ||
+      CASE_IMGSCROLL_MARKER_RE.test(part) ||
+      CASE_JTBD_MARKER_RE.test(part)
+    ) {
       continue;
     }
     const heading = part.match(/^##\s+(.+)$/);
@@ -383,6 +395,266 @@ function createCasePicture(assetKey, caption = "") {
   return wrap;
 }
 
+/** Mouse drag distance (px) before a pointer gesture counts as scroll, not click. */
+const CASE_HSCROLL_DRAG_THRESHOLD_PX = 6;
+
+const CASE_HSCROLL_EXPAND_LABEL = "Открыть экраны в просмотре";
+
+/** Heroicons-style expand corners (same path as troy case-expand). */
+const CASE_HSCROLL_EXPAND_ICON_PATH =
+  "M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15";
+
+/**
+ * @param {HTMLElement} scroller
+ * @returns {boolean}
+ */
+function isCaseHscrollScrollable(scroller) {
+  return scroller.scrollWidth > scroller.clientWidth + 1;
+}
+
+/**
+ * Toggle `is-scrollable` when the strip overflows; recheck on resize / img load.
+ *
+ * @param {HTMLElement} scroller
+ * @param {(scrollable: boolean) => void} apply
+ * @returns {void}
+ */
+function watchCaseHscrollFit(scroller, apply) {
+  const check = () => apply(isCaseHscrollScrollable(scroller));
+  check();
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(check).observe(scroller);
+  }
+  scroller.querySelectorAll("img").forEach((img) => {
+    if (!(img instanceof HTMLImageElement)) return;
+    if (!img.complete) img.addEventListener("load", check, { once: true });
+  });
+  window.addEventListener("resize", check);
+}
+
+/**
+ * Pointer-drag horizontal scroll (mouse). Touch keeps native overflow-x.
+ * Capture + `is-dragging` only after the move threshold — otherwise pointer
+ * capture would swallow the following click on zoomable frames.
+ * After a real drag, suppresses the following click so lightbox does not open.
+ *
+ * @param {HTMLElement} scroller
+ * @returns {void}
+ */
+function bindCaseHscrollDrag(scroller) {
+  let tracking = false;
+  let captured = false;
+  let moved = false;
+  let startX = 0;
+  let startScroll = 0;
+  /** @type {number | null} */
+  let activePointerId = null;
+
+  scroller.addEventListener("pointerdown", (event) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    /* Fit strip: no capture — otherwise it kills click → lightbox. */
+    if (!isCaseHscrollScrollable(scroller)) return;
+    tracking = true;
+    captured = false;
+    moved = false;
+    startX = event.clientX;
+    startScroll = scroller.scrollLeft;
+    activePointerId = event.pointerId;
+  });
+
+  scroller.addEventListener("pointermove", (event) => {
+    if (!tracking || event.pointerId !== activePointerId) return;
+    const dx = event.clientX - startX;
+    if (!moved && Math.abs(dx) < CASE_HSCROLL_DRAG_THRESHOLD_PX) return;
+    if (!captured) {
+      captured = true;
+      scroller.classList.add("is-dragging");
+      scroller.setPointerCapture(event.pointerId);
+    }
+    moved = true;
+    event.preventDefault();
+    scroller.scrollLeft = startScroll - dx;
+  });
+
+  /**
+   * @param {PointerEvent} event
+   * @returns {void}
+   */
+  function stop(event) {
+    if (!tracking) return;
+    tracking = false;
+    const wasMoved = moved;
+    if (captured) {
+      scroller.classList.remove("is-dragging");
+      try {
+        scroller.releasePointerCapture(event.pointerId);
+      } catch {
+        /* already released */
+      }
+    }
+    captured = false;
+    moved = false;
+    activePointerId = null;
+    if (!wasMoved) return;
+    /**
+     * @param {MouseEvent} clickEvent
+     * @returns {void}
+     */
+    const suppress = (clickEvent) => {
+      clickEvent.preventDefault();
+      clickEvent.stopPropagation();
+      scroller.removeEventListener("click", suppress, true);
+    };
+    scroller.addEventListener("click", suppress, true);
+  }
+
+  scroller.addEventListener("pointerup", stop);
+  scroller.addEventListener("pointercancel", stop);
+  scroller.addEventListener("dragstart", (event) => event.preventDefault());
+}
+
+/**
+ * Map wheel/trackpad on the Picture wrap to horizontal strip scroll.
+ * At the strip edges, leave page scroll alone. Ctrl/Meta+wheel stays zoom.
+ *
+ * @param {HTMLElement} wrap
+ * @param {HTMLElement} scroller
+ * @returns {void}
+ */
+function bindCaseHscrollWheel(wrap, scroller) {
+  wrap.addEventListener(
+    "wheel",
+    (event) => {
+      if (event.ctrlKey || event.metaKey) return;
+      if (!isCaseHscrollScrollable(scroller)) return;
+      const delta =
+        Math.abs(event.deltaX) > Math.abs(event.deltaY)
+          ? event.deltaX
+          : event.deltaY;
+      if (delta === 0) return;
+      const max = scroller.scrollWidth - scroller.clientWidth;
+      const atStart = scroller.scrollLeft <= 0;
+      const atEnd = scroller.scrollLeft >= max - 1;
+      if ((delta < 0 && atStart) || (delta > 0 && atEnd)) return;
+      event.preventDefault();
+      scroller.scrollLeft += delta;
+    },
+    { passive: false }
+  );
+}
+
+/**
+ * Expand control for scrollable hscroll (opens lightbox with every frame).
+ *
+ * @returns {HTMLButtonElement}
+ */
+function createCaseHscrollExpandButton() {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className =
+    "ds-button-round ds-button-round--outlined case-page__hscroll-expand";
+  btn.title = CASE_HSCROLL_EXPAND_LABEL;
+  btn.setAttribute("aria-label", CASE_HSCROLL_EXPAND_LABEL);
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "case-page__hscroll-expand-icon");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("width", "24");
+  svg.setAttribute("height", "24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "1.5");
+  svg.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("stroke-linecap", "round");
+  path.setAttribute("stroke-linejoin", "round");
+  path.setAttribute("d", CASE_HSCROLL_EXPAND_ICON_PATH);
+  svg.appendChild(path);
+  btn.appendChild(svg);
+  return btn;
+}
+
+/**
+ * Horizontal scroll gallery (Figma ImgBlockScroll): one secondary pad, N frames.
+ *
+ * @param {string[]} assetKeys
+ * @param {string} [caption]
+ * @returns {HTMLElement | null}
+ */
+function createCasePictureScroll(assetKeys, caption = "") {
+  const keys = (Array.isArray(assetKeys) ? assetKeys : [])
+    .map((key) => (typeof key === "string" ? key.trim() : ""))
+    .filter(Boolean);
+  if (keys.length === 0) return null;
+
+  const wrap = document.createElement("div");
+  wrap.className = "case-page__picture case-page__picture--scroll";
+  if (caption) {
+    const cap = document.createElement("p");
+    cap.className = "case-page__picture-caption";
+    cap.textContent = textOf(caption);
+    wrap.appendChild(cap);
+  }
+
+  const scroller = document.createElement("div");
+  scroller.className = "case-page__hscroll";
+  scroller.tabIndex = 0;
+  scroller.setAttribute("role", "region");
+  scroller.setAttribute(
+    "aria-label",
+    textOf(caption) || "Горизонтальная галерея скриншотов"
+  );
+
+  const track = document.createElement("div");
+  track.className = "case-page__hscroll-track";
+
+  keys.forEach((assetKey, index) => {
+    const item = document.createElement("div");
+    item.className = "case-page__hscroll-item";
+    item.setAttribute("data-case-zoomable", "");
+
+    const img = document.createElement("img");
+    img.className = "case-page__hscroll-img";
+    const assetRef = contentMap.assets?.[assetKey];
+    const frameW = assetRef?.intrinsicWidth;
+    const frameH = assetRef?.intrinsicHeight;
+    if (typeof frameW === "number" && frameW > 0) {
+      img.style.width = `${frameW}px`;
+    }
+    if (typeof frameH === "number" && frameH > 0) {
+      img.style.height = `${frameH}px`;
+    }
+    img.src = resolveAsset(assetKey);
+    const fullSrc = resolveAsset(assetKey, { full: true });
+    if (fullSrc && fullSrc !== img.src) {
+      img.dataset.fullSrc = fullSrc;
+    }
+    img.alt = assetKey;
+    img.decoding = "async";
+    if (index > 0) {
+      img.loading = "lazy";
+    }
+    img.draggable = false;
+
+    item.appendChild(img);
+    track.appendChild(item);
+  });
+
+  scroller.appendChild(track);
+  wrap.appendChild(scroller);
+
+  const expandBtn = createCaseHscrollExpandButton();
+  wrap.appendChild(expandBtn);
+
+  watchCaseHscrollFit(scroller, (on) => {
+    scroller.classList.toggle("is-scrollable", on);
+    wrap.classList.toggle("is-scrollable", on);
+  });
+  bindCaseHscrollDrag(scroller);
+  bindCaseHscrollWheel(wrap, scroller);
+  return wrap;
+}
+
 /**
  * Appends body parts into a section, opening/closing text blocks around images.
  *
@@ -432,6 +704,21 @@ function appendRichBody(
         picture.setAttribute("data-case-long-only", "");
       }
       ensureBlock().appendChild(picture);
+      continue;
+    }
+    const scrollMatch = part.match(CASE_IMGSCROLL_MARKER_RE);
+    if (scrollMatch) {
+      const keys = scrollMatch[1].split(",").map((key) => key.trim()).filter(Boolean);
+      const picture = createCasePictureScroll(
+        keys,
+        (scrollMatch[2] || "").trim()
+      );
+      if (picture) {
+        if (longOnly) {
+          picture.setAttribute("data-case-long-only", "");
+        }
+        ensureBlock().appendChild(picture);
+      }
       continue;
     }
     const jtbdMatch = part.match(CASE_JTBD_MARKER_RE);
@@ -522,7 +809,8 @@ function fillStubSection(sectionId, title, body, options = {}) {
 }
 
 /**
- * Short version hides long-only blocks (analysis + extra hypotheses detail).
+ * Short version hides long-only blocks (analysis + extra hypotheses detail)
+ * and drops those headings from the TOC.
  *
  * @param {boolean} isShort
  */
@@ -534,6 +822,15 @@ function applyCaseLengthMode(isShort) {
       node.hidden = isShort;
     }
   }
+  for (const link of document.querySelectorAll("[data-case-nav]")) {
+    if (!(link instanceof HTMLElement)) continue;
+    const id = String(link.getAttribute("data-case-nav") || "").trim();
+    const section = id ? document.getElementById(id) : null;
+    if (section instanceof HTMLElement) {
+      link.hidden = Boolean(section.hidden);
+    }
+  }
+  window.dispatchEvent(new Event("scroll"));
 }
 
 /**
@@ -871,9 +1168,15 @@ function bindSideNavActive(nav) {
   }
 
   function sync() {
+    const visible = sections.filter(
+      (section) => !section.link.hidden && !section.el.hidden
+    );
+    if (visible.length === 0) {
+      return;
+    }
     const marker = 120;
-    let current = sections[0].id;
-    for (const section of sections) {
+    let current = visible[0].id;
+    for (const section of visible) {
       const top = section.el.getBoundingClientRect().top;
       if (top - marker <= 0) {
         current = section.id;
@@ -1379,6 +1682,8 @@ export function setupCaseMarks() {
 
 const LIGHTBOX_SCALE_MAX = 8;
 const LIGHTBOX_ZOOM_FACTOR = 1.25;
+/** Gap between stacked hscroll frames in the lightbox (matches track). */
+const LIGHTBOX_STRIP_GAP = 8;
 /** Inset for the initial contain-fit so the full bitmap stays on-screen. */
 const LIGHTBOX_FIT_PAD_X = 24;
 const LIGHTBOX_FIT_PAD_TOP = 72;
@@ -1475,8 +1780,8 @@ function setupCaseLightbox() {
   let overlay = null;
   /** @type {HTMLElement | null} */
   let stage = null;
-  /** @type {HTMLImageElement | null} */
-  let overlayImg = null;
+  /** @type {HTMLElement | null} */
+  let overlayFrame = null;
   /** @type {HTMLButtonElement | null} */
   let closeBtn = null;
   /** @type {HTMLElement | null} */
@@ -1493,13 +1798,28 @@ function setupCaseLightbox() {
   let moved = false;
 
   /**
+   * @returns {HTMLImageElement[]}
+   */
+  function lightboxImages() {
+    if (!overlayFrame) return [];
+    return [...overlayFrame.querySelectorAll("img.case-page__lightbox-img")];
+  }
+
+  /**
+   * Combined natural size of 1..N frames in a row (gap matches hscroll track).
+   *
    * @returns {{w: number, h: number}}
    */
   function naturalSize() {
-    return {
-      w: overlayImg?.naturalWidth || 0,
-      h: overlayImg?.naturalHeight || 0,
-    };
+    const imgs = lightboxImages();
+    let w = 0;
+    let h = 0;
+    for (let i = 0; i < imgs.length; i += 1) {
+      w += imgs[i].naturalWidth || 0;
+      h = Math.max(h, imgs[i].naturalHeight || 0);
+      if (i > 0) w += LIGHTBOX_STRIP_GAP;
+    }
+    return { w, h };
   }
 
   /**
@@ -1522,12 +1842,19 @@ function setupCaseLightbox() {
    * @returns {void}
    */
   function draw() {
-    if (!overlayImg) return;
+    const imgs = lightboxImages();
+    if (!imgs.length || !overlayFrame) return;
     clampPan();
-    const { w: nw, h: nh } = naturalSize();
-    overlayImg.style.width = `${Math.max(1, Math.round(nw * k))}px`;
-    overlayImg.style.height = `${Math.max(1, Math.round(nh * k))}px`;
-    overlayImg.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    overlayFrame.style.gap = `${
+      imgs.length > 1 ? LIGHTBOX_STRIP_GAP * k : 0
+    }px`;
+    for (const img of imgs) {
+      const nw = img.naturalWidth || 0;
+      const nh = img.naturalHeight || 0;
+      img.style.width = `${Math.max(1, Math.round(nw * k))}px`;
+      img.style.height = `${Math.max(1, Math.round(nh * k))}px`;
+    }
+    overlayFrame.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
     const zoomed = k > fit * 1.001;
     stage?.classList.toggle("is-zoomed", zoomed);
     if (tapper) {
@@ -1553,7 +1880,7 @@ function setupCaseLightbox() {
    * @returns {void}
    */
   function fitScreen() {
-    if (!stage || !overlayImg) return;
+    if (!stage || !lightboxImages().length) return;
     const box = stage.getBoundingClientRect();
     const { w, h } = naturalSize();
     if (!w || !h || box.width <= 0 || box.height <= 0) return;
@@ -1638,20 +1965,16 @@ function setupCaseLightbox() {
 
     stage = document.createElement("div");
     stage.className = "case-page__lightbox-stage";
-    overlayImg = document.createElement("img");
-    overlayImg.className = "case-page__lightbox-img";
-    overlayImg.alt = "";
-    overlayImg.decoding = "async";
-    overlayImg.draggable = false;
-    overlayImg.addEventListener("load", () => fitScreen());
-    overlayImg.addEventListener("dragstart", (event) => event.preventDefault());
-    overlayImg.addEventListener("dblclick", (event) => {
+    overlayFrame = document.createElement("div");
+    overlayFrame.className = "case-page__lightbox-frame";
+    overlayFrame.addEventListener("dragstart", (event) => event.preventDefault());
+    overlayFrame.addEventListener("dblclick", (event) => {
       if (!stage) return;
       const box = stage.getBoundingClientRect();
       if (k > fit * 1.5) fitScreen();
       else zoomBy(2, event.clientX - box.left, event.clientY - box.top);
     });
-    stage.appendChild(overlayImg);
+    stage.appendChild(overlayFrame);
 
     stage.addEventListener(
       "wheel",
@@ -1805,14 +2128,19 @@ function setupCaseLightbox() {
   }
 
   /**
-   * @param {string} src
-   * @param {string} [alt]
+   * @param {{ src: string, alt?: string }[]} items
    * @returns {void}
    */
-  function open(src, alt = "") {
-    if (!src) return;
+  function openItems(items) {
+    const list = (Array.isArray(items) ? items : [])
+      .map((item) => ({
+        src: typeof item?.src === "string" ? item.src.trim() : "",
+        alt: typeof item?.alt === "string" ? item.alt : "",
+      }))
+      .filter((item) => item.src);
+    if (!list.length) return;
     ensureOverlay();
-    if (!overlay || !overlayImg) return;
+    if (!overlay || !overlayFrame) return;
     k = 1;
     fit = 1;
     x = 0;
@@ -1820,22 +2148,44 @@ function setupCaseLightbox() {
     pointers.clear();
     moved = false;
     panning = false;
-    overlayImg.removeAttribute("width");
-    overlayImg.removeAttribute("height");
-    overlayImg.style.width = "";
-    overlayImg.style.height = "";
-    overlayImg.style.transform = "";
-    overlayImg.src = src;
-    overlayImg.alt = alt || "";
+    overlayFrame.replaceChildren();
+    overlayFrame.style.transform = "";
+    overlayFrame.style.gap = "";
+    for (const item of list) {
+      const img = document.createElement("img");
+      img.className = "case-page__lightbox-img";
+      img.alt = item.alt;
+      img.decoding = "async";
+      img.draggable = false;
+      img.addEventListener("load", () => {
+        const ready = lightboxImages().every(
+          (el) => el.complete && el.naturalWidth
+        );
+        if (ready) fitScreen();
+      });
+      img.src = item.src;
+      overlayFrame.appendChild(img);
+    }
+    overlay.setAttribute(
+      "aria-label",
+      list.length > 1 ? "Просмотр изображений" : "Просмотр изображения"
+    );
     overlay.removeAttribute("hidden");
     document.documentElement.classList.add("is-case-lightbox-open");
     document.body.classList.add("is-case-lightbox-open");
-    if (overlayImg.complete && overlayImg.naturalWidth) {
-      fitScreen();
-    } else {
-      requestAnimationFrame(() => fitScreen());
-    }
+    const ready = lightboxImages().every((el) => el.complete && el.naturalWidth);
+    if (ready) fitScreen();
+    else requestAnimationFrame(() => fitScreen());
     closeBtn?.focus?.({ preventScroll: true });
+  }
+
+  /**
+   * @param {string} src
+   * @param {string} [alt]
+   * @returns {void}
+   */
+  function open(src, alt = "") {
+    openItems([{ src, alt }]);
   }
 
   /**
@@ -1844,12 +2194,10 @@ function setupCaseLightbox() {
   function close() {
     if (!overlay) return;
     overlay.setAttribute("hidden", "");
-    if (overlayImg) {
-      overlayImg.removeAttribute("src");
-      overlayImg.alt = "";
-      overlayImg.style.transform = "";
-      overlayImg.style.width = "";
-      overlayImg.style.height = "";
+    if (overlayFrame) {
+      overlayFrame.replaceChildren();
+      overlayFrame.style.transform = "";
+      overlayFrame.style.gap = "";
     }
     k = 1;
     fit = 1;
@@ -1871,14 +2219,59 @@ function setupCaseLightbox() {
     const target = event.target;
     if (!(target instanceof Element)) return;
     if (target.closest(".case-page__lightbox")) return;
+
+    /**
+     * @param {Element} from
+     * @returns {{ src: string, alt: string }[]}
+     */
+    function sourcesFromHscroll(from) {
+      const wrap = from.closest(".case-page__picture--scroll");
+      const scroller = wrap?.querySelector(".case-page__hscroll");
+      if (!scroller) return [];
+      return [...scroller.querySelectorAll("img.case-page__hscroll-img")]
+        .filter(
+          (img) =>
+            img instanceof HTMLImageElement && (img.currentSrc || img.src)
+        )
+        .map((img) => ({
+          src:
+            img.dataset.fullSrc?.trim() || img.currentSrc || img.src,
+          alt: img.alt || "",
+        }));
+    }
+
+    /* Strip: expand or a frame opens every screenshot, not only the first. */
+    const expandBtn = target.closest(".case-page__hscroll-expand");
+    if (expandBtn instanceof HTMLElement) {
+      const items = sourcesFromHscroll(expandBtn);
+      if (!items.length) return;
+      event.preventDefault();
+      openItems(items);
+      return;
+    }
+
+    const hscrollHit = target.closest(
+      ".case-page__hscroll-item, .case-page__hscroll-img"
+    );
+    if (hscrollHit instanceof HTMLElement) {
+      const items = sourcesFromHscroll(hscrollHit);
+      if (!items.length) return;
+      event.preventDefault();
+      openItems(items);
+      return;
+    }
+
     const picture = target.closest("[data-case-zoomable]");
     if (!(picture instanceof HTMLElement)) return;
     if (picture.classList.contains("is-empty")) return;
     const img =
       target instanceof HTMLImageElement &&
-      target.classList.contains("case-page__picture-img")
+      (target.classList.contains("case-page__picture-img") ||
+        target.classList.contains("case-page__hscroll-img"))
         ? target
-        : picture.querySelector(".case-page__picture-img");
+        : picture.querySelector(
+            ".case-page__picture-img, .case-page__hscroll-img"
+          );
     if (!(img instanceof HTMLImageElement) || !img.src) return;
     event.preventDefault();
     const fullSrc = img.dataset.fullSrc?.trim();
@@ -1927,7 +2320,7 @@ function setupCaseLightbox() {
     overlay?.remove();
     overlay = null;
     stage = null;
-    overlayImg = null;
+    overlayFrame = null;
     closeBtn = null;
     tapper = null;
   };

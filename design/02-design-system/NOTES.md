@@ -1,7 +1,7 @@
 ---
 type: notes
 env: 02-design-system
-updated: 2026-09-26
+updated: 2026-10-07
 ---
 
 # Рабочие заметки
@@ -9,7 +9,7 @@ updated: 2026-09-26
 Прогресс длинных задач этой среды. Читается и дополняется только внутри среды.
 
 ## Активная задача
-_нет_ — Header padding sync (снят pr 24) → manifest **v0.1.12**.
+_нет_ — Hint panel sync → manifest **v0.1.13**.
 
 ## Открытые вопросы
 _нет_
@@ -32,6 +32,7 @@ _нет_
 - 2026-09-14: Dragon/Phish = cover 308×190 как SityBike; зеркала card-innodragon/img-1, card-innophish/img-2.
 - 2026-09-14: stickers anime/books/create/question/seal/sport — декоратив About; SVG в `stickers/`.
 - 2026-09-14: **Hint** (`251:21308`) — white tip для Macbook sticker hover; PNG stickers + `macbook-lid.png` на сцене.
+- 2026-10-07: **Hint panel** (Figma Hint `603:18197`) ≠ sticker **Hint** (`251:21308` / `.ds-hint`); CSS `.ds-hint-panel`.
 - 2026-09-14: **Header** (`226:15768`) — **620×81**, py **16** (было 24 / 85); title = flex slot space-between, не absolute-center.
 - 2026-09-26: **Header** — снят **pr 24**; факт Figma `226:15768` + desktop `401:23328`: только **py 16 · px 0** (`padding: 16px 0`).
 - 2026-09-26: **About me** (`391:22957`, home `391:22959`) — frame **209.61×116.01**; children: me **83.45² @ +12.596°**, Macbook **126×92 @ −10°**, Stiker **81×32**; paint me→Macbook→Stiker; `.ds-about-me`.

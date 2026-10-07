@@ -80,6 +80,8 @@ function isBackgroundPanTarget(target, viewportEl) {
           ".ds-card",
           ".ds-link",
           ".ds-tapper",
+          ".ds-hint-panel",
+          ".scene-hint-panel",
           ".ds-sidebar",
           ".ds-stiker",
           ".ds-comp",

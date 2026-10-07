@@ -183,8 +183,8 @@ describe("TC-E2E-01 no-mock smoke entrypoint", () => {
 
       const iconsSection = /aria-labelledby=["']section-icons["'][\s\S]*?<\/section>/i.exec(html);
       assert.ok(iconsSection, "Icons section");
-      const iconSlots = iconsSection[0].match(/class="ds-icon"/g) || [];
-      assert.equal(iconSlots.length, 14, "Icons×14 (chrome×8 + social×5 + CursorFigma)");
+      const iconSlots = iconsSection[0].match(/class="ds-icon(?:\s|")/g) || [];
+      assert.equal(iconSlots.length, 18, "Icons×18 (chrome×8 + social×5 + CursorFigma + gesture×4)");
 
       const mediaSection = /aria-labelledby=["']section-media["'][\s\S]*?<\/section>/i.exec(html);
       assert.ok(mediaSection, "Media section");

@@ -202,6 +202,7 @@ body {
 .ds-link-samples,
 .ds-tooltip-samples,
 .ds-hint-samples,
+.ds-hint-panel-samples,
 .ds-title-sidebar-samples,
 .ds-segments-samples,
 .ds-card-samples,
@@ -241,6 +242,7 @@ body {
 .ds-section[aria-labelledby="section-composite"] > .ds-segments-samples,
 .ds-section[aria-labelledby="section-composite"] > .ds-side-nav,
 .ds-section[aria-labelledby="section-composite"] > .ds-menu-mobile,
+.ds-section[aria-labelledby="section-composite"] > .ds-hint-panel-samples,
 .ds-section[aria-labelledby="section-composite"] > .ds-card-samples,
 .ds-section[aria-labelledby="section-composite"] > .ds-sidebar,
 .ds-section[aria-labelledby="section-composite"] > .ds-about-me-samples {
@@ -260,6 +262,13 @@ body {
   gap: 16px;
   width: 100%;
   max-width: 620px;
+}
+
+.ds-hint-panel-samples {
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 350px;
 }
 
 /* Media: screen-spec / Figma Ui kit boxes (inline style keeps A2 proportions) */

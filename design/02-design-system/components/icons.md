@@ -3,13 +3,13 @@ type: ds-component
 env: 02-design-system
 status: synced
 figma-node: "41:11521"
-updated: 2026-09-13
+updated: 2026-10-07
 ---
 
 # Icons
 
 ## Назначение
-Набор иконок UI витрины: линейные 24×24 и social / tool 20×20.
+Набор иконок UI витрины: линейные 24×24, social / tool 20×20 и gesture 32×32.
 
 ## Анатомия
 Один глиф, без текста.
@@ -34,6 +34,17 @@ updated: 2026-09-13
 | telegram | `158:11186` | Telegram |
 | CursorFigma | `163:11657` | см. `cursor-figma.md` |
 
+## Варианты — 32×32 (gesture icons)
+
+Не путать с chrome 24×24. Файлы: `components/icons/*.svg`.
+
+| Вариант | node-id | Файл | Когда |
+|---------|---------|------|-------|
+| mouseZoom | `603:18092` | `icons/mouse-zoom.svg` | масштаб мышью (Hint panel mouse) |
+| mouseMove | `603:18130` | `icons/mouse-move.svg` | панорама мышью (Hint panel mouse) |
+| handZoom | `566:29549` | `icons/hand-zoom.svg` | масштаб тачпадом (Hint panel trackpad) |
+| handMove | `603:18274` | `icons/hand-move.svg` | панорама тачпадом (Hint panel trackpad) |
+
 ## Состояния
 default; Plus/Minus — default Black `#121214` / hover Gray_text `#888888` (Figma `55:9403`/`55:9402`, `55:9406`/`55:9405`).
 
@@ -42,9 +53,10 @@ default; Plus/Minus — default Black `#121214` / hover Gray_text `#888888` (Fig
 |----------|-------|
 | size UI | 24×24 fixed |
 | size social/tool | 20×20 fixed |
+| size gesture | 32×32 fixed |
 
 ## Правила применения
-Не растягивать. Стрелка вправо — в CursorHover / FloatingAction (−90°). Стрелка влево — в **Button** Text / **Header**. Burger_menu — мобильное меню. Social 20×20 — в **Button** и ряд контактов.
+Не растягивать. Стрелка вправо — в CursorHover / FloatingAction (−90°). Стрелка влево — в **Button** Text / **Header**. Burger_menu — мобильное меню. Social 20×20 — в **Button** и ряд контактов. Gesture 32×32 — только **Hint panel**.
 
 ## Чем не является
 Не декоративные иллюстрации (Comp / IMG_* / SityBike).

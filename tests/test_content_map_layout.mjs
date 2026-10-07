@@ -223,12 +223,12 @@ describe("content map / scene layout / resolveAsset", () => {
     }
     assert.equal(typeof contentMap.contactUrls, "object");
     assert.equal(contentMap.contactUrls["contact.telegram"], "https://t.me/Annyorina");
-    assert.equal(contentMap.contactUrls["contact.cv"], "assets/cv.pdf");
+    assert.equal(contentMap.contactUrls["contact.cv"], "assets/Резюме Ясинская А. Э..pdf");
     assert.equal(
       contentMap.contactUrls["contact.mail"],
       "mailto:annyorin@gmail.com"
     );
-    assert.ok(fs.existsSync(abs("portfolio/assets/cv.pdf")));
+    assert.ok(fs.existsSync(abs("portfolio/assets/Резюме Ясинская А. Э..pdf")));
   });
 
   it("shared content has no entry-relative ds-showcase path strings", async () => {

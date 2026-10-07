@@ -5,7 +5,7 @@ env: 02-design-system
 status: synced
 source: figma
 figma-node: "41:11646"
-updated: 2026-09-13
+updated: 2026-10-07
 ---
 
 # Радиусы и тени
@@ -14,7 +14,7 @@ updated: 2026-09-13
 
 | Токен | CSS | Значение | Применение |
 |-------|-----|----------|------------|
-| Shadow | `--shadow` | `0 5px 9px #BBBBBD40` | Card default + hover, Sidebar, SegmentsControl active pill |
+| Shadow | `--shadow` | `0 5px 9px #BBBBBD40` | Card default + hover, Sidebar, SegmentsControl active pill, Hint sticker, **Hint panel** |
 | Mobile | `--shadow-mobile` | `0 3px 9px #8B8B8E40` | MenuMobile |
 
 Figma Effect Shadow: `DROP_SHADOW`, color `#BBBBBD40`, offset `(0, 5)`, radius `9`, spread `0`.  

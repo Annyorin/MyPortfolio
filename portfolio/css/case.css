@@ -211,6 +211,10 @@ body.is-page-crossfading .case-page__fab {
   font-weight: var(--type-h2-weight);
 }
 
+.case-page__sidebar .ds-side-nav.ds-menu-mobile .ds-title-sidebar[hidden] {
+  display: none;
+}
+
 .case-page__sidebar .ds-side-nav a.ds-title-sidebar {
   text-decoration: none;
   color: var(--color-gray-text);
@@ -373,39 +377,20 @@ body.is-page-crossfading .case-page__fab {
   box-sizing: border-box;
   position: relative;
   width: 100%;
-  height: 307px;
+  height: auto;
   overflow: hidden;
   border-radius: 32px;
   background-color: var(--color-secondary);
 }
 
-@media (min-width: 769px) {
-  body.case-page[data-case-id="phish"]
-    .case-page__block-pic
-    > .case-page__picture:not(.case-page__picture--inline) {
-    height: 376px;
-  }
-
-  body.case-page[data-case-id="phish"]
-    .case-page__block-pic
-    > .case-page__picture
-    .case-page__picture-img {
-    width: calc(100% - 48px);
-    max-width: none;
-    height: auto;
-    max-height: calc(100% - 24px);
-    margin: 24px;
-  }
-}
-
 .case-page__picture-img {
   box-sizing: border-box;
   display: block;
-  width: calc(100% - 30px);
-  max-width: 590px;
-  height: calc(100% - 24px);
-  margin: 24px auto 0;
-  object-fit: cover;
+  width: calc(100% - 48px);
+  max-width: none;
+  height: auto;
+  margin: 24px auto;
+  object-fit: contain;
   object-position: top center;
   border-radius: 8px;
   background-color: var(--color-secondary);
@@ -794,16 +779,24 @@ body.is-page-crossfading .case-page__fab {
 
   .case-page__picture {
     height: auto;
-    aspect-ratio: 736 / 307;
-    max-height: 307px;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  /* --scroll / --inline hug content. */
+  .case-page__picture--scroll,
+  .case-page__picture--inline {
+    height: auto;
+    max-height: none;
+    aspect-ratio: auto;
   }
 
   .case-page__picture-img {
-    width: calc(100% - 24px);
+    width: calc(100% - 32px);
     max-width: none;
     height: auto;
-    max-height: calc(100% - 16px);
-    margin: 16px auto 0;
+    max-height: none;
+    margin: 16px auto;
   }
 }
 
@@ -868,15 +861,25 @@ body.is-page-crossfading .case-page__fab {
   }
 
   .case-page__picture {
-    height: 168px;
+    height: auto;
+    max-height: none;
     border-radius: 24px;
   }
 
+  /* --scroll / --inline hug content. */
+  .case-page__picture--scroll,
+  .case-page__picture--inline {
+    height: auto;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
   .case-page__picture-img {
-    width: calc(100% - 24px);
-    max-width: 302px;
-    height: calc(100% - 16px);
-    margin: 16px auto 0;
+    width: calc(100% - 32px);
+    max-width: none;
+    height: auto;
+    max-height: none;
+    margin: 16px auto;
   }
 
   .case-page__footer-row {
@@ -1062,10 +1065,179 @@ body.case-page [data-case-zoomable]:not(.is-empty) .case-page__picture-img {
   align-items: center;
   gap: 16px;
   height: auto;
+  max-height: none;
+  aspect-ratio: auto;
   min-height: 0;
   margin: 12px 0 0;
   padding: 24px;
   overflow: hidden;
+}
+
+/*
+ * Finals: inline Picture → next text-sub needs 20px.
+ * text-block gap is 8; margin-bottom 12 → layout gap 20 (flex; no collapse).
+ * Dragon 530:15685 also uses 12 below ImgBlock; adjacent inlines use +4 top → 24.
+ */
+body.case-page[data-case-id="dragon"] #finals .case-page__picture--inline,
+body.case-page[data-case-id="phish"] #finals .case-page__picture--inline {
+  margin-bottom: 12px;
+}
+
+body.case-page[data-case-id="dragon"]
+  #finals
+  .case-page__picture--inline
+  + .case-page__picture--inline {
+  margin-top: 4px;
+}
+
+/* Figma 538:15864 ImgBlockScroll — secondary pad, horizontal frames. */
+.case-page__picture--scroll {
+  position: relative;
+  display: block;
+  height: auto;
+  max-height: none;
+  aspect-ratio: auto;
+  min-height: 0;
+  margin: 12px 0 0;
+  padding: 24px;
+  overflow: hidden;
+}
+
+.case-page__hscroll {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-text) transparent;
+  cursor: auto;
+  user-select: none;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+.case-page__hscroll.is-scrollable {
+  cursor: grab;
+}
+
+.case-page__hscroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.case-page__hscroll::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--color-gray-text) 45%, transparent);
+  border-radius: 999px;
+}
+
+.case-page__hscroll.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.case-page__hscroll.is-dragging,
+.case-page__hscroll.is-dragging * {
+  cursor: grabbing !important;
+}
+
+/* When strip fits: keep zoom-in on frames. When scrollable: inherit grab. */
+body.case-page .case-page__hscroll.is-scrollable [data-case-zoomable]:not(.is-empty) {
+  cursor: inherit;
+}
+
+.case-page__hscroll-expand {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: none;
+  color: var(--color-black);
+  cursor: pointer;
+}
+
+.case-page__picture--scroll.is-scrollable .case-page__hscroll-expand {
+  display: inline-flex;
+}
+
+.case-page__hscroll-expand.ds-button-round:hover,
+.case-page__hscroll-expand.ds-button-round.ds-button-round--hover {
+  color: var(--color-gray-text);
+}
+
+@media (hover: none) {
+  .case-page__hscroll-expand.ds-button-round:hover {
+    color: var(--color-black);
+  }
+}
+
+.case-page__hscroll-expand-icon {
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.case-page__hscroll-track {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 8px;
+  width: max-content;
+}
+
+.case-page__hscroll-item {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* Figma 538:15864 Img8 — 530×269, r8; Picture pad 24 → peek next frame. */
+.case-page__hscroll-img {
+  display: block;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 530px;
+  height: 269px;
+  aspect-ratio: 530 / 269;
+  margin: 0;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 8px;
+  background-color: var(--color-secondary);
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/*
+ * InnoPhish only: tall/uneven fills must not crop to 530×269 cover.
+ * Track height = tallest frame (flex-start); short frames keep intrinsic height.
+ * Dragon keeps the fixed 530×269 cover rules above.
+ * Container hug (no ≤768 736/307 / ≤480 168 lock) is shared on --scroll/--inline.
+ *
+ * Caption→frames: Figma Picture 509:19084 / 509:19532 (phish) and dragon
+ * UX/finals scroll use flex-col gap 16 (same token as --inline).
+ * Shared --scroll is display:block → gap was 0 without this override.
+ */
+body.case-page[data-case-id="phish"] .case-page__picture--scroll,
+body.case-page[data-case-id="dragon"] .case-page__picture--scroll {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+body.case-page[data-case-id="phish"] .case-page__hscroll-track {
+  align-items: flex-start;
+}
+
+body.case-page[data-case-id="phish"] .case-page__hscroll-img {
+  height: auto;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: contain;
+  object-position: top center;
 }
 
 .case-page__picture-caption {
@@ -1169,11 +1341,24 @@ body.case-page [data-case-zoomable]:not(.is-empty) .case-page__picture-img {
   touch-action: none;
 }
 
-.case-page__lightbox-img {
+.case-page__lightbox-frame {
   position: absolute;
   top: 0;
   left: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.case-page__lightbox-img {
+  position: relative;
+  top: auto;
+  left: auto;
   display: block;
+  flex: 0 0 auto;
   max-width: none;
   max-height: none;
   width: auto;
@@ -1184,7 +1369,6 @@ body.case-page [data-case-zoomable]:not(.is-empty) .case-page__picture-img {
   cursor: grab;
   background: var(--color-secondary);
   transform-origin: 0 0;
-  will-change: transform;
   image-rendering: auto;
   user-select: none;
   -webkit-user-drag: none;
@@ -1270,6 +1454,20 @@ html.is-case-lightbox-open body {
   .case-page__picture--inline .case-page__picture-img {
     width: 100%;
     margin: 0;
+  }
+
+  /* Keep Picture pad 24 (Figma); scale frame to column − page gutters. */
+  .case-page__hscroll-img {
+    width: min(530px, calc(100vw - 32px - 48px));
+    height: auto;
+    aspect-ratio: 530 / 269;
+  }
+
+  /* Phish: width scales; height follows natural aspect (no 530/269 lock). */
+  body.case-page[data-case-id="phish"] .case-page__hscroll-img {
+    height: auto;
+    aspect-ratio: auto;
+    object-fit: contain;
   }
 
   .case-page__picture-caption {

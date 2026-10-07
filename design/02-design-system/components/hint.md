@@ -36,4 +36,4 @@ default; видимость — через hover / `:focus-visible` / `.is-hint-
 Только как tip у интерактивных стикеров Macbook. Не заменяет Tooltip (чёрный pill).
 
 ## Чем не является
-Не Tooltip, не Chip, не Button.
+Не Tooltip, не Chip, не Button. Не **Hint panel** (`hint-panel.md`, Figma Hint `603:18197`, `.ds-hint-panel`) — панель жестов камеры.

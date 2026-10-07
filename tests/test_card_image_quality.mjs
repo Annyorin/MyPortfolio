@@ -69,14 +69,20 @@ describe("card image quality (Oct4 visual @ 924×570)", () => {
     assert.ok(dragon.equals(fs.readFileSync(path.join(IMAGES, "card-innodragon.png"))));
   });
 
-  it("contentMap card/hero intrinsics match 924×570", () => {
+  it("contentMap card/cover intrinsics match 924×570", () => {
     const assets = contentMap.assets;
-    for (const key of ["card.image.a", "card.image.b", "case.phish.hero", "dragon", "phish"]) {
+    for (const key of ["card.image.a", "card.image.b", "dragon", "phish"]) {
       const a = assets[key];
       assert.ok(a, `missing asset ${key}`);
       assert.equal(a.intrinsicWidth, 924, `${key}.intrinsicWidth`);
       assert.equal(a.intrinsicHeight, 570, `${key}.intrinsicHeight`);
     }
+    assert.equal(
+      assets["case.phish.hero"]?.pathFromDsRoot,
+      "images/case-phish-hero.png"
+    );
+    assert.equal(assets["case.phish.hero"]?.intrinsicWidth, 572);
+    assert.equal(assets["case.phish.hero"]?.intrinsicHeight, 357);
   });
 
   it("card.a/b still point at img-2 / img-1", () => {

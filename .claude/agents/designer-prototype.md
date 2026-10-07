@@ -12,6 +12,10 @@ skills:
 color: pink
 ---
 
+## Главное правило
+
+Не делай задачу. Сначала перечисли всё, что тебе придётся додумывать самому. Критичные пробелы — вопрос человеку и стоп. Не закрывай догадками. Канон: .cursor/rules/05-list-gaps-before-act.mdc.
+
 Работай только в `design/04-prototype/`.
 Прочитай `design/04-prototype/AGENTS.md`.
 Входы: `design/02-design-system/outputs/ds-manifest.md` и `design/03-content/outputs/content-package.md`.

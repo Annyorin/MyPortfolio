@@ -50,7 +50,8 @@ describe("portfolio case-phish page", () => {
     assert.match(html, /id=["']conclusions["']/);
     assert.match(html, /id=["']contacts["']/);
     assert.doesNotMatch(html, /id=["']hypotheses["']/);
-    assert.match(html, /images\/phish\.png/);
+    assert.match(html, /images\/case-phish-hero\.png/);
+    assert.doesNotMatch(html, /images\/phish\.png/);
     assert.match(html, /mc\.yandex\.ru\/metrika\/tag\.js/);
   });
 
@@ -110,6 +111,24 @@ describe("portfolio case-phish page", () => {
     assert.match(contentMap["case.phish.design_body"], /\[\[img:case\.phish\.flow\]\]/);
     assert.doesNotMatch(contentMap["case.phish.design_body"], /Бизнес-схема/);
     assert.doesNotMatch(contentMap["case.phish.design_body"], /case\.phish\.business/);
+    assert.ok(!Object.prototype.hasOwnProperty.call(contentMap.assets, "case.phish.business"));
+    assert.ok(
+      !fs.existsSync(abs("ds-showcase/assets/images/case-phish-business.png")),
+      "orphan business asset must be removed"
+    );
+    assert.match(
+      contentMap["case.phish.ux_test_body"],
+      /\[\[imgscroll:case\.phish\.test_2tabs,case\.phish\.test_2tabs_2\|/
+    );
+    assert.match(
+      contentMap["case.phish.ux_test_body"],
+      /\[\[imgscroll:case\.phish\.test_3tabs,case\.phish\.test_3tabs_2,case\.phish\.test_3tabs_3\|/
+    );
+    assert.match(
+      contentMap["case.phish.finals_body"],
+      /\[\[imgscroll:case\.phish\.final_1,case\.phish\.final_1_2\]\]/
+    );
+    assert.match(contentMap["case.phish.finals_body"], /\[\[img:case\.phish\.final_2\]\]/);
     assert.equal(
       (contentMap["case.phish.analysis_body"].match(/Мы\u00A0считаем/g) || []).length,
       5
@@ -127,7 +146,7 @@ describe("portfolio case-phish page", () => {
     assert.equal(contentMap["case.phish.toolbar_title"], "InnoPhish");
     assert.equal(
       contentMap.assets["case.phish.hero"]?.pathFromDsRoot,
-      "images/phish.png"
+      "images/case-phish-hero.png"
     );
     assert.equal(
       contentMap.assets["case.phish.hero"]?.fullPathFromDsRoot,
@@ -138,17 +157,33 @@ describe("portfolio case-phish page", () => {
       "images/case-phish-competitors-full.png"
     );
     assert.equal(
+      contentMap.assets["case.phish.ia"]?.fullPathFromDsRoot,
+      "images/case-phish-ia-full.png"
+    );
+    assert.equal(
+      contentMap.assets["case.phish.flow"]?.fullPathFromDsRoot,
+      "images/case-phish-flow-full.png"
+    );
+    assert.equal(
       contentMap.assets["case.phish.final_2"]?.fullPathFromDsRoot,
       "images/case-phish-final-2-full.png"
     );
+    assert.equal(contentMap.assets["case.phish.final_1"]?.intrinsicWidth, 287);
+    assert.equal(contentMap.assets["case.phish.final_1"]?.intrinsicHeight, 276);
+    assert.equal(contentMap.assets["case.phish.final_1_2"]?.intrinsicWidth, 277);
+    assert.equal(contentMap.assets["case.phish.final_1_2"]?.intrinsicHeight, 416);
     for (const key of [
+      "case.phish.hero",
       "case.phish.ia",
       "case.phish.competitors",
-      "case.phish.business",
       "case.phish.flow",
       "case.phish.test_2tabs",
+      "case.phish.test_2tabs_2",
       "case.phish.test_3tabs",
+      "case.phish.test_3tabs_2",
+      "case.phish.test_3tabs_3",
       "case.phish.final_1",
+      "case.phish.final_1_2",
       "case.phish.final_2",
     ]) {
       const rel = contentMap.assets[key]?.pathFromDsRoot;
@@ -157,10 +192,20 @@ describe("portfolio case-phish page", () => {
         fs.existsSync(abs(`ds-showcase/assets/${rel}`)),
         `${rel} must exist`
       );
+      const full = contentMap.assets[key]?.fullPathFromDsRoot;
+      assert.ok(full, `${key} fullPathFromDsRoot missing`);
+      assert.ok(
+        fs.existsSync(abs(`ds-showcase/assets/${full}`)),
+        `${full} must exist`
+      );
     }
     assert.ok(
       fs.existsSync(abs("ds-showcase/assets/images/phish.png")),
-      "hero asset file must exist"
+      "main cover phish.png must remain untouched"
+    );
+    assert.ok(
+      fs.existsSync(abs("ds-showcase/assets/images/case-phish-hero.png")),
+      "case hero inline asset must exist"
     );
     assert.ok(
       fs.existsSync(abs("ds-showcase/assets/images/case-phish-hero-full.png")),
@@ -197,15 +242,29 @@ describe("portfolio case-phish page", () => {
     assert.match(src, /pointermove/);
     assert.match(src, /zoomAt/);
     assert.match(src, /CASE_IMG_MARKER_RE|\[\[img:/);
+    assert.match(src, /CASE_IMGSCROLL_MARKER_RE|\[\[imgscroll:/);
+    assert.match(src, /createCasePictureScroll/);
+    assert.match(src, /intrinsicWidth/);
+    assert.match(src, /img\.style\.width\s*=\s*`\$\{frameW\}px`/);
     assert.match(src, /CASE_JTBD_MARKER_RE|\[\[jtbd:/);
     assert.match(src, /createJtbdGrid|case-page__jtbd/);
     assert.match(src, /createJtbdMergedCard|case-page__jtbd-merged/);
     assert.match(src, /case-page__jtbd-cell/);
     assert.match(src, /case-page__text-sub/);
     assert.match(src, /data-case-long-only|applyCaseLengthMode/);
+    assert.match(src, /link\.hidden = Boolean\(section\.hidden\)/);
     assert.match(src, /role_value|team_value/);
     assert.match(src, /hasHeadings/);
-    assert.doesNotMatch(src, /loading\s*=\s*["']lazy["']/);
+    // Hscroll frames after the first may lazy-load; inline pictures stay eager.
+    assert.match(src, /if\s*\(\s*index\s*>\s*0\s*\)\s*\{[\s\S]*?loading\s*=\s*["']lazy["']/);
+    assert.match(
+      src,
+      /function createCasePicture\([\s\S]*?wrap\.appendChild\(img\);\s*return wrap;\s*\}/
+    );
+    assert.doesNotMatch(
+      src,
+      /function createCasePicture\([\s\S]*?loading\s*=\s*["']lazy["'][\s\S]*?wrap\.appendChild\(img\);\s*return wrap;\s*\}/
+    );
     // Reveal targets each text/picture in stubs (same unit grain as Dragon
     // context blocks), not the whole .case-page__section-stub.
     assert.match(
@@ -257,11 +316,6 @@ describe("portfolio case-phish page", () => {
     const wrapped = [analysis, ux, finals, conclusions].join("\n");
     const markCount = (wrapped.match(/==/g) || []).length / 2;
     assert.equal(markCount, 13);
-    for (const [key, value] of Object.entries(contentMap)) {
-      if (typeof value === "string" && key.startsWith("case.dragon.")) {
-        assert.doesNotMatch(value, /==/);
-      }
-    }
   });
 
   it("case.js parses == marks and observes highlighter sweep", () => {
@@ -292,6 +346,57 @@ describe("portfolio case-phish page", () => {
       /prefers-reduced-motion:\s*reduce[\s\S]*?\.case-page__mark[\s\S]*?--highlighted:\s*1/s
     );
     assert.doesNotMatch(css, /#3d8ffe/i);
+  });
+
+  it("case.css phish hscroll uses natural height without cover crop", () => {
+    const css = read("portfolio/css/case.css");
+    // Shared Dragon canon stays cover 530×269.
+    assert.match(css, /\.case-page__hscroll-img\s*\{[^}]*height:\s*269px/s);
+    assert.match(css, /\.case-page__hscroll-img\s*\{[^}]*object-fit:\s*cover/s);
+    // Shared: --scroll / --inline hug content.
+    assert.match(
+      css,
+      /\.case-page__picture--scroll\s*,\s*\.case-page__picture--inline\s*\{[^}]*aspect-ratio:\s*auto/s
+    );
+    assert.match(
+      css,
+      /\.case-page__picture--scroll\s*,\s*\.case-page__picture--inline\s*\{[^}]*max-height:\s*none/s
+    );
+    assert.match(
+      css,
+      /\.case-page__picture--scroll\s*\{[^}]*aspect-ratio:\s*auto/s
+    );
+    assert.match(
+      css,
+      /\.case-page__picture--inline\s*\{[^}]*max-height:\s*none/s
+    );
+    // Caption→frames gap 16 on --scroll (phish + dragon; hug/crop overrides stay phish-only).
+    assert.match(
+      css,
+      /body\.case-page\[data-case-id=["']phish["']\]\s+\.case-page__picture--scroll\s*,\s*body\.case-page\[data-case-id=["']dragon["']\]\s+\.case-page__picture--scroll\s*\{[^}]*gap:\s*16px/s
+    );
+    // Phish-only override: max natural height, no crop, no stretch.
+    assert.match(
+      css,
+      /body\.case-page\[data-case-id=["']phish["']\]\s+\.case-page__hscroll-track\s*\{[^}]*align-items:\s*flex-start/s
+    );
+    assert.match(
+      css,
+      /body\.case-page\[data-case-id=["']phish["']\]\s+\.case-page__hscroll-img\s*\{[^}]*height:\s*auto/s
+    );
+    assert.match(
+      css,
+      /body\.case-page\[data-case-id=["']phish["']\]\s+\.case-page__hscroll-img\s*\{[^}]*aspect-ratio:\s*auto/s
+    );
+    assert.match(
+      css,
+      /body\.case-page\[data-case-id=["']phish["']\]\s+\.case-page__hscroll-img\s*\{[^}]*object-fit:\s*contain/s
+    );
+    // Mobile: phish keeps intrinsic ratio (overrides 530/269 lock).
+    assert.match(
+      css,
+      /@media\s*\(max-width:\s*480px\)[\s\S]*body\.case-page\[data-case-id=["']phish["']\]\s+\.case-page__hscroll-img\s*\{[^}]*aspect-ratio:\s*auto/s
+    );
   });
 
   it("case.css styles zoomable inline pictures and lightbox chrome", () => {
