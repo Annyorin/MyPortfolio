@@ -93,7 +93,7 @@ npm ci
 | Скрипт | Назначение |
 |--------|------------|
 | `npm run storybook` | UC-01: Storybook (порт по умолчанию **6006**) |
-| `npm run portfolio:dev` | UC-02: Vite — Главная (`/portfolio/main.html`) |
+| `npm run portfolio:dev` | UC-02: Vite — Главная (`/portfolio/index.html`) |
 | `npm run portfolio:static` | опционально: static serve **корня репозитория** (порт **4174**); откройте `/portfolio/` |
 | `npm run build:pages` | production-сборка для GitHub Pages (`base=/MyPortfolio/`) |
 | `npm test` | автотесты поставки |

@@ -1682,12 +1682,19 @@ export function setupCaseMarks() {
 
 const LIGHTBOX_SCALE_MAX = 8;
 const LIGHTBOX_ZOOM_FACTOR = 1.25;
-/** Gap between stacked hscroll frames in the lightbox (matches track). */
-const LIGHTBOX_STRIP_GAP = 8;
-/** Inset for the initial contain-fit so the full bitmap stays on-screen. */
-const LIGHTBOX_FIT_PAD_X = 24;
-const LIGHTBOX_FIT_PAD_TOP = 72;
-const LIGHTBOX_FIT_PAD_BOTTOM = 88;
+/** Desktop open scale vs contain-fit (mobile stays 1×). Min zoom is contain. */
+const LIGHTBOX_OPEN_SCALE = 2;
+/** Wider than this: open at contain so the full width fits the stage. */
+const LIGHTBOX_WIDE_ASPECT = 1.5;
+/** Gap between frames in the lightbox (Figma 616:18390 scrins). */
+const LIGHTBOX_STRIP_GAP = 24;
+/** Inset for contain-fit (min zoom). Desktop open y uses close button top. */
+const LIGHTBOX_FIT_PAD_X = 77;
+const LIGHTBOX_FIT_PAD_TOP = 102;
+const LIGHTBOX_FIT_PAD_BOTTOM = 99;
+const LIGHTBOX_FIT_PAD_X_MOBILE = 16;
+const LIGHTBOX_FIT_PAD_TOP_MOBILE = 64;
+const LIGHTBOX_FIT_PAD_BOTTOM_MOBILE = 80;
 
 /**
  * Builds DS tapper (+/−) for case lightbox zoom.
@@ -1766,6 +1773,40 @@ function createLightboxTapper() {
 }
 
 /**
+ * Outlined round control for lightbox prev/next (Figma 617:18473).
+ *
+ * @param {"prev" | "next"} action
+ * @returns {HTMLButtonElement}
+ */
+function createLightboxNavButton(action) {
+  const isPrev = action === "prev";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className =
+    "ds-button-round ds-button-round--outlined case-page__lightbox-nav";
+  btn.setAttribute("data-lightbox-nav", action);
+  btn.setAttribute(
+    "aria-label",
+    textOf(
+      contentMap[isPrev ? "lightbox.prev" : "lightbox.next"] ||
+        (isPrev ? "Предыдущий экран" : "Следующий экран")
+    )
+  );
+  const icon = document.createElement("span");
+  icon.className = "ds-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.dataset.icon = isPrev ? "arrow-left" : "arrow-right";
+  const img = document.createElement("img");
+  img.src = resolveAsset(isPrev ? "icons.arrow-left" : "icons.arrow-right");
+  img.alt = "";
+  img.width = 24;
+  img.height = 24;
+  icon.appendChild(img);
+  btn.appendChild(icon);
+  return btn;
+}
+
+/**
  * Case picture lightbox: pan/zoom via transform (Figma-style), not scroll.
  * Wheel and tapper zoom to the cursor/center; drag moves the frame.
  *
@@ -1786,14 +1827,23 @@ function setupCaseLightbox() {
   let closeBtn = null;
   /** @type {HTMLElement | null} */
   let tapper = null;
+  /** @type {HTMLElement | null} */
+  let chrome = null;
+  /** @type {HTMLButtonElement | null} */
+  let prevBtn = null;
+  /** @type {HTMLButtonElement | null} */
+  let nextBtn = null;
   /** Scale relative to natural size. */
   let k = 1;
   /** Fit-to-stage scale (contain, never upscale past 1). */
   let fit = 1;
   let x = 0;
   let y = 0;
+  let activeIndex = 0;
   /** @type {Map<number, {x: number, y: number}>} */
   const pointers = new Map();
+  /** @type {{ dist: number, k: number } | null} */
+  let pinch = null;
   let panning = false;
   let moved = false;
 
@@ -1806,20 +1856,16 @@ function setupCaseLightbox() {
   }
 
   /**
-   * Combined natural size of 1..N frames in a row (gap matches hscroll track).
+   * Natural size of the active (visible) frame.
    *
    * @returns {{w: number, h: number}}
    */
   function naturalSize() {
-    const imgs = lightboxImages();
-    let w = 0;
-    let h = 0;
-    for (let i = 0; i < imgs.length; i += 1) {
-      w += imgs[i].naturalWidth || 0;
-      h = Math.max(h, imgs[i].naturalHeight || 0);
-      if (i > 0) w += LIGHTBOX_STRIP_GAP;
-    }
-    return { w, h };
+    const img = lightboxImages()[activeIndex];
+    return {
+      w: img?.naturalWidth || 0,
+      h: img?.naturalHeight || 0,
+    };
   }
 
   /**
@@ -1845,10 +1891,12 @@ function setupCaseLightbox() {
     const imgs = lightboxImages();
     if (!imgs.length || !overlayFrame) return;
     clampPan();
-    overlayFrame.style.gap = `${
-      imgs.length > 1 ? LIGHTBOX_STRIP_GAP * k : 0
-    }px`;
-    for (const img of imgs) {
+    overlayFrame.style.gap = "0px";
+    for (let i = 0; i < imgs.length; i += 1) {
+      const img = imgs[i];
+      const on = i === activeIndex;
+      img.hidden = !on;
+      if (!on) continue;
       const nw = img.naturalWidth || 0;
       const nh = img.naturalHeight || 0;
       img.style.width = `${Math.max(1, Math.round(nw * k))}px`;
@@ -1857,6 +1905,16 @@ function setupCaseLightbox() {
     overlayFrame.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
     const zoomed = k > fit * 1.001;
     stage?.classList.toggle("is-zoomed", zoomed);
+    const last = Math.max(0, imgs.length - 1);
+    if (prevBtn) {
+      prevBtn.setAttribute("aria-disabled", activeIndex <= 0 ? "true" : "false");
+    }
+    if (nextBtn) {
+      nextBtn.setAttribute(
+        "aria-disabled",
+        activeIndex >= last ? "true" : "false"
+      );
+    }
     if (tapper) {
       const out = tapper.querySelector('[data-tapper-action="zoom-out"]');
       const inn = tapper.querySelector('[data-tapper-action="zoom-in"]');
@@ -1877,25 +1935,78 @@ function setupCaseLightbox() {
   }
 
   /**
+   * @returns {{ x: number, top: number, bottom: number }}
+   */
+  /**
+   * @returns {boolean}
+   */
+  function isLightboxMobile() {
+    return (
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 768px)").matches
+    );
+  }
+
+  function fitPads() {
+    if (isLightboxMobile()) {
+      return {
+        x: LIGHTBOX_FIT_PAD_X_MOBILE,
+        top: LIGHTBOX_FIT_PAD_TOP_MOBILE,
+        bottom: LIGHTBOX_FIT_PAD_BOTTOM_MOBILE,
+        imageTop: LIGHTBOX_FIT_PAD_TOP_MOBILE,
+      };
+    }
+    let imageTop = LIGHTBOX_FIT_PAD_TOP;
+    if (closeBtn && stage) {
+      const box = stage.getBoundingClientRect();
+      const closeBox = closeBtn.getBoundingClientRect();
+      imageTop = Math.max(0, Math.round(closeBox.top - box.top));
+    }
+    return {
+      x: LIGHTBOX_FIT_PAD_X,
+      top: LIGHTBOX_FIT_PAD_TOP,
+      bottom: LIGHTBOX_FIT_PAD_BOTTOM,
+      imageTop,
+    };
+  }
+
+  function fitScreen() {
+    const imgs = lightboxImages();
+    if (!stage || !imgs.length) return;
+    const box = stage.getBoundingClientRect();
+    if (box.width <= 0 || box.height <= 0) return;
+    activeIndex = Math.max(0, Math.min(imgs.length - 1, activeIndex));
+    const pad = fitPads();
+    const availW = Math.max(1, box.width - pad.x * 2);
+    const availH = Math.max(1, box.height - pad.top - pad.bottom);
+    const { w, h } = naturalSize();
+    if (!w || !h) return;
+    const contain = Math.min(availW / w, availH / h);
+    const mobile = isLightboxMobile();
+    const wide = w / h >= LIGHTBOX_WIDE_ASPECT;
+    fit = contain;
+    k = mobile || wide ? contain : contain * LIGHTBOX_OPEN_SCALE;
+    const dw = w * k;
+    const dh = h * k;
+    x = (box.width - dw) / 2;
+    y = mobile ? pad.top + (availH - dh) / 2 : pad.imageTop;
+    draw();
+  }
+
+  /**
+   * Show image `index` fitted to the stage (prev/next).
+   *
+   * @param {number} index
    * @returns {void}
    */
-  function fitScreen() {
-    if (!stage || !lightboxImages().length) return;
-    const box = stage.getBoundingClientRect();
-    const { w, h } = naturalSize();
-    if (!w || !h || box.width <= 0 || box.height <= 0) return;
-    const availW = Math.max(1, box.width - LIGHTBOX_FIT_PAD_X * 2);
-    const availH = Math.max(
-      1,
-      box.height - LIGHTBOX_FIT_PAD_TOP - LIGHTBOX_FIT_PAD_BOTTOM
-    );
-    fit = Math.min(availW / w, availH / h, 1);
-    k = fit;
-    const dw = Math.max(1, Math.round(w * k));
-    const dh = Math.max(1, Math.round(h * k));
-    x = LIGHTBOX_FIT_PAD_X + (availW - dw) / 2;
-    y = LIGHTBOX_FIT_PAD_TOP + (availH - dh) / 2;
-    draw();
+  function focusImage(index) {
+    const imgs = lightboxImages();
+    if (!stage || !imgs.length) return;
+    const last = imgs.length - 1;
+    const next = Math.max(0, Math.min(last, index));
+    if (next === activeIndex) return;
+    activeIndex = next;
+    fitScreen();
   }
 
   /**
@@ -1992,18 +2103,55 @@ function setupCaseLightbox() {
       { passive: false }
     );
 
+    /**
+     * @returns {number}
+     */
+    function pointerDistance() {
+      const pts = [...pointers.values()];
+      if (pts.length < 2) return 0;
+      return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    }
+
+    /**
+     * @returns {{ x: number, y: number }}
+     */
+    function pointerMid() {
+      const pts = [...pointers.values()];
+      return {
+        x: (pts[0].x + pts[1].x) / 2,
+        y: (pts[0].y + pts[1].y) / 2,
+      };
+    }
+
     stage.addEventListener("pointerdown", (event) => {
       if (event.target instanceof Element && event.target.closest("button")) {
         return;
       }
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       stage?.setPointerCapture(event.pointerId);
+      if (pointers.size === 2) {
+        pinch = { dist: pointerDistance(), k };
+        moved = true;
+        return;
+      }
+      pinch = null;
       moved = false;
     });
 
     stage.addEventListener("pointermove", (event) => {
       const prev = pointers.get(event.pointerId);
       if (!prev) return;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (pointers.size >= 2 && pinch && pinch.dist > 0 && stage) {
+        const mid = pointerMid();
+        const box = stage.getBoundingClientRect();
+        zoomAt(
+          pinch.k * (pointerDistance() / pinch.dist),
+          mid.x - box.left,
+          mid.y - box.top
+        );
+        return;
+      }
       const dx = event.clientX - prev.x;
       const dy = event.clientY - prev.y;
       if (!moved && Math.abs(dx) + Math.abs(dy) < 4) return;
@@ -2012,7 +2160,6 @@ function setupCaseLightbox() {
       stage?.classList.add("is-panning");
       x += dx;
       y += dy;
-      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
       draw();
     });
 
@@ -2023,6 +2170,7 @@ function setupCaseLightbox() {
     function releasePointer(event) {
       const from = pointers.get(event.pointerId);
       pointers.delete(event.pointerId);
+      if (pointers.size < 2) pinch = null;
       if (!pointers.size) {
         stage?.classList.remove("is-panning");
         panning = false;
@@ -2036,6 +2184,7 @@ function setupCaseLightbox() {
     stage.addEventListener("pointerup", releasePointer);
     stage.addEventListener("pointercancel", (event) => {
       pointers.delete(event.pointerId);
+      if (pointers.size < 2) pinch = null;
       if (!pointers.size) {
         stage?.classList.remove("is-panning");
         panning = false;
@@ -2117,9 +2266,32 @@ function setupCaseLightbox() {
       onTapperActivate(event);
     });
 
+    chrome = document.createElement("div");
+    chrome.className = "case-page__lightbox-chrome";
+    prevBtn = createLightboxNavButton("prev");
+    nextBtn = createLightboxNavButton("next");
+    prevBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (prevBtn?.getAttribute("aria-disabled") === "true") return;
+      focusImage(activeIndex - 1);
+    });
+    nextBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (nextBtn?.getAttribute("aria-disabled") === "true") return;
+      focusImage(activeIndex + 1);
+    });
+    chrome.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+    });
+    chrome.appendChild(prevBtn);
+    chrome.appendChild(tapper);
+    chrome.appendChild(nextBtn);
+
     overlay.appendChild(closeBtn);
     overlay.appendChild(stage);
-    overlay.appendChild(tapper);
+    overlay.appendChild(chrome);
     document.body.appendChild(overlay);
 
     overlay.addEventListener("click", (event) => {
@@ -2129,9 +2301,10 @@ function setupCaseLightbox() {
 
   /**
    * @param {{ src: string, alt?: string }[]} items
+   * @param {number} [startIndex]
    * @returns {void}
    */
-  function openItems(items) {
+  function openItems(items, startIndex = 0) {
     const list = (Array.isArray(items) ? items : [])
       .map((item) => ({
         src: typeof item?.src === "string" ? item.src.trim() : "",
@@ -2146,8 +2319,10 @@ function setupCaseLightbox() {
     x = 0;
     y = 0;
     pointers.clear();
+    pinch = null;
     moved = false;
     panning = false;
+    activeIndex = Math.max(0, Math.min(list.length - 1, startIndex));
     overlayFrame.replaceChildren();
     overlayFrame.style.transform = "";
     overlayFrame.style.gap = "";
@@ -2158,10 +2333,8 @@ function setupCaseLightbox() {
       img.decoding = "async";
       img.draggable = false;
       img.addEventListener("load", () => {
-        const ready = lightboxImages().every(
-          (el) => el.complete && el.naturalWidth
-        );
-        if (ready) fitScreen();
+        const cur = lightboxImages()[activeIndex];
+        if (cur && cur.complete && cur.naturalWidth) fitScreen();
       });
       img.src = item.src;
       overlayFrame.appendChild(img);
@@ -2171,6 +2344,7 @@ function setupCaseLightbox() {
       list.length > 1 ? "Просмотр изображений" : "Просмотр изображения"
     );
     overlay.removeAttribute("hidden");
+    chrome?.classList.toggle("is-single", list.length < 2);
     document.documentElement.classList.add("is-case-lightbox-open");
     document.body.classList.add("is-case-lightbox-open");
     const ready = lightboxImages().every((el) => el.complete && el.naturalWidth);
@@ -2204,8 +2378,10 @@ function setupCaseLightbox() {
     x = 0;
     y = 0;
     pointers.clear();
+    pinch = null;
     moved = false;
     panning = false;
+    activeIndex = 0;
     stage?.classList.remove("is-zoomed", "is-panning");
     document.documentElement.classList.remove("is-case-lightbox-open");
     document.body.classList.remove("is-case-lightbox-open");
@@ -2257,7 +2433,16 @@ function setupCaseLightbox() {
       const items = sourcesFromHscroll(hscrollHit);
       if (!items.length) return;
       event.preventDefault();
-      openItems(items);
+      const wrap = hscrollHit.closest(".case-page__picture--scroll");
+      const thumbs = wrap
+        ? [...wrap.querySelectorAll("img.case-page__hscroll-img")]
+        : [];
+      const clicked =
+        hscrollHit instanceof HTMLImageElement
+          ? hscrollHit
+          : hscrollHit.querySelector("img.case-page__hscroll-img");
+      const start = clicked instanceof HTMLImageElement ? thumbs.indexOf(clicked) : 0;
+      openItems(items, start >= 0 ? start : 0);
       return;
     }
 
@@ -2297,6 +2482,12 @@ function setupCaseLightbox() {
     } else if (event.key === "0") {
       event.preventDefault();
       fitScreen();
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      focusImage(activeIndex - 1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      focusImage(activeIndex + 1);
     }
   }
 
@@ -2323,6 +2514,9 @@ function setupCaseLightbox() {
     overlayFrame = null;
     closeBtn = null;
     tapper = null;
+    chrome = null;
+    prevBtn = null;
+    nextBtn = null;
   };
 }
 
@@ -2333,16 +2527,19 @@ export function initCasePage() {
   consumeEnterCrossfade();
   // Warm the home document + keep «Назад» href aligned with the entry file.
   try {
-    const home = sessionStorage.getItem(HOME_HREF_KEY) || "main.html";
+    let home = sessionStorage.getItem(HOME_HREF_KEY) || "index.html";
+    if (home === "main.html") {
+      home = "index.html";
+    }
     if (/^[A-Za-z0-9._-]+\.html$/.test(home)) {
       prefetchInternalPage(home);
-      const links = document.querySelectorAll('a[href="main.html"]');
+      const links = document.querySelectorAll('a[href="index.html"], a[href="main.html"]');
       for (const link of links) {
         link.setAttribute("href", home);
       }
     }
   } catch {
-    prefetchInternalPage("main.html");
+    prefetchInternalPage("index.html");
   }
   // Home Macbook layers: warm HTTP/memory cache so back does not PNG→layers flash.
   prefetchMacbookAssets();

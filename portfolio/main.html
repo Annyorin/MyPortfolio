@@ -2,91 +2,14 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=index.html">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>
-    try {
-      var storedTheme = localStorage.getItem("portfolio-theme");
-      var prefersDark =
-        storedTheme !== "light" &&
-        (storedTheme === "dark" ||
-          (window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches));
-      if (prefersDark) {
-        document.documentElement.setAttribute("data-theme", "dark");
-        document.documentElement.style.backgroundColor = "#121214";
-      }
-    } catch (e) {}
-    try {
-      if (sessionStorage.getItem("portfolio-page-enter") === "crossfade") {
-        document.documentElement.classList.add("is-page-enter-crossfade");
-      } else if (
-        !(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        )
-      ) {
-        document.documentElement.classList.add("is-booting");
-      }
-    } catch (e) {}
-  </script>
   <title>Аня Ясинская — Продуктовый дизайнер · UX/UI дизайнер</title>
-  <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../ds-showcase/assets/images/avatar.png" type="image/png" sizes="90x90">
-  <link rel="apple-touch-icon" href="../ds-showcase/assets/images/avatar.png">
-  <link rel="preload" as="image" href="../ds-showcase/assets/images/avatar.png">
-  <link rel="preload" as="image" href="../ds-showcase/assets/images/img-1.png">
-  <link rel="preload" as="image" href="../ds-showcase/assets/images/img-2.png">
-  <link rel="preload" as="image" href="../ds-showcase/assets/images/card-citybike.png">
-  <link rel="stylesheet" href="../ds-showcase/css/tokens.css">
-  <link rel="stylesheet" href="../ds-showcase/css/components.css">
-  <link rel="stylesheet" href="css/portfolio.css">
-  <script>
-    (function (m, e, t, r, i, k, a) {
-      m[i] =
-        m[i] ||
-        function () {
-          (m[i].a = m[i].a || []).push(arguments);
-        };
-      m[i].l = 1 * new Date();
-      for (var j = 0; j < document.scripts.length; j++) {
-        if (document.scripts[j].src === r) {
-          return;
-        }
-      }
-      k = e.createElement(t);
-      a = e.getElementsByTagName(t)[0];
-      k.async = 1;
-      k.src = r;
-      a.parentNode.insertBefore(k, a);
-    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-    ym(98871536, "init", {
-      clickmap: true,
-      trackLinks: true,
-      accurateTrackBounce: true,
-      webvisor: true,
-    });
-  </script>
+  <link rel="canonical" href="index.html">
+  <script>location.replace("index.html" + location.search + location.hash);</script>
 </head>
 <body>
-  <noscript><div><img src="https://mc.yandex.ru/watch/98871536" style="position:absolute;left:-9999px" alt=""></div></noscript>
-  <div
-    id="boot-loader"
-    class="boot-loader"
-    aria-busy="true"
-    aria-live="polite"
-    aria-label="Загрузка портфолио"
-  >
-    <canvas class="boot-loader__canvas" aria-hidden="true"></canvas>
-    <div class="boot-loader__badge">
-      <span class="boot-loader__pct">0%</span>
-    </div>
-  </div>
-  <div class="viewport" tabindex="0">
-    <div id="camera-pan" class="camera-pan">
-      <div id="world" class="world"></div>
-    </div>
-    <div id="mobile-sheet" class="portfolio-mobile-host" hidden></div>
-  </div>
-  <script type="module" src="js/main.js"></script>
+  <p><a href="index.html">Аня Ясинская — Продуктовый дизайнер · UX/UI дизайнер</a></p>
 </body>
 </html>

@@ -58,7 +58,7 @@ describe("portfolio pageTransition", () => {
       },
     };
     globalThis.window = {
-      location: { href: "http://localhost:5173/portfolio/main.html" },
+      location: { href: "http://localhost:5173/portfolio/index.html" },
     };
     try {
       prefetchInternalPage("https://behance.net/x");
@@ -110,13 +110,13 @@ describe("portfolio pageTransition", () => {
     assert.match(caseHtml, /is-page-enter-crossfade/);
     assert.match(caseJs, /navigateWithExpand/);
     assert.match(caseJs, /bindHomeLinks/);
-    assert.match(read("portfolio/main.html"), /is-page-enter-crossfade/);
+    assert.match(read("portfolio/index.html"), /is-page-enter-crossfade/);
     assert.match(read("portfolio/js/main.js"), /consumeEnterCrossfade/);
 
     assert.match(interactions, /prefetchCardIfInternal/);
     assert.match(mobile, /prefetchCardIfInternal/);
     assert.doesNotMatch(config, /main-crossfade/);
     assert.match(config, /redirectRootToPortfolio/);
-    assert.match(config, /portfolio\/main\.html/);
+    assert.match(config, /portfolio\/index\.html/);
   });
 });

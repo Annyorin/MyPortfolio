@@ -21,7 +21,7 @@ function redirectRootToPortfolio() {
       }
       const base = String(server.config.base || "/").replace(/\/?$/, "/");
       res.statusCode = 302;
-      res.setHeader("Location", `${base}portfolio/main.html`);
+      res.setHeader("Location", `${base}portfolio/index.html`);
       res.end();
     });
   }
@@ -66,7 +66,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       rollupOptions: {
         input: {
-          portfolio: path.resolve(rootDir, "portfolio/main.html"),
+          portfolio: path.resolve(rootDir, "portfolio/index.html"),
           caseDragon: path.resolve(rootDir, "portfolio/case-dragon.html"),
           casePhish: path.resolve(rootDir, "portfolio/case-phish.html"),
         },

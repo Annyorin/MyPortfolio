@@ -1,7 +1,7 @@
 /**
  * Portfolio + Storybook entry wiring on stubs (task entrypoints).
  *
- * TC-E2E-01: portfolio/main.html links ds-showcase tokens + components CSS
+ * TC-E2E-01: portfolio/index.html links ds-showcase tokens + components CSS
  * TC-E2E-02: main.js calls mountScene + camera.apply; stub world transform scale(1)
  * TC-E2E-03: story files exist for Chip, Card, Sidebar (and full inventory groups)
  * TC-UNIT-01: preview.js imports both DS CSS paths
@@ -60,8 +60,8 @@ const STORY_GROUPS = [
 ];
 
 describe("portfolio / Storybook entrypoints (stubs)", () => {
-  it("TC-E2E-01: portfolio/main.html links tokens.css and components.css from ds-showcase", () => {
-    const html = read("portfolio/main.html");
+  it("TC-E2E-01: portfolio/index.html links tokens.css and components.css from ds-showcase", () => {
+    const html = read("portfolio/index.html");
     assert.match(
       html,
       /href=["']\.\.\/ds-showcase\/css\/tokens\.css["']/,
@@ -94,8 +94,8 @@ describe("portfolio / Storybook entrypoints (stubs)", () => {
       /rel=["']icon["'][^>]*avatar\.png/,
       "favicon Avatar90 required"
     );
-    const indexHtml = read("portfolio/index.html");
-    assert.match(indexHtml, /main\.html/, "index.html redirects to main.html");
+    const legacyHtml = read("portfolio/main.html");
+    assert.match(legacyHtml, /index\.html/, "main.html redirects to index.html");
   });
 
   it("TC-E2E-02: main.js wires mountScene → camera.apply; stub world gets scale(1)", async () => {

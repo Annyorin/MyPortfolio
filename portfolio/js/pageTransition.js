@@ -244,8 +244,11 @@ export function prefetchCardIfInternal(card) {
 function rememberNavigation() {
   try {
     sessionStorage.setItem(ENTER_MOTION_KEY, "crossfade");
-    const file = String(window.location.pathname.split("/").pop() || "main.html");
-    if (/^main[\w.-]*\.html$/.test(file)) {
+    let file = String(window.location.pathname.split("/").pop() || "index.html");
+    if (file === "main.html") {
+      file = "index.html";
+    }
+    if (file === "index.html") {
       sessionStorage.setItem(HOME_HREF_KEY, file);
       // Leaving home for a case: next back should treat Macbook as warm.
       sessionStorage.setItem(MACBOOK_WARM_KEY, "1");

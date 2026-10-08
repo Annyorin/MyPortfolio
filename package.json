@@ -5,7 +5,7 @@
   "description": "Portfolio home + Storybook delivery. Alias @ds-assets → ds-showcase/assets (vite.config.js, .storybook/main.js).",
   "scripts": {
     "storybook": "storybook dev -p 6006",
-    "portfolio:dev": "vite --open /portfolio/main.html",
+    "portfolio:dev": "vite --open /portfolio/index.html",
     "portfolio:boot-demo": "vite --open /portfolio/boot-demo.html",
     "portfolio:static": "npx --yes serve -l 4174 .",
     "build": "vite build && node scripts/copy-pages-assets.mjs",

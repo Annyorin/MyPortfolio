@@ -486,7 +486,7 @@ async function startViteDev() {
       );
     }
     try {
-      const res = await httpGet(`${baseUrl}/portfolio/main.html`);
+      const res = await httpGet(`${baseUrl}/portfolio/index.html`);
       if (res.status === 200) {
         return { baseUrl, stop };
       }
@@ -593,10 +593,10 @@ describe("portfolio viewport branches + entry smoke", () => {
     assert.equal(mobile.mobile.querySelectorAll(".ds-card").length, 3);
   });
 
-  it("no-mock entry: Vite serves portfolio/main.html (portfolio:dev)", async () => {
+  it("no-mock entry: Vite serves portfolio/index.html (portfolio:dev)", async () => {
     const { baseUrl, stop } = await startViteDev();
     try {
-      const html = await httpGet(`${baseUrl}/portfolio/main.html`);
+      const html = await httpGet(`${baseUrl}/portfolio/index.html`);
       assert.equal(html.status, 200);
       assert.match(html.body, /class=["'][^"']*\bviewport\b/);
       assert.match(html.body, /id=["']world["']/);

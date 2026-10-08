@@ -781,6 +781,8 @@ body.is-page-crossfading .case-page__fab {
     height: auto;
     max-height: none;
     aspect-ratio: auto;
+    border-radius: 16px;
+    padding: 16px;
   }
 
   /* --scroll / --inline hug content. */
@@ -792,11 +794,17 @@ body.is-page-crossfading .case-page__fab {
   }
 
   .case-page__picture-img {
-    width: calc(100% - 32px);
+    width: 100%;
     max-width: none;
     height: auto;
     max-height: none;
-    margin: 16px auto;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .case-page__fill-block {
+    padding: 16px;
+    border-radius: 16px;
   }
 }
 
@@ -863,7 +871,7 @@ body.is-page-crossfading .case-page__fab {
   .case-page__picture {
     height: auto;
     max-height: none;
-    border-radius: 24px;
+    border-radius: 16px;
   }
 
   /* --scroll / --inline hug content. */
@@ -875,11 +883,12 @@ body.is-page-crossfading .case-page__fab {
   }
 
   .case-page__picture-img {
-    width: calc(100% - 32px);
+    width: 100%;
     max-width: none;
     height: auto;
     max-height: none;
-    margin: 16px auto;
+    margin: 0;
+    border-radius: 8px;
   }
 
   .case-page__footer-row {
@@ -1158,6 +1167,15 @@ body.case-page .case-page__hscroll.is-scrollable [data-case-zoomable]:not(.is-em
 
 .case-page__picture--scroll.is-scrollable .case-page__hscroll-expand {
   display: inline-flex;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms cubic-bezier(0.33, 0.05, 0.2, 1);
+}
+
+.case-page__picture--scroll.is-scrollable:hover .case-page__hscroll-expand,
+.case-page__picture--scroll.is-scrollable:focus-within .case-page__hscroll-expand {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .case-page__hscroll-expand.ds-button-round:hover,
@@ -1166,6 +1184,11 @@ body.case-page .case-page__hscroll.is-scrollable [data-case-zoomable]:not(.is-em
 }
 
 @media (hover: none) {
+  .case-page__picture--scroll.is-scrollable .case-page__hscroll-expand {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .case-page__hscroll-expand.ds-button-round:hover {
     color: var(--color-black);
   }
@@ -1238,6 +1261,59 @@ body.case-page[data-case-id="phish"] .case-page__hscroll-img {
   aspect-ratio: auto;
   object-fit: contain;
   object-position: top center;
+}
+
+/* Figma 624:18990 (360 Picture): pad 16, r16, caption→frames 8, frame 178/294. */
+@media (max-width: 768px) {
+  .case-page__picture--scroll {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  body.case-page[data-case-id="phish"] .case-page__picture--scroll,
+  body.case-page[data-case-id="dragon"] .case-page__picture--scroll {
+    gap: 8px;
+  }
+
+  .case-page__hscroll {
+    container-type: inline-size;
+  }
+
+  .case-page__hscroll-img {
+    /* 178 of Interfs 294; cqi = scroller, not max-content track. */
+    width: calc(178 / 294 * 100cqi) !important;
+    height: auto;
+  }
+
+  /* Context as-is strip (Dragon «Как сейчас»): stack frames, no h-scroll. */
+  #context .case-page__picture--scroll .case-page__hscroll {
+    overflow-x: hidden;
+    overflow-y: visible;
+    touch-action: auto;
+    cursor: auto;
+  }
+
+  #context .case-page__picture--scroll .case-page__hscroll-track {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 8px;
+  }
+
+  #context .case-page__picture--scroll .case-page__hscroll-item {
+    width: 100%;
+  }
+
+  #context .case-page__picture--scroll .case-page__hscroll-img {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+    aspect-ratio: auto;
+  }
+
+  #context .case-page__picture--scroll .case-page__hscroll-expand {
+    display: none !important;
+  }
 }
 
 .case-page__picture-caption {
@@ -1353,6 +1429,10 @@ body.case-page[data-case-id="phish"] .case-page__hscroll-img {
   will-change: transform;
 }
 
+.case-page__lightbox-img[hidden] {
+  display: none !important;
+}
+
 .case-page__lightbox-img {
   position: relative;
   top: auto;
@@ -1384,16 +1464,68 @@ body.case-page[data-case-id="phish"] .case-page__hscroll-img {
   cursor: grabbing;
 }
 
-.case-page__lightbox-tapper {
+/* Figma 617:18473 Bottons — prev 48 + gap 20 + tapper 104 + gap 20 + next 48 */
+.case-page__lightbox-chrome {
   position: absolute;
   left: 50%;
   bottom: 20px;
   z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
   transform: translateX(-50%);
+  pointer-events: none;
   cursor: default;
-  background-color: #fefefe !important;
-  box-shadow: 0 5px 9px rgba(187, 187, 189, 0.25) !important;
-  color: #121214 !important;
+}
+
+.case-page__lightbox-chrome > * {
+  pointer-events: auto;
+}
+
+.case-page__lightbox-chrome.is-single .case-page__lightbox-nav {
+  display: none;
+}
+
+.case-page__lightbox-chrome.is-single {
+  gap: 0;
+}
+
+.case-page__lightbox-nav.ds-button-round {
+  cursor: pointer;
+  color: var(--color-black);
+}
+
+.case-page__lightbox-nav.ds-button-round:hover,
+.case-page__lightbox-nav.ds-button-round.ds-button-round--hover {
+  color: var(--color-gray-text);
+}
+
+@media (hover: none) {
+  .case-page__lightbox-nav.ds-button-round:hover {
+    color: var(--color-black);
+  }
+}
+
+.case-page__lightbox-nav .ds-icon[data-icon="arrow-right"] {
+  -webkit-mask-image: url("../../ds-showcase/assets/icons/arrow-right.svg");
+  mask-image: url("../../ds-showcase/assets/icons/arrow-right.svg");
+}
+
+.case-page__lightbox-nav .ds-icon > img {
+  display: none;
+}
+
+.case-page__lightbox-tapper {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  z-index: 2;
+  transform: none;
+  cursor: default;
+  background-color: var(--color-white) !important;
+  box-shadow: var(--shadow) !important;
+  color: var(--color-black) !important;
   /* Real halves instead of DS pad+gap: no dead chrome, no ::before hit hack. */
   padding: 0;
   gap: 0;
@@ -1445,6 +1577,11 @@ html.is-case-lightbox-open body {
   overflow: hidden;
 }
 
+html.is-case-lightbox-open .case-page__fab {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 @media (max-width: 480px) {
   .case-page__picture--inline {
     padding: 16px;
@@ -1456,9 +1593,13 @@ html.is-case-lightbox-open body {
     margin: 0;
   }
 
-  /* Keep Picture pad 24 (Figma); scale frame to column − page gutters. */
+  /* Figma 624:18990 — frame 178 / inner 294; pad 16 already on --scroll. */
+  .case-page__hscroll {
+    container-type: inline-size;
+  }
+
   .case-page__hscroll-img {
-    width: min(530px, calc(100vw - 32px - 48px));
+    width: calc(178 / 294 * 100cqi) !important;
     height: auto;
     aspect-ratio: 530 / 269;
   }
@@ -1489,5 +1630,16 @@ html.is-case-lightbox-open body {
 
   .case-page__lightbox-tapper {
     bottom: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .case-page__lightbox-tapper {
+    display: none !important;
+  }
+
+  .case-page__lightbox-chrome {
+    bottom: 16px;
+    gap: 16px;
   }
 }

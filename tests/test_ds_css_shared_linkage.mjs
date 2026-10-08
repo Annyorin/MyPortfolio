@@ -124,7 +124,7 @@ function assertWithinTol(actual, target, label) {
 
 describe("ds CSS shared linkage (no fork)", () => {
   it("portfolio HTML and Storybook preview link ds-showcase/css/* only", () => {
-    const html = read("portfolio/main.html");
+    const html = read("portfolio/index.html");
     assert.match(
       html,
       /href=["']\.\.\/ds-showcase\/css\/tokens\.css["']/,

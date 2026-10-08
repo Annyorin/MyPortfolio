@@ -13,7 +13,7 @@ npm ci
 npm run portfolio:dev
 ```
 
-Откроется Vite на `/portfolio/main.html`. Для viewport ≥1024×609 старт камеры
+Откроется Vite на `/portfolio/index.html`. Для viewport ≥1024×609 старт камеры
 `scale=1`, `translate=0`; на узком viewport — `fitToContent(24)`.
 
 Превью reverse particle boot (без сцены портфолио):

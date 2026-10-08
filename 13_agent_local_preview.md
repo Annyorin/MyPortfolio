@@ -18,7 +18,7 @@
 npm run portfolio:dev
 ```
 
-Это Vite с входом `/portfolio/main.html`. Дефолтный порт `5173`; если занят, Vite берёт следующий (`5174`, …).
+Это Vite с входом `/portfolio/index.html`. Дефолтный порт `5173`; если занят, Vite берёт следующий (`5174`, …).
 
 Storybook (`npm run storybook`, порт `6006`) **не** поднимай, пока человек явно не попросил.
 
@@ -26,7 +26,7 @@ Storybook (`npm run storybook`, порт `6006`) **не** поднимай, по
 
 1. Проверь, жив ли уже dev-сервер.
    - Сначала терминалы сессии: ищи `vite`, `portfolio:dev`, `localhost:5173` / `5174`.
-   - Затем HTTP: `http://127.0.0.1:5173/portfolio/main.html` и при промахе `5174`.
+   - Затем HTTP: `http://127.0.0.1:5173/portfolio/index.html` и при промахе `5174`.
    - Успех: статус `200` или редирект `302`. Корень `/` тоже редиректит на портфолио — это норма.
 2. Если сервер уже отвечает — **не** стартуй второй процесс. Верни URL и `already_running`.
 3. Если `node_modules` нет — один раз `npm install`, затем снова шаг 3 запуска.
@@ -58,7 +58,7 @@ Storybook (`npm run storybook`, порт `6006`) **не** поднимай, по
 ```json
 {
   "status": "already_running",
-  "url": "http://localhost:5173/portfolio/main.html",
+  "url": "http://localhost:5173/portfolio/index.html",
   "port": 5173,
   "command": "npm run portfolio:dev",
   "note": ""

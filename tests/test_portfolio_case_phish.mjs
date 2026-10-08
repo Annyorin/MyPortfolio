@@ -238,12 +238,16 @@ describe("portfolio case-phish page", () => {
     assert.match(src, /translate\(\$\{Math\.round\(x\)\}px/);
     assert.match(src, /nw \* k/);
     assert.match(src, /LIGHTBOX_FIT_PAD_TOP/);
+    assert.match(src, /LIGHTBOX_OPEN_SCALE/);
+    assert.match(src, /LIGHTBOX_WIDE_ASPECT/);
     assert.doesNotMatch(src, /scale\(\$\{k\}\)/);
     assert.match(src, /pointermove/);
     assert.match(src, /zoomAt/);
     assert.match(src, /CASE_IMG_MARKER_RE|\[\[img:/);
     assert.match(src, /CASE_IMGSCROLL_MARKER_RE|\[\[imgscroll:/);
     assert.match(src, /createCasePictureScroll/);
+    assert.match(src, /case-page__lightbox-chrome|createLightboxNavButton/);
+    assert.match(src, /pointerDistance|pinch/);
     assert.match(src, /intrinsicWidth/);
     assert.match(src, /img\.style\.width\s*=\s*`\$\{frameW\}px`/);
     assert.match(src, /CASE_JTBD_MARKER_RE|\[\[jtbd:/);
@@ -434,7 +438,12 @@ describe("portfolio case-phish page", () => {
       /\.case-page__lightbox-close\.ds-button-round:hover[\s\S]*?color:\s*var\(--color-gray-text\)/
     );
     assert.match(css, /icons\/close\.svg/);
+    assert.match(css, /\.case-page__lightbox-chrome/);
     assert.match(css, /\.case-page__lightbox-tapper/);
+    assert.match(
+      css,
+      /@media\s*\(max-width:\s*768px\)[\s\S]*?\.case-page__lightbox-tapper\s*\{[^}]*display:\s*none/s
+    );
     assert.match(
       css,
       /\.case-page__lightbox-tapper[\s\S]*?\[data-tapper-action="zoom-out"\]\s*\{[^}]*padding:\s*8px 12px 8px 16px/s

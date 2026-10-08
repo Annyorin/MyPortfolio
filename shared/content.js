@@ -220,6 +220,10 @@ export const contentMap = {
 
   "tooltip.zoom_in": "Приблизить",
 
+  "lightbox.prev": "Предыдущий экран",
+
+  "lightbox.next": "Следующий экран",
+
   "button.home": "На\u00A0главную",
 
   "header.title": "Аня Ясинская · Портфолио",

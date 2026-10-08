@@ -1,5 +1,5 @@
 /**
- * Smoke: portfolio entry HTML wiring (no-mock parse of real main.html).
+ * Smoke: portfolio entry HTML wiring (no-mock parse of real index.html).
  *
  * TC-E2E-02: DS tokens/components CSS links; .viewport / .world; module main.js
  */
@@ -12,11 +12,11 @@ import { describe, it } from "node:test";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
-const ENTRY_HTML = path.join(REPO_ROOT, "portfolio", "main.html");
+const ENTRY_HTML = path.join(REPO_ROOT, "portfolio", "index.html");
 
 describe("portfolio entry HTML smoke (stubs)", () => {
   it("TC-E2E-02: entry HTML links DS CSS, has .viewport/.world and module main.js", () => {
-    assert.ok(fs.existsSync(ENTRY_HTML), "missing portfolio/main.html");
+    assert.ok(fs.existsSync(ENTRY_HTML), "missing portfolio/index.html");
     const html = fs.readFileSync(ENTRY_HTML, "utf8");
 
     assert.match(

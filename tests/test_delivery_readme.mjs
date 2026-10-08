@@ -200,7 +200,7 @@ describe("TC-E2E-03 no-mock smoke entrypoints", () => {
           throw new Error(`vite exited early: ${stderr || stdout}`);
         }
         try {
-          const res = await httpGet(`${baseUrl}/portfolio/main.html`);
+          const res = await httpGet(`${baseUrl}/portfolio/index.html`);
           if (res.status === 200) {
             ready = true;
             assert.match(res.body, /class=["'][^"']*\bviewport\b/);

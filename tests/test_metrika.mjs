@@ -32,9 +32,9 @@ describe("Yandex Metrika", () => {
     assert.match(src, /accurateTrackBounce:\s*true/);
   });
 
-  it("main.html, case-dragon.html and case-phish.html inline the counter (Vite does not emit js/metrika.js)", () => {
+  it("index.html, case-dragon.html and case-phish.html inline the counter (Vite does not emit js/metrika.js)", () => {
     for (const file of [
-      "portfolio/main.html",
+      "portfolio/index.html",
       "portfolio/case-dragon.html",
       "portfolio/case-phish.html",
     ]) {
@@ -51,8 +51,8 @@ describe("Yandex Metrika", () => {
     }
   });
 
-  it("index.html redirect does not load Metrika (avoids a double hit)", () => {
-    const html = read("portfolio/index.html");
+  it("legacy main.html redirect does not load Metrika (avoids a double hit)", () => {
+    const html = read("portfolio/main.html");
     assert.doesNotMatch(html, /metrika/);
     assert.doesNotMatch(html, new RegExp(COUNTER_ID));
   });
