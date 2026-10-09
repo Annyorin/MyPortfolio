@@ -831,7 +831,7 @@ html[data-theme="dark"] .viewport.portfolio--mobile {
   display: block;
   position: relative;
   width: 100%;
-  min-height: 100%;
+  min-height: auto;
   box-sizing: border-box;
   /* Let viewport dots show through gaps between cards. */
   background-color: transparent;
@@ -939,14 +939,14 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
 }
 
 /*
- * Cards: full width (Figma Портфолио.768 169:13125 — 736×500, Photo 394, Info 104).
- * Body stays 104px; media fills the rest. Description 32px (not desktop 64).
- * <768 → card height lerps to Портфолио.360 (322); media still flex-fills.
+ * Cards: full width (Figma Портфолио.768 169:13125 — 736×500, Photo 394, Info 104;
+ * Портфолио.360 card 169:12156 — Photo 324×172 @ ~326w). Media keeps 736:394 aspect
+ * as width scales 328→736 (360–768 viewport minus 16px sheet padding); body locked 104.
  */
 .portfolio-mobile__card.ds-card {
   position: relative;
   width: 100%;
-  height: 500px;
+  height: auto;
   max-width: none;
   border-radius: 24px;
   box-shadow: var(--shadow);
@@ -962,11 +962,18 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
 
 .portfolio-mobile__card .ds-card__media,
 .portfolio-mobile__card .ds-card__media.ds-placeholder {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   width: 100%;
   height: auto;
   min-height: 0;
   max-height: none;
+  aspect-ratio: 736 / 394;
+}
+
+.portfolio-mobile__card .ds-card__media > img {
+  object-fit: cover;
+  object-position: left top;
+  transform: none;
 }
 
 .portfolio-mobile__card .ds-card__body {
@@ -988,18 +995,7 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
   width: 100%;
 }
 
-/* 768 → 360: card height only; media keeps flex-fill above fixed 104 body */
-@media (max-width: 767.98px) {
-  .portfolio-mobile__card.ds-card {
-    height: clamp(
-      322px,
-      calc(322px + 178px * (100vw - 360px) / 408px),
-      500px
-    );
-  }
-}
-
-/* Narrow phone (≈360): denser sidebar gaps/type; card size already lerps above */
+/* Narrow phone (≈360): denser sidebar gaps/type; card height follows media aspect */
 @media (max-width: 480px) {
   .portfolio-mobile__sidebar .ds-sidebar__designer {
     gap: 12px;

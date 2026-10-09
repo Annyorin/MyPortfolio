@@ -607,10 +607,10 @@ describe("portfolio mobile document mode", () => {
     assert.ok(shell.world.children.length >= 4);
   });
 
-  it("portfolio.css mobile cards: full width, body 104, desc 32, media flex-fill", () => {
+  it("portfolio.css mobile cards: full width, body 104, desc 32, media aspect", () => {
     const css = fs.readFileSync(abs("portfolio/css/portfolio.css"), "utf8");
     assert.match(css, /\.portfolio-mobile__card\.ds-card[\s\S]*?width:\s*100%/);
-    assert.match(css, /\.portfolio-mobile__card\.ds-card[\s\S]*?height:\s*500px/);
+    assert.match(css, /\.portfolio-mobile__card\.ds-card[\s\S]*?height:\s*auto/);
     assert.match(
       css,
       /\.portfolio-mobile__card\s+\.ds-card__body[\s\S]*?height:\s*104px/
@@ -625,11 +625,15 @@ describe("portfolio mobile document mode", () => {
     );
     assert.match(
       css,
-      /\.portfolio-mobile__card\s+\.ds-card__media[\s\S]*?flex:\s*1\s+1\s+auto/
+      /\.portfolio-mobile__card\s+\.ds-card__media[\s\S]*?aspect-ratio:\s*736\s*\/\s*394/
+    );
+    assert.match(
+      css,
+      /\.portfolio-mobile__card\s+\.ds-card__media\s*>\s*img[\s\S]*?object-position:\s*left\s+top/
     );
     assert.doesNotMatch(
       css,
-      /@media\s*\(max-width:\s*767\.98px\)[\s\S]*?\.portfolio-mobile__card\s+\.ds-card__media[\s\S]*?height:\s*clamp\(\s*172px/
+      /\.portfolio-mobile__card\s+\.ds-card__media[\s\S]*?flex:\s*1\s+1\s+auto/
     );
   });
 });
