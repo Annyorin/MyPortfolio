@@ -32,6 +32,7 @@ import {
 } from "./boot/dots/assets.js";
 import { upgradeImages, watchZoom } from "./progressiveImages.js";
 import { INFINITE_BG } from "./infiniteBg.js";
+import { versionAssetUrl } from "../../shared/assetUrl.js";
 
 const BADGE_SIZE = 100;
 const BADGE_GAP = 18;
@@ -468,8 +469,8 @@ export async function runDotsBoot(_viewportEl, loaderEl, { dark = false } = {}) 
   const rest = PRELOAD_PATHS.filter((path) => lightestPath(path) === path);
 
   const stop = trackAssets((p) => loader.setProgress(p), {
-    preload: quick.map((path) => base + lightestPath(path)),
-    warmOnly: rest.map((path) => base + lightestPath(path)),
+    preload: quick.map((path) => versionAssetUrl(base + lightestPath(path))),
+    warmOnly: rest.map((path) => versionAssetUrl(base + lightestPath(path))),
     // Nothing is being fetched on a cached visit, so readiness should not wait
     // out the silence window — the fast path may fire as soon as warm-up ends.
     fastPathMs: cached ? 2500 : 600,

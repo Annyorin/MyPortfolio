@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
+import { getAssetVersion } from "./scripts/asset-version.mjs";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -39,13 +40,18 @@ function redirectRootToPortfolio() {
  *
  * GitHub Pages: set `GITHUB_PAGES=1` so `base` is `/MyPortfolio/`.
  */
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, rootDir, "");
   const pages =
     env.GITHUB_PAGES === "1" || process.env.GITHUB_PAGES === "1";
 
   return {
     base: pages ? "/MyPortfolio/" : "/",
+    define: {
+      "import.meta.env.VITE_ASSET_VERSION": JSON.stringify(
+        command === "build" ? getAssetVersion({ ...env, ...process.env }) : ""
+      ),
+    },
     plugins: [redirectRootToPortfolio()],
     resolve: {
       alias: {

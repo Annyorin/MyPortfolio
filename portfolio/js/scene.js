@@ -5,6 +5,7 @@
 
 import { computeContentAABB, FIXED_CHROME_KINDS } from "../../shared/layout.js";
 import { fixHangingPrepositions } from "../../shared/typography.js";
+import { versionAssetUrl } from "../../shared/assetUrl.js";
 import { isMacbookWarmVisit, markMacbookWarm } from "./pageTransition.js";
 
 /** Sidebar action buttons (Figma Ui kit Sidebar 158:11468). */
@@ -143,7 +144,7 @@ function buildSidebar(content, resolveAsset) {
       urls && typeof urls[action.key] === "string" && urls[action.key]
         ? urls[action.key]
         : "#";
-    btn.href = href;
+    btn.href = action.key === "contact.cv" ? versionAssetUrl(href) : href;
     btn.tabIndex = 0;
     if (href !== "#" && !href.startsWith("mailto:")) {
       // The CV opens in a tab rather than downloading: a `download` attribute

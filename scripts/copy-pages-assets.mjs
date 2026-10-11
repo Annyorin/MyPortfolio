@@ -5,6 +5,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { COPIED_ASSET_PATHS, getAssetVersion } from "./asset-version.mjs";
+import { versionAssetUrl } from "../shared/assetUrl.js";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(rootDir, "..");
@@ -29,14 +31,10 @@ if (!fs.existsSync(dist)) {
   process.exit(1);
 }
 
-copyRecursive(
-  path.join(repoRoot, "ds-showcase", "assets"),
-  path.join(dist, "ds-showcase", "assets")
-);
-copyRecursive(
-  path.join(repoRoot, "portfolio", "assets"),
-  path.join(dist, "portfolio", "assets")
-);
+for (const relative of COPIED_ASSET_PATHS) {
+  copyRecursive(path.join(repoRoot, relative), path.join(dist, relative));
+}
+const iconUrl = versionAssetUrl("ds-showcase/assets/images/avatar.png", getAssetVersion());
 
 const indexHtml = `<!DOCTYPE html>
 <html lang="ru">
@@ -44,8 +42,8 @@ const indexHtml = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Аня Ясинская — Продуктовый дизайнер · UX/UI дизайнер</title>
-  <link rel="icon" href="ds-showcase/assets/images/avatar.png" type="image/png" sizes="90x90">
-  <link rel="apple-touch-icon" href="ds-showcase/assets/images/avatar.png">
+  <link rel="icon" href="${iconUrl}" type="image/png" sizes="90x90">
+  <link rel="apple-touch-icon" href="${iconUrl}">
   <link rel="canonical" href="portfolio/index.html">
   <meta http-equiv="refresh" content="0; url=portfolio/index.html">
   <script>location.replace("portfolio/index.html" + location.search + location.hash);</script>

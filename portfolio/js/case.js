@@ -4,6 +4,7 @@
  */
 
 import { contentMap } from "../../shared/content.js";
+import { versionAssetUrl } from "../../shared/assetUrl.js";
 import { fixHangingPrepositions } from "../../shared/typography.js";
 import { bindSegmentsControl } from "../../ds-showcase/js/segments.js";
 import {
@@ -1047,7 +1048,7 @@ function fillContent(content, caseId) {
         urls && typeof urls[action.key] === "string" && urls[action.key]
           ? urls[action.key]
           : "#";
-      btn.href = href;
+      btn.href = action.key === "contact.cv" ? versionAssetUrl(href) : href;
       if (href !== "#" && !href.startsWith("mailto:")) {
         // Резюме открываем во вкладке, а не скачиваем: атрибут download отменял бы
         // target="_blank" и файл падал бы в загрузки мимо просмотрщика.

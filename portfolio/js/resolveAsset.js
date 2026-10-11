@@ -8,6 +8,7 @@
  */
 
 import { contentMap } from "../../shared/content.js";
+import { versionAssetUrl } from "../../shared/assetUrl.js";
 
 /** Documented Vite alias name (imports only; not used as img.src). */
 const DS_ASSETS_ALIAS = "@ds-assets";
@@ -99,10 +100,9 @@ export function resolveAsset(key, options = {}) {
 
   if (!pathFromDsRoot) {
     console.warn(`[resolveAsset] unknown or empty asset key: ${String(key)}`);
-    return `${viteBaseUrl()}ds-showcase/assets/`;
+    return versionAssetUrl(`${viteBaseUrl()}ds-showcase/assets/`);
   }
 
   const mode = options.mode ?? detectResolveMode();
-  return buildUrl(pathFromDsRoot, mode);
+  return versionAssetUrl(buildUrl(pathFromDsRoot, mode));
 }
-
