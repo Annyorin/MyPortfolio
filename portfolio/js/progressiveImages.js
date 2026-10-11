@@ -26,12 +26,15 @@ const INFLIGHT = new WeakSet();
  */
 export function previewUrlFor(url) {
   if (typeof url !== "string") return null;
+  const suffixAt = url.search(/[?#]/);
+  const suffix = suffixAt < 0 ? "" : url.slice(suffixAt);
+  const pathname = suffixAt < 0 ? url : url.slice(0, suffixAt);
   const marker = "/assets/";
-  const at = url.lastIndexOf(marker);
+  const at = pathname.lastIndexOf(marker);
   if (at < 0) return null;
 
-  const preview = LOW_RES_IMAGES[url.slice(at + marker.length)];
-  return preview ? url.slice(0, at + marker.length) + preview : null;
+  const preview = LOW_RES_IMAGES[pathname.slice(at + marker.length)];
+  return preview ? pathname.slice(0, at + marker.length) + preview + suffix : null;
 }
 
 /**

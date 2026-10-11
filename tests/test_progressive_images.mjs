@@ -79,6 +79,38 @@ describe("low-res twins", () => {
     assert.equal(resolve("icons.mail"), icon);
   });
 
+  it("preserves deployment queries and fragments on previews and their original upgrades", async () => {
+    const { withProgressiveAssets, previewUrlFor, upgradeImages } = await load("portfolio/js/progressiveImages.js");
+    const { LOW_RES_IMAGES } = await load("shared/lowResImages.js");
+    const [original, preview] = Object.entries(LOW_RES_IMAGES)[0];
+    const suffix = "?quality=90&v=deploy-sha#crop";
+    const fullUrl = `/MyPortfolio/ds-showcase/assets/${original}${suffix}`;
+    const previewUrl = `/MyPortfolio/ds-showcase/assets/${preview}${suffix}`;
+    assert.equal(previewUrlFor(fullUrl), previewUrl);
+    assert.equal(previewUrlFor(`/assets/${original}#crop`), `/assets/${preview}#crop`);
+    assert.equal(withProgressiveAssets(() => fullUrl)("image"), previewUrl);
+    const img = {
+      src: previewUrl,
+      getAttribute() { return this.src; },
+      setAttribute(_name, value) { this.src = value; },
+      getBoundingClientRect: () => ({ left: 0, top: 0, right: 100, bottom: 100 }),
+    };
+    const saved = { Image: globalThis.Image, innerWidth: globalThis.innerWidth, innerHeight: globalThis.innerHeight };
+    const requested = [];
+    globalThis.innerWidth = 1280;
+    globalThis.innerHeight = 800;
+    globalThis.Image = class {
+      set src(url) { requested.push(url); queueMicrotask(() => this.onload?.()); }
+    };
+    try {
+      assert.equal(await upgradeImages({ querySelectorAll: () => [img] }), 1);
+      assert.deepEqual(requested, [fullUrl]);
+      assert.equal(img.src, fullUrl);
+    } finally {
+      Object.assign(globalThis, saved);
+    }
+  });
+
   it("upgrades previews to originals, largest on screen first", async () => {
     const { withProgressiveAssets, upgradeImages } = await load("portfolio/js/progressiveImages.js");
     const { LOW_RES_IMAGES } = await load("shared/lowResImages.js");

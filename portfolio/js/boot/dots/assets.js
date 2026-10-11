@@ -1,4 +1,5 @@
 import { LOW_RES_IMAGES } from "../../../../shared/lowResImages.js";
+import { versionAssetUrl } from "../../../../shared/assetUrl.js";
 
 /**
  * Real page-loading progress: images, fonts and network activity.
@@ -182,7 +183,7 @@ export function trackAssets(onProgress, {
   // gone, so they cannot be awaited — but they can be ready by then. The page's
   // own preload links join the list: on a repeat visit they settle instantly and
   // let the fast path fire.
-  const warmUrls = new Set(preload);
+  const warmUrls = new Set(preload.map((url) => versionAssetUrl(url)));
   for (const link of document.querySelectorAll?.('link[rel="preload"][as="image"]') ?? []) {
     if (link.href) warmUrls.add(link.href);
   }
@@ -193,7 +194,7 @@ export function trackAssets(onProgress, {
   // for them they are in cache anyway.
   for (const url of warmOnly) {
     const probe = new Image();
-    probe.src = url;
+    probe.src = versionAssetUrl(url);
   }
 
   for (const url of preload) {
@@ -211,7 +212,7 @@ export function trackAssets(onProgress, {
     };
     probe.onload = settle;
     probe.onerror = tick;
-    probe.src = url;
+    probe.src = versionAssetUrl(url);
     if (probe.complete) settle();
   }
 
