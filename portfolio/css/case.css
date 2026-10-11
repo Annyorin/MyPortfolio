@@ -438,6 +438,13 @@ body.is-page-crossfading .case-page__fab {
   align-items: stretch;
 }
 
+@media (min-width: 769px) {
+  /* Grid stretch equalizes row heights without percentage sizing. */
+  .case-page__jtbd-row > .case-page__jtbd-cell {
+    height: auto;
+  }
+}
+
 /* Mobile (&lt;768 / ≤768): one Fill_Block per job — Figma 561:18198 */
 .case-page__jtbd-merged {
   display: none;
