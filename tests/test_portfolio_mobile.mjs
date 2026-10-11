@@ -613,6 +613,10 @@ describe("portfolio mobile document mode", () => {
     assert.match(css, /\.portfolio-mobile__card\.ds-card[\s\S]*?height:\s*auto/);
     assert.match(
       css,
+      /\.portfolio-mobile__card\.ds-card[\s\S]*?border-radius:\s*16px/
+    );
+    assert.match(
+      css,
       /\.portfolio-mobile__card\s+\.ds-card__body[\s\S]*?height:\s*104px/
     );
     assert.match(
@@ -629,11 +633,35 @@ describe("portfolio mobile document mode", () => {
     );
     assert.match(
       css,
+      /\.portfolio-mobile__card\s+\.ds-card__media[\s\S]*?border-radius:\s*16px\s+16px\s+0\s+0/
+    );
+    assert.match(
+      css,
       /\.portfolio-mobile__card\s+\.ds-card__media\s*>\s*img[\s\S]*?object-position:\s*left\s+top/
     );
     assert.doesNotMatch(
       css,
       /\.portfolio-mobile__card\s+\.ds-card__media[\s\S]*?flex:\s*1\s+1\s+auto/
+    );
+  });
+
+  it("portfolio.css mobile skills ≤767: 2 equal buttons, hide Behance/Почта", () => {
+    const css = fs.readFileSync(abs("portfolio/css/portfolio.css"), "utf8");
+    assert.match(
+      css,
+      /@media\s*\(\s*max-width:\s*767px\s*\)[\s\S]*?\.portfolio-mobile__sidebar\s+\.ds-sidebar__skills\s+\.ds-button[\s\S]*?flex:\s*1\s+1\s+0/
+    );
+    assert.match(
+      css,
+      /@media\s*\(\s*max-width:\s*767px\s*\)[\s\S]*?\.portfolio-mobile__sidebar\s+\.ds-sidebar__skills\s+\.ds-button[\s\S]*?padding:\s*10px\s+16px/
+    );
+    assert.match(
+      css,
+      /@media\s*\(\s*max-width:\s*767px\s*\)[\s\S]*?\.ds-sidebar__skills\s+\.ds-button:nth-child\(\s*n\s*\+\s*3\s*\)[\s\S]*?display:\s*none/
+    );
+    assert.match(
+      css,
+      /\.portfolio-mobile__sidebar\s+\.ds-sidebar__skills\s+\.ds-button\s*\{[\s\S]*?flex:\s*0\s+0\s+auto/
     );
   });
 });

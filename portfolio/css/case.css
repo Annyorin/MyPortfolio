@@ -438,6 +438,17 @@ body.is-page-crossfading .case-page__fab {
   align-items: stretch;
 }
 
+/* 768–1024 (iPad): keep 3 cols, hug text — do not stretch to the tallest card. */
+@media (max-width: 1024px) {
+  .case-page__jtbd-row {
+    align-items: start;
+  }
+
+  .case-page__jtbd-row > .case-page__jtbd-cell {
+    height: auto;
+  }
+}
+
 /* Mobile (&lt;768 / ≤768): one Fill_Block per job — Figma 561:18198 */
 .case-page__jtbd-merged {
   display: none;

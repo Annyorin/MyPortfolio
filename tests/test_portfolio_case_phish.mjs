@@ -411,6 +411,10 @@ describe("portfolio case-phish page", () => {
     assert.match(css, /\.case-page__jtbd-merged/);
     assert.match(
       css,
+      /@media\s*\(max-width:\s*1024px\)[\s\S]*?\.case-page__jtbd-row\s*\{[^}]*align-items:\s*start/s
+    );
+    assert.match(
+      css,
       /@media\s*\(max-width:\s*768px\)[\s\S]*?\.case-page__jtbd-merged\s*\{[^}]*display:\s*flex/s
     );
     assert.match(

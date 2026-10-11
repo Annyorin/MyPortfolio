@@ -920,15 +920,31 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
 }
 
 .portfolio-mobile__sidebar .ds-sidebar__skills {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   width: 100%;
 }
 
+/* ≥768 hug width — 4 contacts in a row (Портфолио.768) */
 .portfolio-mobile__sidebar .ds-sidebar__skills .ds-button {
   flex: 0 0 auto;
   min-width: 0;
+}
+
+/* Figma 169:11899 Skills — equal Написать/Резюме until 768; Behance/Почта hidden */
+@media (max-width: 767px) {
+  .portfolio-mobile__sidebar .ds-sidebar__skills .ds-button {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding: 10px 16px;
+  }
+
+  .portfolio-mobile__sidebar .ds-sidebar__skills .ds-button:nth-child(n + 3) {
+    display: none;
+  }
 }
 
 .portfolio-mobile__projects {
@@ -948,7 +964,7 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
   width: 100%;
   height: auto;
   max-width: none;
-  border-radius: 24px;
+  border-radius: 16px;
   box-shadow: var(--shadow);
   /* Avoid 1.03 hover scale shifting a full-bleed sheet card. */
   transform: none;
@@ -968,6 +984,8 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
   min-height: 0;
   max-height: none;
   aspect-ratio: 736 / 394;
+  /* Override .ds-card[data-card-hover] .ds-card__media 23px when overflow:visible */
+  border-radius: 16px 16px 0 0;
 }
 
 .portfolio-mobile__card .ds-card__media > img {
@@ -1016,11 +1034,6 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
     font-weight: var(--type-caption-weight);
-  }
-
-  .portfolio-mobile__sidebar .ds-sidebar__skills .ds-button {
-    padding-top: 10px;
-    padding-bottom: 10px;
   }
 }
 
