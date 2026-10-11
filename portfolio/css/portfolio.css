@@ -957,7 +957,7 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
 /*
  * Cards: full width (Figma Портфолио.768 169:13125 — 736×500, Photo 394, Info 104;
  * Портфолио.360 card 169:12156 — Photo 324×172 @ ~326w). Media keeps 736:394 aspect
- * as width scales 328→736 (360–768 viewport minus 16px sheet padding); body locked 104.
+ * as width scales 328→736 (360–768 viewport minus 16px sheet padding); body fits content.
  */
 .portfolio-mobile__card.ds-card {
   position: relative;
@@ -995,16 +995,17 @@ html[data-theme="dark"] .viewport.portfolio--mobile .portfolio-mobile-host.portf
 }
 
 .portfolio-mobile__card .ds-card__body {
-  height: 104px;
-  flex: 0 0 104px;
+  height: auto;
+  flex: 0 0 auto;
   padding: 16px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .portfolio-mobile__card .ds-card__description {
-  height: 32px;
-  flex: 0 0 32px;
-  max-height: 32px;
+  height: auto;
+  flex: 0 0 auto;
+  max-height: none;
+  overflow: visible;
 }
 
 /* Desktop forced \\n wraps are for 310px; on full-width mobile collapse to fill. */
